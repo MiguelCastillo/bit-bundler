@@ -1,6 +1,7 @@
 var browserPack = require("browser-pack");
 var pstream     = require("p-stream");
 var types       = require("dis-isa");
+var utils       = require("belty");
 
 
 function Bundler(loader, options) {
@@ -14,6 +15,22 @@ function Bundler(loader, options) {
 
   if (options.ignore) {
     this.ignore(options.ignore);
+  }
+
+  if (options.resolve) {
+    this.resolve(options.resolve);
+  }
+
+  if (options.fetch) {
+    this.fetch(options.fetch);
+  }
+
+  if (options.transform) {
+    this.transform(options.transform);
+  }
+
+  if (options.dependency) {
+    this.dependency(options.dependency);
   }
 }
 
@@ -34,15 +51,6 @@ Bundler.prototype.files = function(files) {
 
 Bundler.prototype.ignore = function(config) {
   this._loader.ignore(config);
-  return this;
-};
-
-
-Bundler.prototype.processor = function(config) {
-  this._loader.plugin("bundler", {
-    transform: config
-  });
-
   return this;
 };
 
@@ -97,6 +105,7 @@ Bundler.prototype.bundle = function(settings, success, failure) {
   }
 
   success = success || function() {};
+  failure = failure || function() {};
 
   var bundler = this;
   var loader = this._loader;
@@ -110,42 +119,64 @@ Bundler.prototype.bundle = function(settings, success, failure) {
     updateSuccess = updateSuccess || success;
     updateFailure = updateFailure || failure;
 
-    loader.fetch(files).then(function runBundler(modules) {
-      createBundle(loader, modules, settings).then(updateSuccess, updateFailure);
-    }, updateFailure);
+    function runBundler(modules) {
+      createBundle(bundler, modules, settings).then(updateSuccess, updateFailure);
+    }
+
+    loader.fetch(files).then(runBundler, updateFailure);
   }
 
-  function refresh(refreshSuccess, refhresFailure) {
+  function run(refreshSuccess, refhresFailure) {
     update(bundler._files, refreshSuccess, refhresFailure);
   }
 
   // Run the bundler...
-  refresh();
+  run();
 
   return {
-    refresh: refresh,
+    refresh: run,
     update: update
   };
 };
 
 
-function createBundle(loader, modules, options) {
-  var stack    = modules.slice(0);
-  var mods     = [];
-  var finished = {};
+function createBundle(bundler, modules, options) {
+  options       = utils.extend({ raw: true }, options);
+  var loader    = bundler._loader;
+  var stack     = modules.slice(0);
+  var output    = [];
+  var finished  = {};
+  var ids       = {};
+  var idCounter = 1;
+  var pack      = browserPack(options);
+  var promise   = pstream(pack);
+  
+  function getId(mod) {
+    if (bundler._options.fullPaths) {
+      return mod.id;
+    }
+
+    if (!ids[mod.id]) {
+      ids[mod.id] = idCounter++;
+    }
+    
+    return ids[mod.id];
+  }
 
   function processModule(mod) {
     if (finished.hasOwnProperty(mod.id)) {
       return;
     }
 
+    var id = getId(mod);
     mod = loader.getModule(mod.id);
 
     // browser pack chunk
-    var browserpack = {
-      id     : mod.id,
-      source : mod.source,
-      deps   : {}
+    var browserpackConfig = {
+      id     : id,
+      deps   : {},
+      path   : mod.path,
+      source : mod.source
     };
 
     // Gather up all dependencies
@@ -153,11 +184,11 @@ function createBundle(loader, modules, options) {
     for (i = 0, length = mod.deps.length; i < length; i++) {
       dep = mod.deps[i];
       stack.push(dep);
-      browserpack.deps[dep.id] = dep.id;
+      browserpackConfig.deps[dep.name] = getId(dep);
     }
 
-    finished[mod.id] = browserpack;
-    mods.unshift(browserpack);
+    finished[mod.id] = browserpackConfig;
+    output.push(browserpackConfig);
   }
 
   // Process all modules
@@ -165,10 +196,16 @@ function createBundle(loader, modules, options) {
     processModule(stack.pop());
   }
 
-  var stream = browserPack(options).setEncoding("utf8");
-  var promise = pstream(stream);
+  // TODO: Determine how to set the entry fields.
+  modules.forEach(function(mod) {
+    finished[mod.id].entry = true;
+  });
 
-  stream.end(JSON.stringify(mods));
+  output.forEach(function(mod) {
+    pack.write(mod);
+  });
+
+  pack.end();
   return promise;
 }
 
