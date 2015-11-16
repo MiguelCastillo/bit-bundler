@@ -22,7 +22,7 @@ var grunt = require('grunt');
     test.ifError(value)
 */
 
-exports.bit_bundler = {
+exports.bitbundler = {
   setUp: function(done) {
     // setup here if necessary
     done();
