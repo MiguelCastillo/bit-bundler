@@ -9,7 +9,8 @@
     "deps-bits": "^0.1.2",
     "dis-isa": "^1.2.2",
     "loggero": "^2.0.1",
-    "p-stream": "^1.0.2"
+    "p-stream": "^1.0.2",
+    "process": "^0.11.2"
   },
   "main": "src/index.js",
   "scripts": {

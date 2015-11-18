@@ -19,13 +19,12 @@ module.exports = function(grunt) {
 
     var allFiles = this.files.reduce(function(container, files) {
       var output = files.dest;
-      var input = files.src.map(function(filePath) {
-        return path.resolve(filePath);
+      var input = files.src.map(function(src) {
+        return path.resolve(src);
       });
 
       bitbundler(utils.merge({files: input}, settings))
-        .bundle(settings.browserPack || {},
-          function(result) {
+        .bundle(function(result) {
             grunt.file.write(output, result);
             done();
           },
@@ -42,7 +41,7 @@ module.exports = function(grunt) {
       return container;
     }, []);
 
-    if (settings.stats) {
+    if (settings.stats === true) {
       grunt.log.writeln("Files processed:");
       grunt.log.writeln(JSON.stringify(allFiles));
     }
