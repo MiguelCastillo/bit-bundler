@@ -29,6 +29,7 @@ module.exports = function(grunt) {
             done();
           },
           function(err) {
+            err = err && err.stack ? err.stack : err;
             grunt.log.error(err);
             done(err);
           });

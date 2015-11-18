@@ -11,6 +11,7 @@ function Bundler(loader, options) {
   this._loader = loader;
   this._files = [];
   this._options = {};
+  this._bundle = browserPackBundler;
 
   if (options.builtin !== false) {
     this.resolve(builtInsProcessor.resolve);
@@ -115,13 +116,10 @@ Bundler.prototype.bundle = function(success, failure) {
     updateSuccess = updateSuccess || success;
     updateFailure = updateFailure || failure;
 
-    function runBundler(modules) {
-      var bpModules = toBrowserPackModules(bundler, modules);
-      var bpOptions = configureBrowserPack(bundler, bpModules);
-      writeBrowserPackModules(bpModules, bpOptions).then(updateSuccess, updateFailure);
-    }
-
-    bundler._loader.fetch(files).then(runBundler, updateFailure);
+    bundler._loader
+      .fetch(files)
+      .then(runBundler(bundler, updateSuccess, updateFailure), updateFailure)
+      .then(utils.noop, updateFailure); // This extra `then` is to process errors triggered from within the bundler.
   }
 
   function run(refreshSuccess, refhresFailure) {
@@ -136,6 +134,21 @@ Bundler.prototype.bundle = function(success, failure) {
     update: update
   };
 };
+
+
+function runBundler(bundler, success, failure) {
+  return function runBundlerDelegate(modules) {
+    var bundle = bundler._options.bundle ? bundler._options.bundle : bundler._bundle;
+    Promise.resolve(bundle(bundler, modules)).then(success, failure);
+  };
+}
+
+
+function browserPackBundler(bundler, modules) {
+  var bpModules = toBrowserPackModules(bundler, modules);
+  var bpOptions = configureBrowserPack(bundler, bpModules);
+  return writeBrowserPackModules(bpModules, bpOptions);
+}
 
 
 /**
