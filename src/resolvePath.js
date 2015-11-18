@@ -4,6 +4,11 @@ var fs             = require("fs");
 var browserResolve = require("browser-resolve");
 
 
+function getDirectory(path) {
+  return path.replace(/([^/]+)$/gmi, function(match) {return "";});
+}
+
+
 /**
  * Resolves the path for the moduleMeta object.  It uses process.cwd as the baseUrl
  */
@@ -36,6 +41,7 @@ resolver.configure = function(options) {
 function resolve(moduleMeta, options) {
   function setPath(path) {
     return {
+      directory: getDirectory(path),
       path: path
     };
   }
