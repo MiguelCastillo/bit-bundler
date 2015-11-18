@@ -63,12 +63,12 @@ function resolvePath(moduleMeta, options) {
   // vs
   // require('./app/test);
   //
-//  var filePath = path.resolve(path.dirname(options.baseUrl), moduleMeta.name);
-//  var stat = fs.statSync(filePath);
-//
-//  if (stat.isFile()) {
-//    return Promise.resolve(filePath);
-//  }
+  //  var filePath = path.resolve(path.dirname(options.baseUrl), moduleMeta.name);
+  //  var stat = fs.statSync(filePath);
+  //
+  //  if (stat.isFile()) {
+  //    return Promise.resolve(filePath);
+  //  }
 
   return new Promise(function(resolve, reject) {
     browserResolve(moduleMeta.name, {filename: parentPath}, function(err, filePath) {
