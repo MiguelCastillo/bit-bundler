@@ -1,8 +1,10 @@
-var umd_deps    = require("deps-bits");
-var Bitloader   = require("bit-loader");
-var Bundler     = require("./bundler");
-var fileReader  = require("./fileReader");
+var umd_deps = require("deps-bits");
+var Bitloader = require("bit-loader");
+var Bundler = require("./bundler");
+var fileReader = require("./fileReader");
 var resolvePath = require("./resolvePath");
+var utils = require("belty");
+var defaultOptions = require("./defaultOptions");
 
 
 function createLoader(options) {
@@ -22,7 +24,7 @@ function createLoader(options) {
 
 
 function createBundler(options) {
-  options = options || {};
+  options = utils.merge({}, defaultOptions, options);
   var loader = createLoader(options);
   return new Bundler(loader, options);
 }
