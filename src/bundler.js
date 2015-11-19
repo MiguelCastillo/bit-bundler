@@ -4,7 +4,6 @@ var types = require("dis-isa");
 var utils = require("belty");
 var getUniqueId = require("./getUniqueId");
 var builtInsProcessor = require("./builtInsProcessor");
-var defaultBrowserPackOptions = require("./defaultBrowserPackOptions");
 
 
 function Bundler(loader, options) {
@@ -160,7 +159,13 @@ function browserPackBundler(bundler, modules) {
  * @returns {Object} Browser pack settings.
  */
 function configureBrowserPack(bundler, modules) {
-  return utils.merge({}, defaultBrowserPackOptions, bundler._options.browserPack);
+  var bpOptions = utils.merge({}, bundler._options.browserPack);
+
+  if (bpOptions.standalone) {
+    bpOptions.standaloneModule = modules[bpOptions.standaloneModule].id;
+  }
+
+  return bpOptions;
 }
 
 
@@ -178,7 +183,7 @@ function toBrowserPackModules(bundler, modules) {
   var stack = modules.slice(0);
   var bpModules = [];
   var byId = {};
-  var getId = bundler._options.fullPaths ? utils.noop : getUniqueId;
+  var getId = bundler._options.filePathAsId ? utils.noop : getUniqueId;
 
   function processModule(mod) {
     if (byId.hasOwnProperty(mod.id)) {
