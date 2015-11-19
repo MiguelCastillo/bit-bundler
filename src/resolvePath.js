@@ -1,11 +1,9 @@
-var logger         = require("loggero").create("bundler/resolvePath");
-var path           = require("path");
-var fs             = require("fs");
+var logger = require("loggero").create("bundler/resolvePath");
 var browserResolve = require("browser-resolve");
 
 
 function getDirectory(path) {
-  return path.replace(/([^/]+)$/gmi, function(match) {return "";});
+  return path.replace(/([^/]+)$/gmi, function() {return "";});
 }
 
 

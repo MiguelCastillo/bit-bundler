@@ -31,7 +31,7 @@ var builtInMap = {
       return "'/" + path.relative(".", moduleMeta.path) + "'";
     }
   }
-}
+};
 
 
 function resolve(moduleMeta) {
