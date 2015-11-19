@@ -6,10 +6,7 @@ module.exports = function(grunt) {
 
   require("load-grunt-tasks")(grunt);
 
-  var date = new Date();
-  var today = date.toDateString() + " " + date.toLocaleTimeString();
   var pkg = require("./package.json");
-  var banner = "/*! <%= pkg.name %> v<%= pkg.version %> - " + today + ". (c) " + date.getFullYear() + " Miguel Castillo. Licensed under MIT */";
 
   grunt.initConfig({
     pkg: pkg,
@@ -66,20 +63,6 @@ module.exports = function(grunt) {
         }
       }
     },
-    browserify: {
-      build: {
-        files: {
-          "dist/index.js": ["src/index.js"]
-        },
-        options: {
-          banner: banner,
-          browserifyOptions: {
-            detectGlobals: false,
-            standalone: "<%= pkg.name %>"
-          }
-        }
-      }
-    },
     uglify: {
       build: {
         options: {
@@ -101,7 +84,6 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask("build", ["eslint:all", "browserify:build", "uglify:build"]);
-  grunt.registerTask("serve", ["build", "concurrent:build"]);
+  grunt.registerTask("build", ["eslint:all"]);
   grunt.registerTask("test", ["connect:test", "mocha:test"]);
 };

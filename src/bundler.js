@@ -30,11 +30,11 @@ Bundler.prototype.configure = function(options) {
     })
     .forEach(function(option) {
       bundler[option](options[option]);
-    })
+    });
 
   this._options = utils.merge({}, this._options, options);
   return this;
-}
+};
 
 
 Bundler.prototype.files = function(files) {
@@ -217,7 +217,7 @@ function toBrowserPackModules(bundler, modules) {
     processModule(stack.pop());
   }
 
-  modules.forEach(function(mod, i) {
+  modules.forEach(function(mod) {
     byId[mod.id].entry = true;
   });
 
