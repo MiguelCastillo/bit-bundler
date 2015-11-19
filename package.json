@@ -1,6 +1,6 @@
 {
   "name": "bit-bundler",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "dependencies": {
     "belty": "^0.3.0",
     "bit-loader": "^1.1.0",
