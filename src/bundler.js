@@ -126,7 +126,7 @@ function browserPackBundler(bundler, modules) {
     var bpOptions = configureBrowserPack(bundler, bundle);
     return writeBrowserPackModules(bundle.modules, bpOptions)
       .then(function(result) {
-        bundl.result = result;
+        bundle.result = result;
         return bundle;
       });
   }));
