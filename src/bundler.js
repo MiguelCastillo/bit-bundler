@@ -46,7 +46,7 @@ Bundler.prototype.files = function(files) {
     files = [files];
   }
 
-  this._files = this._files.concat(files); // I like that we have new array.
+  this._files = this._files.concat(files); // I like that we have a new array.
   return this;
 };
 
@@ -113,23 +113,19 @@ function runBundler(bundler) {
 
 
 function browserPackBundler(bundler, modules) {
-  var bpBundles = toBrowserPackModules(bundler, modules);
+  var bpBundle = toBrowserPackModules(bundler, modules);
+  var bpOptions = configureBrowserPack(bundler, bpBundle);
 
-//  bpBundles.forEach(function(bundle) {
-//    console.log(bundle.standaloneModule);
-//    bundle.modules.forEach(function(mod) {
-//      console.log(mod.name, mod.exports);
-//    });
-//  });
+  // Print bundle information
+  if (bundler._options.showInformation) {
+    printBundleInformation(bpBundle, bpOptions);
+  }
 
-  return Promise.all(bpBundles.map(function(bundle) {
-    var bpOptions = configureBrowserPack(bundler, bundle);
-    return writeBrowserPackModules(bundle.modules, bpOptions)
-      .then(function(result) {
-        bundle.result = result;
-        return bundle;
-      });
-  }));
+  return writeBrowserPackModules(bpBundle.modules, bpOptions)
+    .then(function(result) {
+      bpBundle.result = result;
+      return bpBundle;
+    });
 }
 
 
@@ -162,14 +158,7 @@ function configureBrowserPack(bundler, bundle) {
  * @return {Object[]} Collection of browser pack bundles
  */
 function toBrowserPackModules(bundler, modules) {
-  if (bundler._options.splitVendor) {
-    return modules.map(function(mod) {
-      return createBundle(bundler, [mod], bundler._options.splitVendor);
-    });
-  }
-  else {
-    return [createBundle(bundler, modules, bundler._options.splitVendor)];
-  }
+  return createBundle(bundler, modules, bundler._options.splitVendor);
 }
 
 
@@ -210,7 +199,7 @@ function createBundle(bundler, modules, splitVendor) {
   }
 
   modules.forEach(function(mod) {
-    //cache[mod.id].entry = true;
+    cache[mod.id].entry = true;
     result.exports.push(cache[mod.id].id);
   });
 
@@ -261,6 +250,28 @@ function writeBrowserPackModules(bundle, options) {
 
   bp.end();
   return deferred;
+}
+
+
+function printBundleInformation(bundle, options) {
+  var output = {
+    modules: []
+  };
+
+  if (options.standalone) {
+    output.standalone = options.standalone;
+    output.exports = bundle.exports;
+  }
+
+  bundle.modules.forEach(function(mod) {
+    output.modules.push({
+      id: mod.id,
+      name: mod.name,
+      deps: JSON.stringify(mod.deps)
+    });
+  });
+
+  console.log(output);
 }
 
 
