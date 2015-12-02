@@ -38,10 +38,12 @@ resolver.configure = function(options) {
  */
 function resolve(moduleMeta, options) {
   function setPath(path) {
-    return {
-      directory: getDirectory(path),
-      path: path
-    };
+    if (path) {
+      return {
+        directory: getDirectory(path),
+        path: path
+      };
+    }
   }
 
   function logError(err) {
@@ -74,14 +76,9 @@ function resolvePath(moduleMeta, options) {
   //    return Promise.resolve(filePath);
   //  }
 
-  return new Promise(function(resolve, reject) {
+  return new Promise(function(resolve) {
     browserResolve(moduleMeta.name, {filename: parentPath}, function(err, filePath) {
-      if (err) {
-        reject(err);
-      }
-      else {
-        resolve(filePath);
-      }
+      resolve(filePath);
     });
   });
 }

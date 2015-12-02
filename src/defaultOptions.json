@@ -1,4 +1,6 @@
 {
+  "ignoreNotFound": false,
+  "builtins": true,
   "filePathAsId": false,
   "browserPack": {
     "raw": true
