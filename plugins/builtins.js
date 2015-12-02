@@ -1,4 +1,4 @@
-var resolver = require("./resolvePath").configure({baseUrl: __filename});
+var resolver = require("../src/resolvePath").configure({baseUrl: __filename});
 var path = require("path");
 
 
@@ -34,7 +34,7 @@ var builtInMap = {
 };
 
 
-function resolve(moduleMeta) {
+function resolveBuiltin(moduleMeta) {
   if (builtInMap.hasOwnProperty(moduleMeta.name)) {
     return resolver({
       name: builtInMap[moduleMeta.name].target
@@ -43,7 +43,7 @@ function resolve(moduleMeta) {
 }
 
 
-function transform(moduleMeta) {
+function transformBuiltin(moduleMeta) {
   var wrapped;
 
   var builtInResult = Object.keys(builtInMap).reduce(function(container, builtIn) {
@@ -67,7 +67,9 @@ function transform(moduleMeta) {
 }
 
 
-module.exports = {
-  resolve: resolve,
-  transform: transform
+module.exports = function() {
+  return {
+    resolve: resolveBuiltin,
+    transform: transformBuiltin
+  };
 };
