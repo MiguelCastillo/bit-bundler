@@ -1,68 +1,74 @@
-var logger = require("loggero").create("bundler/bundler-index");
-var Bitloader = require("bit-loader");
-var Bundler = require("./bundler");
-var fileReader = require("./fileReader");
-var resolvePath = require("./resolvePath");
-var utils = require("belty");
 var defaultOptions = require("./defaultOptions");
+var types = require("dis-isa");
+var utils = require("belty");
+var Loader = require("./loader");
+var Bundler = require("./bundler");
+
+
+function Runner(options) {
+  if (!(this instanceof Runner)) {
+    return new Runner(options);
+  }
+
+  this.loader = createLoader(options.loader);
+  this.bundler = createBundler(options.bundler);
+}
+
+
+Runner.prototype.bundle = function(files) {
+  var runner = this;
+
+  if (!files) {
+    throw new TypeError("Must provide or configure Files to bundle");
+  }
+
+  if (!types.isArray(files)) {
+    files = [files];
+  }
+
+  return this.loader.fetch(files)
+    .then(function(modules) {
+      return createBundleContext(runner.loader, modules);
+    })
+    .then(function(bundleContext) {
+      return runner.bundler.bundle(bundleContext);
+    });
+};
 
 
 function createLoader(options) {
-  var loader = new Bitloader({
-    resolve: configureResolve(options),
-    fetch: configureFetch(options),
-    doNotIgnoreNodeModules: true
-  });
-
-  if (options.debug) {
-    Bitloader.logger.enable();
-  }
-
-  return loader;
+  return new Loader(utils.merge({}, defaultOptions.loader, options));
 }
 
 
 function createBundler(options) {
-  options = utils.merge({}, defaultOptions, options);
-  var loader = createLoader(options);
-  return new Bundler(loader, options);
+  return new Bundler(utils.merge({}, defaultOptions.bundler, options));
 }
 
 
-function configureResolve(options) {
-  var resolver = resolvePath.configure({baseUrl: options.baseUrl});
+function createBundleContext(loader, modules) {
+  var i = 0;
+  var stack = modules.slice(0);
+  var id, mod, cache = {};
 
-  return function resolveName(meta) {
-    return resolver(meta).then(function(result) {
-      if (!result) {
-        if (options.ignoreNotFound) {
-          return {
-            path: null
-          };
-        }
-        else {
-          logger.error("Cannot find module " + meta.name);
-          throw new Error("Cannot find module " + meta.name);
-        }
-      }
+  while (stack.length !== i) {
+    id = stack[i++].id;
 
-      return result;
-    });
-  }
-}
-
-
-function configureFetch(options) {
-  return function fetchModule(meta) {
-    if (!meta.path && options.ignoreNotFound) {
-      return {
-        source: ""
-      };
+    if (cache.hasOwnProperty(id)) {
+      continue;
     }
 
-    return fileReader(meta);
+    mod = loader.getModule(id);
+    stack = stack.concat(mod.deps);
+    cache[mod.id] = mod;
+  }
+
+  return {
+    cache: cache,
+    modules: modules,
+    parts: {}
   };
 }
 
 
-module.exports = createBundler;
+module.exports = Runner;

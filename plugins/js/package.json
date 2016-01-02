@@ -1,0 +1,17 @@
+{
+  "name": "bit-bundler-js",
+  "version": "1.0.0",
+  "description": "Bit bundler plugin for processing JavaScript assets",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bit-bundler"
+  ],
+  "author": "Miguel Castillo <manchagnu@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "belty": "^0.3.0"
+  }
+}

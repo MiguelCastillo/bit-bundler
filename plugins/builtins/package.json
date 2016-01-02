@@ -1,0 +1,14 @@
+{
+  "name": "bit-bundler-builtins",
+  "version": "1.0.0",
+  "description": "Bit bundler plugin for processing builtins modules such as process, __dirname, __path",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bit-bundler"
+  ],
+  "author": "Miguel Castillo <manchagnu@gmail.com>",
+  "license": "MIT"
+}

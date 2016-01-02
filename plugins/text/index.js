@@ -1,4 +1,4 @@
-var Plugin = require("./plugin");
+var plugin = require("bit-bundler-utils/plugin");
 var utils = require("belty");
 
 var defaults = {};
@@ -10,9 +10,9 @@ function dependencyText(meta) {
 }
 
 function textPlugin(options) {
-  var plugin = Plugin.create(utils.merge({}, defaults, options));
+  var _plugin = plugin.create(utils.merge({}, defaults, options));
 
-  return Plugin.configure(plugin, {
+  return plugin.configure(_plugin, {
     dependency: dependencyText
   });
 }

@@ -1,4 +1,4 @@
-var resolver = require("../src/resolvePath").configure({baseUrl: __filename});
+var resolver = require("bit-bundler-utils/resolvePath").configure({baseUrl: __filename});
 var path = require("path");
 
 

@@ -1,4 +1,4 @@
-var ids       = {};
+var ids = {};
 var idCounter = 1;
 
 function getUniqueId(id) {

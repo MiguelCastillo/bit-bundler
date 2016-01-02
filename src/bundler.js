@@ -1,103 +1,78 @@
 var types = require("dis-isa");
 var utils = require("belty");
-var builtins = require("../plugins/builtins");
-var browserPackBundler = require("../bundlers/browserPack");
-var pluginCounter = 1;
+var configurator = require("./configurator")();
 
 
-function Bundler(loader, options) {
-  this._loader = loader;
-  this._files = [];
-  this._options = {};
-  this._bundle = browserPackBundler;
-  this.configure(options);
-
-  if (options.builtins !== false) {
-    this.plugins(builtins());
-  }
+function Bundler(options) {
+  this._plugins = [];
+  configurator.configure(this, options);
 }
 
 
 Bundler.prototype.configure = function(options) {
-  var bundler = this;
-
-  Object.keys(options)
-    .filter(function(option) {
-      return types.isFunction(bundler[option]);
-    })
-    .forEach(function(option) {
-      bundler[option](options[option]);
-    });
-
-  this._options = utils.merge({}, this._options, options);
+  configurator.configure(this, options);
   return this;
 };
 
 
-Bundler.prototype.files = function(files) {
-  if (!files) {
-    throw new TypeError("Files is a required argument");
-  }
-
-  if (types.isString(files)) {
-    files = [files];
-  }
-
-  this._files = this._files.concat(files);
-  return this;
-};
-
-
-Bundler.prototype.ignore = function(config) {
-  this._loader.ignore(config);
+Bundler.prototype.bundler = function(bundler) {
+  this._bundler = bundler;
   return this;
 };
 
 
 Bundler.prototype.plugins = function(plugins) {
-  var bundler = this;
+  if (!plugins) {
+    throw new TypeError("Must provide plugins to register");
+  }
 
   if (!types.isArray(plugins)) {
     plugins = [plugins];
   }
 
-  plugins
-    .map(configurePlugin)
-    .forEach(function(plugin) {
-      bundler._loader.plugin(plugin.name, plugin.settings);
-    });
-
+  this._plugins = this._plugins.concat(plugins);
   return this;
 };
 
 
-Bundler.prototype.bundle = function(files) {
-  files = files || this._files;
-
-  if (!files) {
-    throw new TypeError("Must provide Files to bundle");
+Bundler.prototype.bundle = function(context) {
+  if (!context) {
+    throw new TypeError("Must provide bundle context");
   }
 
-  return this._loader.fetch(files).then(runBundler(this));
+  if (!this._bundler) {
+    throw new TypeError("Bundler does not have a bundler handler configured");
+  }
+
+  return Promise
+    .resolve(this._bundler.bundle(context))
+    .then(mergeResult(context))
+    .then(pluginRunner(this));
 };
 
 
-function configurePlugin(options) {
-  var name = options.name || "bundler-plugin-" + pluginCounter++;
-  var settings = utils.extend({}, options);
-  delete settings.name;
+function pluginRunner(bundler) {
+  return function runPlugins(context) {
+    var resultMerger = mergeResult(context);
 
-  return {
-    name: name,
-    settings: settings
+    return bundler._plugins
+      .reduce(function(next, plugin) {
+        return next.then(function(result) {
+          result = resultMerger(result);
+          return plugin(bundler._bundler, result) || result;
+        });
+      }, Promise.resolve(context))
   };
 }
 
 
-function runBundler(bundler) {
-  return function runBundlerDelegate(modules) {
-    var bundle = bundler._options.bundle ? bundler._options.bundle : bundler._bundle;
-    return Promise.resolve(bundle(bundler, modules));
+function mergeResult(context) {
+  return function mergeResultDelegate(result) {
+    if (result && result !== context) {
+      context = utils.merge({}, context, result);
+    }
+
+    return context;
   };
 }
 
