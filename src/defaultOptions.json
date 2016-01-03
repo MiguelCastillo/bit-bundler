@@ -1,8 +1,13 @@
 {
-  "ignoreNotFound": false,
-  "builtins": true,
-  "filePathAsId": false,
-  "browserPack": {
-    "raw": true
+  "loader": {
+    "log": false
+  },
+  "bundler": {
+    "showInformation": false,
+    "ignoreNotFound": false,
+    "builtins": true,
+    "filePathAsId": false,
+    "exclude": [],
+    "ignore": []
   }
 }

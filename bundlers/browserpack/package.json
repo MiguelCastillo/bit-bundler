@@ -1,0 +1,19 @@
+{
+  "name": "bit-bundler-browserpack",
+  "version": "1.0.0",
+  "description": "Bit bundler for JavaScript assets",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bit-bundler"
+  ],
+  "author": "Miguel Castillo <manchagnu@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "belty": "^0.3.0",
+    "browser-pack": "^6.0.1",
+    "p-stream": "^1.0.3"
+  }
+}

@@ -1,4 +1,4 @@
-var Plugin = require("./plugin");
+var Plugin = require("bit-bundler-utils/plugin");
 var utils = require("belty");
 var umd_deps = require("deps-bits");
 
