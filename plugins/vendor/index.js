@@ -38,14 +38,14 @@ function vendorBundler(fileName) {
       return;
     }
 
-    var vendor = getVendorModules(context);
-    var newContext = context.addExclude(vendor.map(function(mod) { return mod.id; }));
+    var vendorModules = getVendorModules(context);
+    var vendorExclude = vendorModules.map(function(mod) { return mod.id; });
+    var vendorContext = context.configure({ modules: vendorModules });
 
-    return Promise.all([
-        bundler.bundle(newContext),
-        bundler.bundle(context.configure({ modules: vendor }), { browserPack: { standalone: false } })
-      ]).then(function(bundles) {
-        return newContext.setBundle(bundles[0]).addPart(fileName, bundles[1]);
+    return Promise
+      .resolve(bundler.bundle(vendorContext, { browserPack: { standalone: false } }))
+      .then(function(bundle) {
+        return context.addExclude(vendorExclude).addPart(fileName, bundle);
       });
   }
 }
