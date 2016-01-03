@@ -7,7 +7,7 @@ var utils = require("belty");
 
 function Bundler(options) {
   this._options = utils.merge({}, defaultOptions, options);
-  this._getId = options.filePathAsId ? utils.noop : getUniqueId;
+  this._getId = this._options.filePathAsId ? utils.noop : getUniqueId;
 }
 
 
