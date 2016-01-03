@@ -44,10 +44,31 @@ Bundler.prototype.bundle = function(context) {
     throw new TypeError("Bundler does not have a bundler handler configured");
   }
 
-  return Promise
-    .resolve(this._bundler.bundle(context))
-    .then(setBundle(context))
-    .then(runPlugins(this));
+  //
+  // Run bundler first.  Not quite sure this is the best way to handle
+  // the flow of building bundles.
+  // return Promise
+  //   .resolve(this._bundler.bundle(context))
+  //   .then(setBundle(context))
+  //   .then(runPlugins(this));
+  //
+
+  //
+  // Evaluate whether executing the plugins first is more efficient
+  // or desirable than building the main bundle and then forcing
+  // each and every plugin that splits the main bundle to rebundle
+  // the main bundle...  I currently can't see why we wouldn't want
+  // to run the plugins first, we are going this route for now.
+  //
+  var bundler = this;
+  return runPlugins(this)(context)
+    .then(function(context) {
+      return Promise
+        .resolve(bundler._bundler.bundle(context))
+        .then(function(result) {
+          return context.setBundle(result);
+        });
+    });
 };
 
 
@@ -55,18 +76,14 @@ function runPlugins(bundler) {
   return function pluginRunner(context) {
     return bundler._plugins
       .reduce(function(next, plugin) {
-        return next.then(function(result) {
-          result = context.configure(result);
-          return plugin(bundler._bundler, result) || result;
-        });
+        return next
+          .then(function(context) {
+            return plugin(bundler._bundler, context);
+          })
+          .then(function(result) {
+            return context.configure(result);
+          });
       }, Promise.resolve(context))
-  };
-}
-
-
-function setBundle(context) {
-  return function setBundleDelegate(bundle) {
-    return context.setBundle(bundle);
   };
 }
 
