@@ -1,5 +1,8 @@
 {
   "browserPack": {
-    "raw": true
+    "raw": true,
+    "hasExports": true,
+    "standalone": false,
+    "standaloneModule": null
   }
 }

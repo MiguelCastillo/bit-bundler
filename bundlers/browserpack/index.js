@@ -11,7 +11,7 @@ function Bundler(options) {
 }
 
 
-Bundler.prototype.bundle = function(context) {
+Bundler.prototype.bundle = function(context, options) {
   if (!context.modules.length) {
     return Promise.resolve();
   }
@@ -30,7 +30,7 @@ Bundler.prototype.bundle = function(context) {
     this.printInfo(bpBundle);
   }
 
-  return this.stringify(bpBundle).then(function(result) {
+  return this.stringify(bpBundle, options).then(function(result) {
     //
     // Force converting Buffer to string to prevent buffers from causing
     // issues with utils.merge.
@@ -41,8 +41,8 @@ Bundler.prototype.bundle = function(context) {
 };
 
 
-Bundler.prototype.stringify = function(bpBundle) {
-  var bp = browserPack(configureBrowserPack(bpBundle, this._options));
+Bundler.prototype.stringify = function(bpBundle, options) {
+  var bp = browserPack(configureBrowserPack(bpBundle, utils.merge({}, this._options, options)));
   var deferred = pstream(bp);
   bpBundle.modules.forEach(function(mod) { bp.write(mod); });
   bp.end();
@@ -62,13 +62,8 @@ Bundler.prototype.getId = function(moduleId) {
 
 function configureBrowserPack(bpBundle, options) {
   var bpOptions = utils.merge({}, options.browserPack);
-  var hasExports = bpBundle.exports.length !== 0;
-
-  if (bpOptions.standalone || hasExports) {
-    bpOptions.standaloneModule = bpBundle.exports;
-    bpOptions.hasExports = true;
-  }
-
+  bpOptions.hasExports = bpBundle.exports.length !== 0;
+  bpOptions.standaloneModule = bpBundle.exports;
   return bpOptions;
 }
 

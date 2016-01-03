@@ -3,7 +3,9 @@ function isVendor(mod) {
 }
 
 function hasVendor(context) {
-  return Object.keys(context.cache).some(isVendor);
+  return Object.keys(context.cache)
+    .map(function(key) { return context.cache[key]; })
+    .some(isVendor);
 }
 
 function getVendorModules(context) {
@@ -41,7 +43,7 @@ function vendorBundler(fileName) {
 
     return Promise.all([
         bundler.bundle(newContext),
-        bundler.bundle(context.configure({ modules: vendor }))
+        bundler.bundle(context.configure({ modules: vendor }), { browserPack: { standalone: false } })
       ]).then(function(bundles) {
         return newContext.setBundle(bundles[0]).addPart(fileName, bundles[1]);
       });
