@@ -31,9 +31,12 @@ Bundler.prototype.bundle = function(context) {
   }
 
   return this.stringify(bpBundle).then(function(result) {
-    return {
-      bundle: utils.extend({ result: result }, bpBundle)
-    };
+    //
+    // Force converting Buffer to string to prevent buffers from causing
+    // issues with utils.merge.
+    // https://github.com/MiguelCastillo/belty/issues/13
+    //
+    return utils.extend({ result: "" + result }, bpBundle);
   });
 };
 
@@ -41,11 +44,7 @@ Bundler.prototype.bundle = function(context) {
 Bundler.prototype.stringify = function(bpBundle) {
   var bp = browserPack(configureBrowserPack(bpBundle, this._options));
   var deferred = pstream(bp);
-
-  bpBundle.modules.forEach(function(mod) {
-    bp.write(mod);
-  });
-
+  bpBundle.modules.forEach(function(mod) { bp.write(mod); });
   bp.end();
   return deferred;
 };
@@ -63,9 +62,11 @@ Bundler.prototype.getId = function(moduleId) {
 
 function configureBrowserPack(bpBundle, options) {
   var bpOptions = utils.merge({}, options.browserPack);
+  var hasExports = bpBundle.exports.length !== 0;
 
-  if (bpOptions.standalone) {
+  if (bpOptions.standalone || hasExports) {
     bpOptions.standaloneModule = bpBundle.exports;
+    bpOptions.hasExports = true;
   }
 
   return bpOptions;
@@ -73,16 +74,17 @@ function configureBrowserPack(bpBundle, options) {
 
 
 function createBrowserPackModules(bundler, context) {
+  var excludeMap = arrayToMap(context.exclude);
   var stack = context.modules.slice(0);
   var result = [], processed = {}, i = 0, mod;
 
   while(stack.length !== i) {
-    mod = stack[i++];
-    if (processed.hasOwnProperty(mod.id)) {
+    mod = context.cache[stack[i++].id];
+
+    if (processed.hasOwnProperty(mod.id) || excludeMap.hasOwnProperty(mod.id)) {
       continue;
     }
 
-    mod = context.cache[mod.id];
     processed[mod.id] = mod;
     stack.push.apply(stack, mod.deps);
     result.push(createBrowserPackModule(mod));
@@ -108,10 +110,7 @@ function configureIds(bundler, bpModules) {
 
 
 function configureEntries(bundler, bpModules, bpExports) {
-  var exports = bpExports.reduce(function(container, item) {
-    container[item] = true;
-    return container;
-  }, {});
+  var exports = arrayToMap(bpExports);
 
   bpModules.forEach(function(mod) {
     mod.entry = exports.hasOwnProperty(mod.id);
@@ -122,10 +121,7 @@ function configureEntries(bundler, bpModules, bpExports) {
 
 
 function getBrowserPackExports(bundler, context) {
-  var ids = context.modules.map(function(mod) {
-    return mod.id;
-  });
-
+  var ids = context.modules.map(function(mod) { return mod.id; });
   return convertModuleIds(bundler, ids);
 }
 
@@ -150,9 +146,7 @@ function createBrowserPackModule(mod) {
 
 
 function convertModuleIds(bundler, ids) {
-  return ids.map(function(id) {
-    return bundler.getId(id);
-  });
+  return ids.map(function(id) { return bundler.getId(id); });
 }
 
 
@@ -179,8 +173,19 @@ function formatBundleInfo(bpBundle, options) {
 
 
 function browserPackFactory(options) {
-  options.bundler = new Bundler(options);
-  return options;
+  return utils.extend({}, options, { bundler: new Bundler(options) });
+}
+
+
+/**
+ * Converts array to a map. The resulting map can be used for quick lookup
+ * that is more efficient than calling indexOf on the array.
+ */
+function arrayToMap(items) {
+  return items.reduce(function(container, item) {
+    container[item] = true;
+    return container;
+  }, {});
 }
 
 

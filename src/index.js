@@ -3,6 +3,7 @@ var types = require("dis-isa");
 var utils = require("belty");
 var Loader = require("./loader");
 var Bundler = require("./bundler");
+var Context = require("./context");
 
 
 function Runner(options) {
@@ -63,11 +64,10 @@ function createBundleContext(loader, modules) {
     cache[mod.id] = mod;
   }
 
-  return {
+  return new Context({
     cache: cache,
-    modules: modules,
-    parts: {}
-  };
+    modules: modules
+  });
 }
 
 

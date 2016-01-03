@@ -46,19 +46,17 @@ Bundler.prototype.bundle = function(context) {
 
   return Promise
     .resolve(this._bundler.bundle(context))
-    .then(mergeResult(context))
-    .then(pluginRunner(this));
+    .then(setBundle(context))
+    .then(runPlugins(this));
 };
 
 
-function pluginRunner(bundler) {
-  return function runPlugins(context) {
-    var resultMerger = mergeResult(context);
-
+function runPlugins(bundler) {
+  return function pluginRunner(context) {
     return bundler._plugins
       .reduce(function(next, plugin) {
         return next.then(function(result) {
-          result = resultMerger(result);
+          result = context.configure(result);
           return plugin(bundler._bundler, result) || result;
         });
       }, Promise.resolve(context))
@@ -66,13 +64,9 @@ function pluginRunner(bundler) {
 }
 
 
-function mergeResult(context) {
-  return function mergeResultDelegate(result) {
-    if (result && result !== context) {
-      context = utils.merge({}, context, result);
-    }
-
-    return context;
+function setBundle(context) {
+  return function setBundleDelegate(bundle) {
+    return context.setBundle(bundle);
   };
 }
 
