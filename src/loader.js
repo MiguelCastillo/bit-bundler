@@ -5,7 +5,7 @@ var configurator = require("./configurator")();
 var fileReader = require("./fileReader");
 var logger = require("loggero").create("bundler/bundler-index");
 var loggerLevel = require("loggero/src/levels");
-var resolvePath = require("../utils/resolvePath");
+var resolvePath = require("bit-bundler-utils/resolvePath");
 var pluginCounter = 1;
 
 
