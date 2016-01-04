@@ -1,14 +1,14 @@
 {
-  "name": "bit-bundler-vendor",
+  "name": "bit-bundler-builtins",
   "version": "1.0.0",
-  "description": "Bit bundler plugin to create vendor bundles",
+  "description": "Bit bundler plugin for processing builtins modules such as process, __dirname, __path",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "bit-bundler",
-    "bit-bundler-plugin"
+    "bit-bundler-loader-plugin"
   ],
   "author": "Miguel Castillo <manchagnu@gmail.com>",
   "license": "MIT"
