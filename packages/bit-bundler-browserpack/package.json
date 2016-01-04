@@ -14,6 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "belty": "^0.3.0",
+    "bit-bundler-utils": "^1.0.1",
     "browser-pack": "^6.0.1",
     "p-stream": "^1.0.3"
   }

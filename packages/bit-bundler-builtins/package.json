@@ -11,5 +11,8 @@
     "bit-bundler-loader-plugin"
   ],
   "author": "Miguel Castillo <manchagnu@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "bit-bundler-utils": "^1.0.1"
+  }
 }

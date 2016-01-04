@@ -13,6 +13,8 @@
   "author": "Miguel Castillo <manchagnu@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "belty": "^0.3.0"
+    "belty": "^0.3.0",
+    "bit-bundler-utils": "^1.0.1",
+    "deps-bits": "^0.1.2"
   }
 }
