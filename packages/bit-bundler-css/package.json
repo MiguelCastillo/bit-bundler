@@ -12,8 +12,17 @@
   ],
   "author": "Miguel Castillo <manchagnu@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MiguelCastillo/bit-bundler.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MiguelCastillo/bit-bundler/issues"
+  },
+  "homepage": "https://github.com/MiguelCastillo/bit-bundler",
   "dependencies": {
     "belty": "^0.3.0",
+    "bit-bundler-utils": "^1.0.1",
     "loadstyle-bits": "^1.0.0"
   }
 }

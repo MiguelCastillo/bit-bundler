@@ -1,13 +1,8 @@
 {
   "loader": {
-    "log": false
+    "log": false,
+    "ignoreNotFound": false
   },
   "bundler": {
-    "showInformation": false,
-    "ignoreNotFound": false,
-    "builtins": true,
-    "filePathAsId": false,
-    "exclude": [],
-    "ignore": []
   }
 }

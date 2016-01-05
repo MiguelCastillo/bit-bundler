@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "dependencies": {
     "belty": "^0.3.0",
+    "bit-bundler-utils": "^1.0.1",
     "bit-loader": "^1.1.0",
     "browser-pack": "^6.0.1",
     "browser-resolve": "^1.10.1",
