@@ -1,7 +1,10 @@
 var plugin = require("bit-bundler-utils/plugin");
-var resolver = require("bit-bundler-utils/resolvePath").configure({baseUrl: __filename});
 var utils = require("belty");
-var loadStyleName = "bit-bundler-css/loadstyle";
+
+// For now we will use the full path as the name while this
+// issue is resolved:
+// https://github.com/MiguelCastillo/bit-loader/issues/187
+var loadStyleName = __dirname + "/loadstyle.js";
 
 var defaults = {
   match: {
@@ -12,7 +15,7 @@ var defaults = {
 function dependencyCSS(meta) {
   return {
     deps: [loadStyleName],
-    source: "require(\"" + loadStyleName + "\")({source: " + JSON.stringify(meta.source) + "});"
+    source: "require(\"" + loadStyleName + "\")(" + JSON.stringify(meta.source) + ");"
   };
 }
 
