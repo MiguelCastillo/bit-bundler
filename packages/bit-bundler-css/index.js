@@ -1,4 +1,4 @@
-var plugin = require("bit-bundler-utils/plugin");
+var Plugin = require("bit-bundler-utils/plugin");
 var utils = require("belty");
 
 // For now we will use the full path as the name while this
@@ -20,9 +20,9 @@ function dependencyCSS(meta) {
 }
 
 function cssPlugin(options) {
-  var _plugin = plugin.create(utils.merge({}, defaults, options));
+  var plugin = Plugin.create(utils.merge({}, defaults, options));
 
-  return plugin.configure(_plugin, {
+  return Plugin.configure(plugin, {
     dependency: dependencyCSS
   });
 }
