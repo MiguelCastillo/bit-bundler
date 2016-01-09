@@ -22,7 +22,7 @@ function Loader(options) {
 Loader.prototype.configure = function(options) {
   configurator.configure(this, options);
   return this;
-}
+};
 
 
 Loader.prototype.log = function(level) {
@@ -44,7 +44,7 @@ Loader.prototype.log = function(level) {
 
 Loader.prototype.getModule = function(id) {
   return this._loader.getModule(id);
-}
+};
 
 
 Loader.prototype.fetch = function(files) {
@@ -94,7 +94,7 @@ function configureResolve(options) {
 
       return result;
     });
-  }
+  };
 }
 
 

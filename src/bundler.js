@@ -1,5 +1,4 @@
 var types = require("dis-isa");
-var utils = require("belty");
 var configurator = require("./configurator")();
 
 
@@ -83,7 +82,7 @@ function runPlugins(bundler) {
           .then(function(result) {
             return context.configure(result);
           });
-      }, Promise.resolve(context))
+      }, Promise.resolve(context));
   };
 }
 
