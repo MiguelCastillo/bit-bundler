@@ -14,8 +14,8 @@ Bundler.prototype.configure = function(options) {
 };
 
 
-Bundler.prototype.bundler = function(bundler) {
-  this._bundler = bundler;
+Bundler.prototype.provider = function(provider) {
+  this._provider = provider;
   return this;
 };
 
@@ -39,15 +39,15 @@ Bundler.prototype.bundle = function(context) {
     throw new TypeError("Must provide bundle context");
   }
 
-  if (!this._bundler) {
-    throw new TypeError("Bundler does not have a bundler handler configured");
+  if (!this._provider) {
+    throw new TypeError("Bundler does not have a provider configured");
   }
 
   //
   // Run bundler first.  Not quite sure this is the best way to handle
   // the flow of building bundles.
   // return Promise
-  //   .resolve(this._bundler.bundle(context))
+  //   .resolve(this._provider.bundle(context))
   //   .then(setBundle(context))
   //   .then(runPlugins(this));
   //
@@ -63,7 +63,7 @@ Bundler.prototype.bundle = function(context) {
   return runPlugins(this)(context)
     .then(function(context) {
       return Promise
-        .resolve(bundler._bundler.bundle(context))
+        .resolve(bundler._provider.bundle(context))
         .then(function(result) {
           return context.setBundle(result);
         });
@@ -77,7 +77,7 @@ function runPlugins(bundler) {
       .reduce(function(next, plugin) {
         return next
           .then(function(context) {
-            return plugin(bundler._bundler, context);
+            return plugin(bundler._provider, context);
           })
           .then(function(result) {
             return context.configure(result);
