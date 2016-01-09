@@ -3,7 +3,7 @@ var types = require("dis-isa");
 var utils = require("belty");
 var configurator = require("./configurator")();
 var fileReader = require("./fileReader");
-var logger = require("loggero").create("bundler/bundler-index");
+var logger = require("loggero").create("bundler/loader");
 var loggerLevel = require("loggero/src/levels");
 var resolvePath = require("bit-bundler-utils/resolvePath");
 var pluginCounter = 1;
@@ -87,8 +87,9 @@ function configureResolve(options) {
           };
         }
         else {
-          logger.error("Cannot find module " + meta.name);
-          throw new Error("Cannot find module " + meta.name);
+          var error = buildModuleNotFoundError(meta);
+          logger.error(error);
+          throw new Error(error);
         }
       }
 
@@ -106,7 +107,11 @@ function configureFetch(options) {
           source: ""
         };
       }
-      throw err;
+      else {
+          var error = buildModuleNotFoundError(meta, err);
+          logger.error(error);
+          throw new Error(error);
+      }
     }
 
     return fileReader(meta).then(utils.noop, handleError);
@@ -123,6 +128,14 @@ function configurePlugin(options) {
     name: name,
     settings: settings
   };
+}
+
+
+function buildModuleNotFoundError(meta, err) {
+  var error = "Unable find module '" + meta.name + "'.";
+  error += meta.referrer ? " Referrer " + JSON.stringify(meta.referrer.path) : "";
+  error += err ? "\n" + err : "";
+  return error;
 }
 
 

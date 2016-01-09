@@ -1,6 +1,6 @@
 {
   "loader": {
-    "log": false,
+    "log": "error",
     "ignoreNotFound": false
   },
   "bundler": {
