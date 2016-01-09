@@ -29,7 +29,7 @@ Context.prototype.setBundle = function(bundle) {
   return this.configure({
     bundle: bundle
   });
-}
+};
 
 Context.prototype.addPart = function(name, part) {
   var parts = utils.extend({}, this.parts);
@@ -37,7 +37,7 @@ Context.prototype.addPart = function(name, part) {
 
   return this.configure({
     parts: parts
-  })
+  });
 };
 
 Context.prototype.removePart = function(name) {
@@ -47,7 +47,7 @@ Context.prototype.removePart = function(name) {
   return this.configure({
     parts: parts
   });
-}
+};
 
 Context.prototype.addExclude = function(exclude) {
   if (!types.isArray(exclude)) {
@@ -63,7 +63,7 @@ Context.prototype.addExclude = function(exclude) {
 
   return this.configure({
     exclude: Object.keys(exclude)
-  })
+  });
 };
 
 module.exports = Context;
