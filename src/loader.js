@@ -132,7 +132,7 @@ function configurePlugin(options) {
 
 
 function buildModuleNotFoundError(meta, err) {
-  var error = "Unable find module '" + meta.name + "'.";
+  var error = "Unable find module \"" + meta.name + "\".";
   error += meta.referrer ? " Referrer " + JSON.stringify(meta.referrer.path) : "";
   error += err ? "\n" + err : "";
   return error;
