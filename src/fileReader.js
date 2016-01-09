@@ -15,12 +15,7 @@ function fileReader(moduleMeta) {
     };
   }
 
-  function logError(err) {
-    logger.error(moduleMeta.path, err);
-    throw err;
-  }
-
-  return pstream(readFile(moduleMeta.path)).then(setSource, logError);
+  return pstream(readFile(moduleMeta.path)).then(setSource);
 }
 
 
