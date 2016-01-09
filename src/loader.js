@@ -100,13 +100,16 @@ function configureResolve(options) {
 
 function configureFetch(options) {
   return function fetchModule(meta) {
-    if (!meta.path && options.ignoreNotFound) {
-      return {
-        source: ""
-      };
+    function handleError(err) {
+      if (options.ignoreNotFound) {
+        return {
+          source: ""
+        };
+      }
+      throw err;
     }
 
-    return fileReader(meta);
+    return fileReader(meta).then(utils.noop, handleError);
   };
 }
 
