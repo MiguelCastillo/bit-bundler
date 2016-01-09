@@ -83,7 +83,7 @@ function configureResolve(options) {
       if (!result) {
         if (options.ignoreNotFound) {
           return {
-            path: null
+            path: ""
           };
         }
         else {
