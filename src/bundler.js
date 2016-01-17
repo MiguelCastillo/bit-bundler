@@ -1,9 +1,15 @@
 var types = require("dis-isa");
+var jsBundler = require("bit-bundler-browserpack");
 var configurator = require("./configurator")();
 
 
 function Bundler(options) {
   this._plugins = [];
+
+  if (!options.provider) {
+    options.provider = jsBundler(options);
+  }
+
   configurator.configure(this, options);
 }
 
