@@ -1,5 +1,4 @@
-var logger  = require("loggero").create("bundler/fileReader");
-var fs      = require("fs");
+var fs = require("fs");
 var pstream = require("p-stream");
 
 
