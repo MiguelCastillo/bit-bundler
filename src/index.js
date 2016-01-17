@@ -11,6 +11,7 @@ function Runner(options) {
     return new Runner(options);
   }
 
+  options = options || {};
   this.loader = createLoader(options.loader);
   this.bundler = createBundler(options.bundler);
 }
