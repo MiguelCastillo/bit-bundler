@@ -39,7 +39,7 @@
   "directories": {
     "test": "test"
   },
-  "description": "Just a plugable bundler for JavaScript and others",
+  "description": "Pluggable bundler that generates bundles for the browser.",
   "repository": {
     "type": "git",
     "url": "https://github.com/MiguelCastillo/bit-bundler.git"
