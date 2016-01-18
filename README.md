@@ -1,6 +1,5 @@
 <img src="img/bit-bundler_white.png" width="100%"></img>
 
-# bit-bundler
 > Pluggable bundler that generates bundles for the browser.
 
 
