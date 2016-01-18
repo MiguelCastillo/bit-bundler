@@ -22,6 +22,7 @@ Constructor that creates an instance of `bit-bundler`.  Valid options are:
 
 - **`options.bundler`** { object } - Options to be passed on to the bundler.
   - **`plugins`** { Array[Plugin] | Plugin } - Plugins to be registered with the bundler. These plugins are for processing the module graph in order to create and manipulate bundles.
+  - **`umd`** { string } - String name for the `UMD` module to be exported. `UMD` is a configuration that allows bundles to run in node.js, requirejs, and traditional script tags. If running in the browser, provide this setting for maximum compatibility. The name you provide is exported so that other modules can consume the bundle. [This is some literature on it](https://github.com/umdjs/umd).
   - **`printInfo`** { boolean } (false) - Flag to print to console basic information about the modules in bundles.
   - **`filePathAsId`** { boolean } (false) - Flag to tell the bundler to use modules' full path as ids instead of numeric values when generating bundles.
   - **`provider`** { { function: bundle } } - Option for defining a custom bundler to process the module graph. By default, this is set to [js bundler](https://github.com/MiguelCastillo/bit-bundler-browserpack). But you can override this if you would like to provide a custom way of generating bundles.

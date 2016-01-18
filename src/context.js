@@ -30,7 +30,7 @@ Context.prototype.setFile = function(file) {
   return this.configure({
     file: file
   });
-}
+};
 
 Context.prototype.setBundle = function(bundle) {
   return this.configure({

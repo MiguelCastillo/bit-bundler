@@ -1,5 +1,4 @@
 var defaultOptions = require("./defaultOptions");
-var types = require("dis-isa");
 var utils = require("belty");
 var Loader = require("./loader");
 var Bundler = require("./bundler");
