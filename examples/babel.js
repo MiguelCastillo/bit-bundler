@@ -1,13 +1,14 @@
-var jsPlugin = require('bit-loader-js');
-var babel = require('babel-bits');
-var Bitbundler = require('bit-bundler');
+var jsPlugin = require("bit-loader-js");
+var babel = require("babel-bits");
+var Bitbundler = require("bit-bundler");
+var fs = require("fs");
 
 var bitbundler = new Bitbundler({
   loader: {
     plugins: jsPlugin({
       transform: babel.config({
         options: {
-          presets: ['es2015']
+          presets: ["es2015"]
         }
       })
     })
@@ -15,9 +16,10 @@ var bitbundler = new Bitbundler({
 });
 
 bitbundler
-  .bundle('./src/main.js')
-  .then(function(context) {
-    console.log(context.bundle);
+  .bundle("src/main.js")
+  .then(Bitbundler.dest("dest/babel.js"))
+  .then(function() {
+    console.log("babel bundle complete");
   }, function(err) {
     console.log(err);
   });

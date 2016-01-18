@@ -2,6 +2,7 @@ var utils = require("belty");
 var types = require("dis-isa");
 
 var defaults = {
+  file: null,
   bundle: null,
   cache: {},
   exclude: [],
@@ -24,6 +25,12 @@ Context.prototype.configure = function(options) {
 
   return new Context(utils.extend({}, this, options));
 };
+
+Context.prototype.setFile = function(file) {
+  return this.configure({
+    file: file
+  });
+}
 
 Context.prototype.setBundle = function(bundle) {
   return this.configure({
