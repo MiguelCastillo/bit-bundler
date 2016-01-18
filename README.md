@@ -52,37 +52,79 @@ The context is generated with the following information:
 
 ---
 
+### Examples
+
+This example bundles JavaScript with node.js dependencies, transform with babel, and creates multiple bundles.
+
+Go [here](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples) for more examples.
+
+> By default, `bit-bundler` does not understand how to process module dependencies.  So we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to help us out here.
+
+``` javascript
+var babel = require("babel-bits");
+var jsPlugin = require("bit-loader-js");
+var splitBundle = require("bit-bundler-splitter");
+var Bitbundler = require("bit-bundler");
+
+var bitbundler = new Bitbundler({
+  loader: {
+    plugins: jsPlugin({
+      transform: babel
+    })
+  },
+  bundler: {
+    plugins: [
+      splitBundle("dest/vendor.js"),
+      splitBundle("dest/renderer.js", { match: { path: /src\/renderer/ } })
+    ]
+  }
+});
+
+bitbundler
+  .bundle("src/main.js")
+  .then(Bitbundler.dest("dest/splitter.js"))
+  .then(function() {
+    console.log("splitter bundle complete");
+  }, function(err) {
+    console.log(err);
+  });
+```
+
+
+### Loader Plugins
+
+Loader plugins enable loading and processing of your assets via transforms and other loader hooks. Generally speaking, you will be using at least [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to load your JavaScript assets and perhaps configure transforms.
+
+List of core loader plugins:
+
+- [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) for loading and processing JavaScript assets
+- [bit-loader-json](https://github.com/MiguelCastillo/bit-loader-json) for loading and processing JSON assets
+- [bit-loader-css](https://github.com/MiguelCastillo/bit-loader-css) for loading and processing css assets
+- [bit-loader-text](https://github.com/MiguelCastillo/bit-loader-text) for loading and processing text assets such as HTML
+
+
+### Loader Transforms
+
+Probably the more common loader hook you will use are transforms, which allow you to transform your modules before they are bundled.
+
+- [babel-bits](https://github.com/MiguelCastillo/babel-bits) for transpiling your JavaScript assets with [babel](http://babeljs.io/)
+- [sassy-bits](https://github.com/MiguelCastillo/sassy-bits) for transpiling your SASS assets
+
+
+### Bundler Plugins
+
+Bundler plugins enable processing of bundles. A useful bundler plugin is for splitting a bundles with `bit-bundler-splitter`.
+
+- [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) for splitting bundles based on matching rules. This will handle splitting out your vendor modules.
+
+
 ### Integrations
 
 - [grunt](https://github.com/MiguelCastillo/grunt-bit-bundler)
 - gulp: TODO
 
 
-### Examples
-
-For more, please see [examples](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples)
-
-#### Bundle JavaScript with node.js dependencies
-
-By default, `bit-bundler` does not understand how to process module dependencies.  So we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to help us out here.
-
-``` javascript
-var jsPlugin = require('bit-loader-js');
-var Bitbundler = require('bit-bundler');
-
-var bitbundler = new Bitbundler({
-  loader: {
-    plugins: jsPlugin()
-  }
-});
-
-bitbundler
-  .bundle('src/main.js')
-  .then(Bitbundler.dest('dest/main.js'))
-  .then(function() {
-    console.log('Bundle finished');
-  });
-```
+---
 
 
 ### Why this project?
