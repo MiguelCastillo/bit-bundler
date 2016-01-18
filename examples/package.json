@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Miguel Castill <manchagnu@gmail.com>",
+  "author": "Miguel Castillo <manchagnu@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "babel-bits": "^1.0.0",
