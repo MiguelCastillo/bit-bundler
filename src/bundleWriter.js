@@ -40,7 +40,7 @@ function streamFactory(dest) {
     }
 
     return types.isString(out) ? fileStream(out) : out;
-  }
+  };
 }
 
 module.exports = bundleWriter;

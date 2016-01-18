@@ -15,7 +15,7 @@ function Configurator(checker) {
 Configurator.prototype.configure = function(target, options) {
   Object.keys(options)
     .map(function(option) {
-      var camelOption = 'set' + option[0].toUpperCase() + option.substr(1);
+      var camelOption = "set" + option[0].toUpperCase() + option.substr(1);
       var setter = types.isFunction(target[camelOption]) ? camelOption : option;
       return {
         setter: setter,
