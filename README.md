@@ -18,16 +18,23 @@ Constructor that creates an instance of `bit-bundler`.  Valid options are:
 - **`options.loader`** { object } - Options to be passed on to the module loader.
   - **`plugins`** { Array[Plugin] | Plugin } - Plugins to be registerer with the module loader. These plugins are for procesing modules before they are bundled.
   - **`ignoreNotFound`** { boolean } (false) - Flag to ignore modules not found on disk. When set to true, these modules will just be empty entries in the bundle.
-  - **`log`** { string } (error) - Log level. By default only errors are logged. Valid values are `info`, `warn`, `error`, and false.
+  - **`log`** { string } (error) - Log level. By default only errors are logged. Valid values are `'info'`, `'warn'`, `'error'`, and `false`.
 
 - **`options.bundler`** { object } - Options to be passed on to the bundler.
   - **`plugins`** { Array[Plugin] | Plugin } - Plugins to be registered with the bundler. These plugins are for processing the module graph in order to create and manipulate bundles.
   - **`printInfo`** { boolean } (false) - Flag to print to console basic information about the modules in bundles.
-  - **`filePathAsId`** { boolean } (false) - Flag for the bundler to use modules' full path as ids in the bundle instead of numeric values.
+  - **`filePathAsId`** { boolean } (false) - Flag to tell the bundler to use modules' full path as ids instead of numeric values when generating bundles.
   - **`provider`** { { function: bundle } } - Option for defining a custom bundler to process the module graph. By default, this is set to [js bundler](https://github.com/MiguelCastillo/bit-bundler-browserpack). But you can override this if you would like to provide a custom way of generating bundles.
 
 
-#### bitbundler.bundle(files) : Promise
+#### Bitbundler.dest(destination) : Function
+
+Static method that creates bundle writers. Bundle writers handle writing bundle parts as well.
+
+- **`destination`** { function | string } - Destination can be a `string`, in which case the internal stream factory creates a file stream to write bundles to. If `destination` is a `function`, it is called. If the call returns a `string`, then the internal stream factory creates a file stream with it, otherwise the bundle writer will expect a stream and will use that. Use a `function` if you need to create custom streams to write bundles to.
+
+
+#### bundle(files) : Promise
 
 Method to bundle a list of files. Calling this method returns a promise that when resolved returns a context with the bundle along with information about it.
 
@@ -38,7 +45,7 @@ The context is generated with the following information:
 - **`bundle`** { {string: result} } - Object with a string property called `result`, which is the actual string to be written to disk.
 - **`cache`** { object } - Map of modules by module `id`.
 - **`exclude`** { Array[string] } - Array of module `ids` to exclude from `bundle`. TODO: [Allow matching more than module ids](https://github.com/MiguelCastillo/bit-bundler/issues/47)
-- **`modules`** { Array[object] } - Array of root nodes (modules) of the module graph. These root nodes have an `id` that are used as keys into `cache` to get the full module object. The root nodes correspond to the `files` passed into the `bundle` method that initiated the bundling process.
+- **`modules`** { Array[object] } - Array of root nodes (modules) of the module graph. These root nodes have an `id` that are used as keys into `cache` to get full module objects.
 - **`parts`** { object } - Map of bundle parts pulled out of the main `bundle` in the context. This map will have items created by plugins like [bundle splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) that can extract modules and generate separate bundles.
 
 ---
@@ -68,9 +75,10 @@ var bitbundler = new Bitbundler({
 });
 
 bitbundler
-  .bundle('./src/main.js')
-  .then(function(context) {
-    console.log(context.bundle);
+  .bundle('src/main.js')
+  .then(Bitbundler.dest('dest/main.js'))
+  .then(function() {
+    console.log('Bundle finished');
   });
 ```
 

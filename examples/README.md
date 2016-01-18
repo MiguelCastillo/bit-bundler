@@ -19,9 +19,10 @@ var Bitbundler = require('bit-bundler');
 var bitbundler = new Bitbundler();
 
 bitbundler
-  .bundle('./src/main.js')
-  .then(function(context) {
-    console.log(context.bundle);
+  .bundle('src/main.js')
+  .then(Bitbundler.dest('dest/basic.js'))
+  .then(function() {
+    console.log('Finished bundling');
   });
 ```
 
@@ -48,9 +49,10 @@ var bitbundler = new Bitbundler({
 });
 
 bitbundler
-  .bundle('./src/main.js')
-  .then(function(context) {
-    console.log(context.bundle);
+  .bundle('src/main.js')
+  .then(Bitbundler.dest('dest/jsplugin.js'))
+  .then(function() {
+    console.log('Finished bundling');
   });
 ```
 
@@ -82,7 +84,8 @@ var bitbundler = new Bitbundler({
 });
 
 bitbundler
-  .bundle('./src/main.js')
+  .bundle('src/main.js')
+  .then(Bitbundler.dest('dest/babel.js'))
   .then(function(context) {
     console.log(context.bundle);
   });
@@ -122,7 +125,8 @@ var bitbundler = new Bitbundler({
 });
 
 bitbundler
-  .bundle('./src/main.js')
+  .bundle('src/main.js')
+  .then(Bitbundler.dest('dest/splitter.js'))
   .then(function(context) {
     console.log(context.bundle);
   });

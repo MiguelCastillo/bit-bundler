@@ -1,5 +1,5 @@
-var jsPlugin = require('bit-loader-js');
-var Bitbundler = require('bit-bundler');
+var jsPlugin = require("bit-loader-js");
+var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
   loader: {
@@ -8,9 +8,10 @@ var bitbundler = new Bitbundler({
 });
 
 bitbundler
-  .bundle('./src/main.js')
-  .then(function(context) {
-    console.log(context.bundle);
+  .bundle("src/main.js")
+  .then(Bitbundler.dest("dest/jsplugin.js"))
+  .then(function() {
+    console.log("jsplugin bundle complete");
   }, function(err) {
     console.log(err);
   });

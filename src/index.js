@@ -4,6 +4,8 @@ var utils = require("belty");
 var Loader = require("./loader");
 var Bundler = require("./bundler");
 var Context = require("./context");
+var File = require("./file");
+var bundleWriter = require("./bundleWriter");
 
 
 function Runner(options) {
@@ -24,16 +26,18 @@ Runner.prototype.bundle = function(files) {
     throw new TypeError("Must provide or configure Files to bundle");
   }
 
-  if (!types.isArray(files)) {
-    files = [files];
-  }
+  var file = new File(files);
 
-  return this.loader.fetch(files)
+  return this.loader.fetch(file.src)
     .then(function(modules) {
-      return createBundleContext(runner.loader, modules);
+      return new Context({
+        cache: createCache(runner.loader, modules),
+        file: file,
+        modules: modules
+      });
     })
-    .then(function(bundleContext) {
-      return runner.bundler.bundle(bundleContext);
+    .then(function(context) {
+      return runner.bundler.bundle(context);
     });
 };
 
@@ -48,7 +52,7 @@ function createBundler(options) {
 }
 
 
-function createBundleContext(loader, modules) {
+function createCache(loader, modules) {
   var i = 0;
   var stack = modules.slice(0);
   var id, mod, cache = {};
@@ -65,11 +69,11 @@ function createBundleContext(loader, modules) {
     cache[mod.id] = mod;
   }
 
-  return new Context({
-    cache: cache,
-    modules: modules
-  });
+  return cache;
 }
 
 
+Runner.dest = bundleWriter;
+Runner.Context = Context;
+Runner.File = File;
 module.exports = Runner;

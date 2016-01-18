@@ -8,6 +8,7 @@
     "bit-loader": "^1.2.0",
     "dis-isa": "^1.2.2",
     "loggero": "^2.0.1",
+    "mkdirp": "^0.5.1",
     "p-stream": "^1.0.3"
   },
   "main": "src/index.js",

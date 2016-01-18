@@ -14,11 +14,19 @@ function Configurator(checker) {
 
 Configurator.prototype.configure = function(target, options) {
   Object.keys(options)
+    .map(function(option) {
+      var camelOption = 'set' + option[0].toUpperCase() + option.substr(1);
+      var setter = types.isFunction(target[camelOption]) ? camelOption : option;
+      return {
+        setter: setter,
+        name: option
+      };
+    })
     .filter(function(option) {
-      return types.isFunction(target[option]);
+      return types.isFunction(target[option.setter]);
     })
     .forEach(function(option) {
-      target[option](options[option]);
+      target[option.setter](options[option.name]);
     });
 };
 
