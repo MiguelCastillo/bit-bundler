@@ -40,7 +40,7 @@
   "directories": {
     "test": "test"
   },
-  "description": "Pluggable bundler that generates bundles for the browser.",
+  "description": "Generate application bundles for the browser with ease",
   "repository": {
     "type": "git",
     "url": "https://github.com/MiguelCastillo/bit-bundler.git"
