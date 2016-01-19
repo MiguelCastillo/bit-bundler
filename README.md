@@ -1,6 +1,8 @@
 <img src="img/bit-bundler_white.png" width="100%"></img>
 
-> Pluggable bundler that generates bundles for the browser.
+> Generate application bundles for the browser with ease.
+
+`bit-bundler` aims to simplify the process of generating application bundles for your browser where the bundles generated can be loaded via `script` tags in your HTML.
 
 
 ### Install
@@ -9,56 +11,16 @@
 $ npm install --save-dev bit-bundler
 ```
 
-
-### Options and settings.
-
-#### Bitbundler(options) : bitbundler
-
-Constructor that creates an instance of `bit-bundler`.  Valid options are:
-
-- **`options.loader`** { object } - Options to be passed on to the module loader.
-  - **`plugins`** { Array[Plugin] | Plugin } - Plugins to be registerer with the module loader. These plugins are for procesing modules before they are bundled.
-  - **`ignoreNotFound`** { boolean } (false) - Flag to ignore modules not found on disk. When set to true, these modules will just be empty entries in the bundle.
-  - **`log`** { string } (error) - Log level. By default only errors are logged. Valid values are `'info'`, `'warn'`, `'error'`, and `false`.
-
-- **`options.bundler`** { object } - Options to be passed on to the bundler.
-  - **`plugins`** { Array[Plugin] | Plugin } - Plugins to be registered with the bundler. These plugins are for processing the module graph in order to create and manipulate bundles.
-  - **`umd`** { string } - String name for the `UMD` module to be exported. `UMD` is a configuration that allows bundles to run in node.js, requirejs, and traditional script tags. If running in the browser, provide this setting for maximum compatibility. The name you provide is exported so that other modules can consume the bundle. [This is some literature on it](https://github.com/umdjs/umd).
-  - **`printInfo`** { boolean } (false) - Flag to print to console basic information about the modules in bundles.
-  - **`filePathAsId`** { boolean } (false) - Flag to tell the bundler to use modules' full path as ids instead of numeric values when generating bundles.
-  - **`provider`** { { function: bundle } } - Option for defining a custom bundler to process the module graph. By default, this is set to [js bundler](https://github.com/MiguelCastillo/bit-bundler-browserpack). But you can override this if you would like to provide a custom way of generating bundles.
-
-
-#### Bitbundler.dest(destination) : Function
-
-Static method that creates bundle writers. Bundle writers handle writing bundle parts as well.
-
-- **`destination`** { function | string } - Destination can be a `string`, in which case the internal stream factory creates a file stream to write bundles to. If `destination` is a `function`, it is called. If the call returns a `string`, then the internal stream factory creates a file stream with it, otherwise the bundle writer will expect a stream and will use that. Use a `function` if you need to create custom streams to write bundles to.
-
-
-#### bundle(files) : Promise
-
-Method to bundle a list of files. Calling this method returns a promise that when resolved returns a context with the bundle along with information about it.
-
-- **`files`** { Array[string] | string } - Files to be bundled.
-
-The context is generated with the following information:
-
-- **`bundle`** { {string: result} } - Object with a string property called `result`, which is the actual string to be written to disk.
-- **`cache`** { object } - Map of modules by module `id`.
-- **`exclude`** { Array[string] } - Array of module `ids` to exclude from `bundle`. TODO: [Allow matching more than module ids](https://github.com/MiguelCastillo/bit-bundler/issues/47)
-- **`modules`** { Array[object] } - Array of root nodes (modules) of the module graph. These root nodes have an `id` that are used as keys into `cache` to get full module objects.
-- **`parts`** { object } - Map of bundle parts pulled out of the main `bundle` in the context. This map will have items created by plugins like [bundle splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) that can extract modules and generate separate bundles.
-
----
-
-### Examples
-
-This example bundles JavaScript with node.js dependencies, transform with babel, and creates multiple bundles.
+### Example
 
 Go [here](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples) for more examples.
 
+This example bundles JavaScript with node.js dependencies, transforms your assets with babel, and creates multiple bundles.
+
 > By default, `bit-bundler` does not understand how to process module dependencies.  So we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to help us out here.
+
+
+Configure `bit-bundler` to generate your bundles:
 
 ``` javascript
 var babel = require("babel-bits");
@@ -82,14 +44,100 @@ var bitbundler = new Bitbundler({
 
 bitbundler
   .bundle("src/main.js")
-  .then(Bitbundler.dest("dest/splitter.js"))
-  .then(function() {
-    console.log("splitter bundle complete");
-  }, function(err) {
-    console.log(err);
+  .then(Bitbundler.dest("dest/app.js"));
+```
+
+Now just include the output in your HTML
+
+``` html
+<html>
+  <head>
+    <script type="text/javascript" src="./dest/vendor.js" defer></script>
+    <script type="text/javascript" src="./dest/renderer.js" defer></script>
+    <script type="text/javascript" src="./dest/app.js" defer></script>
+  </head>
+
+  <body></body>
+</html>
+```
+
+### API
+
+### Bitbundler(options) : bitbundler
+
+Constructor that creates an instance of `bit-bundler`.  Valid options are:
+
+- **`options.loader`** { object } - Options to be passed on to the module loader.
+  - **`plugins`** { Array[Plugin] | Plugin } - Plugins to be registerer with the module loader. These plugins are for procesing modules before they are bundled.
+  - **`ignoreNotFound`** { boolean } (false) - Flag to ignore modules not found on disk. When set to true, these modules will just be empty entries in the bundle.
+  - **`log`** { string } (error) - Log level. By default only errors are logged. Valid values are `'info'`, `'warn'`, `'error'`, and `false`.
+
+- **`options.bundler`** { object } - Options to be passed on to the bundler.
+  - **`plugins`** { Array[Plugin] | Plugin } - Plugins to be registered with the bundler. These plugins are for processing the module graph in order to create and manipulate bundles.
+  - **`umd`** { string } - String name for the `UMD` module to be exported. `UMD` is a configuration that allows bundles to run in node.js, requirejs, and traditional script tags. If running in the browser, provide this setting for maximum compatibility. The name you provide is exported so that other modules can consume the bundle. [This is some literature on it](https://github.com/umdjs/umd).
+  - **`printInfo`** { boolean } (false) - Flag to print to console basic information about the modules in bundles.
+  - **`filePathAsId`** { boolean } (false) - Flag to tell the bundler to use modules' full path as ids instead of numeric values when generating bundles.
+  - **`provider`** { { function: bundle } } - Option for defining a custom bundler to process the module graph. By default, this is set to [js bundler](https://github.com/MiguelCastillo/bit-bundler-browserpack). But you can override this if you would like to provide a custom way of generating bundles.
+
+``` javascript
+var Bitbundler = require("bit-bundler");
+var jsPlugin = require("bit-loader-js");
+
+var bitbundler = new Bitbundler({
+  loader: {
+    log: "warn",
+    plugins: [ jsPlugin() ]
+  },
+  bundler: {
+    printInfo: true
+  }
+});
+```
+
+### bitbundler.bundle(files) : Promise
+
+Method to bundle a list of files. Calling this method returns a promise that when resolved returns a context with the bundle along with information about it. *The context is generally used by post processors.*
+
+- **`files`** { Array[string] | string } - Files to be bundled.
+
+The context is generated with the following information:
+
+- **`bundle`** { {string: result} } - Object with a `result` string, which is the actual string to be written to disk.
+- **`cache`** { object } - Map of modules by module `id`.
+- **`exclude`** { Array[string] } - Array of module `ids` to exclude from `bundle`. TODO: [Allow matching more than module ids](https://github.com/MiguelCastillo/bit-bundler/issues/47)
+- **`file`** { { Array[string] : src, string : dest } } - Object with `src` files to bundle and `dest` where the bundle is to be written to.
+- **`modules`** { Array[object] } - Array of root modules of the module graph. These modules have an `id` that are used as keys into the `cache` to get full module objects.
+- **`parts`** { object } - Map of bundle parts pulled out of the main `bundle` in the context. This map will have items created by plugins like [bundle splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) that can extract modules and generate separate bundles.
+
+
+``` javascript
+var Bitbundler = require("bit-bundler");
+var bitbundler = new Bitbundler();
+
+bitbundler
+  .bundle(["path/to/file.js"])
+  .then(function(context) {
+    console.log("Bundle ready", context.bundle.result);
   });
 ```
 
+### Bitbundler.dest(destination) : Function
+
+Static method to define where to write bundles to. This will handle writing bundle parts as well.
+
+- **`destination`** { function | string } - `destination` can be a `string`, in which case the internal stream factory creates a file stream to write bundles to. If `destination` is a `function`, it is called. If the call returns a `string`, then the internal stream factory creates a file stream with it, otherwise the bundle writer expects a writable stream to be used. Use a `function` if you need to create custom streams to write bundles to.
+
+``` javascript
+var Bitbundler = require("bit-bundler");
+var bitbundler = new Bitbundler();
+
+bitbundler
+  .bundle(["path/to/file.js"])
+  .then(Bitbundler.dest("output/path/file.js"))
+  .then(function() {
+    console.log("Bundle ready");
+  });
+```
 
 ### Loader Plugins
 
@@ -101,6 +149,7 @@ List of core loader plugins:
 - [bit-loader-json](https://github.com/MiguelCastillo/bit-loader-json) for loading and processing JSON assets
 - [bit-loader-css](https://github.com/MiguelCastillo/bit-loader-css) for loading and processing css assets
 - [bit-loader-text](https://github.com/MiguelCastillo/bit-loader-text) for loading and processing text assets such as HTML
+- [bit-bundler-builtins](https://github.com/MiguelCastillo/bit-bundler-builtins) for handling built in node.js modules
 
 
 ### Loader Transforms
@@ -123,9 +172,7 @@ Bundler plugins enable processing of bundles. A useful bundler plugin is for spl
 - [grunt](https://github.com/MiguelCastillo/grunt-bit-bundler)
 - gulp: TODO
 
-
 ---
-
 
 ### Why this project?
 
