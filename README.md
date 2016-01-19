@@ -2,7 +2,7 @@
 
 > Generate application bundles for the browser with ease.
 
-`bit-bundler` aims to simplify the process of generating application bundles for your browser. The bundles generated can then be loaded via `script` tags in your HTML.
+`bit-bundler` aims to simplify the process of generating application bundles for your browser where the bundles generated can be loaded via `script` tags in your HTML.
 
 
 ### Install
