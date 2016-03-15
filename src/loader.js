@@ -2,15 +2,15 @@ var Bitloader = require("bit-loader");
 var types = require("dis-isa");
 var utils = require("belty");
 var configurator = require("./configurator")();
-var fileReader = require("./fileReader");
 var logger = require("loggero").create("bundler/loader");
 var loggerLevel = require("loggero/src/levels");
 var resolvePath = require("bit-bundler-utils/resolvePath");
+var readFile = require("bit-bundler-utils/readFile");
 var pluginCounter = 1;
 
 
 function Loader(options) {
-  this._loader = new Bitloader({
+  this._provider = new Bitloader({
     resolve: configureResolve(options),
     fetch: configureFetch(options)
   });
@@ -43,17 +43,17 @@ Loader.prototype.log = function(level) {
 
 
 Loader.prototype.getModule = function(id) {
-  return this._loader.getModule(id);
+  return this._provider.getModule(id);
 };
 
 
 Loader.prototype.fetch = function(files) {
-  return this._loader.fetch(files);
+  return this._provider.fetch(files);
 };
 
 
 Loader.prototype.ignore = function(ignore) {
-  this._loader.ignore(ignore);
+  this._provider.ignore(ignore);
   return this;
 };
 
@@ -68,7 +68,7 @@ Loader.prototype.plugins = function(plugins) {
   plugins
     .map(configurePlugin)
     .forEach(function(plugin) {
-      loader._loader.plugin(plugin.name, plugin.settings);
+      loader._provider.plugin(plugin.name, plugin.settings);
     });
 
   return loader;
@@ -114,7 +114,7 @@ function configureFetch(options) {
       }
     }
 
-    return fileReader(meta).then(utils.noop, handleError);
+    return readFile(meta).then(utils.noop, handleError);
   };
 }
 

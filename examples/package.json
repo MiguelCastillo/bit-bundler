@@ -9,8 +9,8 @@
   "author": "Miguel Castillo <manchagnu@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "babel-bits": "^1.0.0",
-    "bit-bundler": "^2.0.1",
+    "babel-bits": "^1.0.1",
+    "bit-bundler": "^2.0.5",
     "bit-bundler-splitter": "^1.0.2",
     "bit-loader-js": "^1.0.0"
   }

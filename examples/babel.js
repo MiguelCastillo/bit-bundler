@@ -1,7 +1,6 @@
 var jsPlugin = require("bit-loader-js");
 var babel = require("babel-bits");
 var Bitbundler = require("bit-bundler");
-var fs = require("fs");
 
 var bitbundler = new Bitbundler({
   loader: {
