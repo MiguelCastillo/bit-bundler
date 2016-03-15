@@ -4,16 +4,15 @@ var System = (function() { // eslint-disable-line
     paths: {
       chai: 'node_modules/chai/chai',
       babel: 'node_modules/babel-bits/dist/index'
-    }
-  });
-
-  importer.ignore(['chai', 'dist/index']);
-
-  importer.plugin('js', {
+    },
+    ignore: ['chai', 'dist/index']
+  })
+  .plugin('js', {
     transform: {
       handler: 'babel',
       options: {
-        sourceMaps: 'inline'
+        sourceMaps: 'inline',
+        presets: ['es2015']
       }
     }
   });

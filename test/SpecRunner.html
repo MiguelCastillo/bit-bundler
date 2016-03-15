@@ -14,10 +14,7 @@
     <link rel="stylesheet" href="../node_modules/mocha/mocha.css"/>
     <script type="text/javascript" src="../node_modules/mocha/mocha.js"></script>
     <script type="text/javascript" src="../node_modules/sinon/pkg/sinon.js"></script>
-
     <script type="text/javascript" src="../node_modules/spromise/dist/spromise.min.js"></script>
-    <script>if (typeof(window) !== 'undefined' && !window.hasOwnProperty("Promise")) window.Promise = spromise;</script>
-
     <script type="text/javascript" src="../node_modules/bit-imports/dist/bit-imports.js"></script>
     <script type="text/javascript" src="config.js"></script>
   </head>
@@ -26,12 +23,7 @@
     <div id="mocha"></div>
     <script>
       mocha.setup('bdd');
-      System.import(['chai', 'test/SpecRunner']).then(function(modules) {
-        // Setup chai
-        var chai      = modules[0];
-        window.chai   = chai;
-        window.expect = chai.expect;
-        window.assert = chai.assert;
+      System.import(['test/SpecRunner']).then(function() {
         // Run test
         mocha.run();
       });
