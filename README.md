@@ -1,8 +1,8 @@
 <img src="img/bit-bundler_white.png" width="100%"></img>
 
-> Generate application bundles for the browser with ease.
+> Generate application bundles with ease.
 
-`bit-bundler` aims to simplify the process of generating application bundles for your browser where the bundles generated can be loaded via `script` tags in your HTML.
+But we already a bunch of bundlers out there... Why another one???  `bit-bundler` aims to simplify the process of generating application bundles with a fluid and intuitive API. The problem we are trying to solve is around setup complexity while providing a flexible environment that scales to meet more intricate requirements. No unwieldy streams or unconventional config string params. Just JSON, functions, and Promises.
 
 
 ### Install
