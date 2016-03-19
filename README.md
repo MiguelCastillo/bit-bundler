@@ -149,7 +149,7 @@ List of core loader plugins:
 - [bit-loader-json](https://github.com/MiguelCastillo/bit-loader-json) for loading and processing JSON assets
 - [bit-loader-css](https://github.com/MiguelCastillo/bit-loader-css) for loading and processing css assets
 - [bit-loader-text](https://github.com/MiguelCastillo/bit-loader-text) for loading and processing text assets such as HTML
-- [bit-loader-builtins](https://github.com/MiguelCastillo/bit-load-builtins) for handling built in node.js modules
+- [bit-loader-builtins](https://github.com/MiguelCastillo/bit-loader-builtins) for handling built in node.js modules
 
 
 ### Loader Transforms
