@@ -7,7 +7,8 @@ var bitbundler = new Bitbundler({
     plugins: jsPlugin({
       transform: babel.config({
         options: {
-          presets: ["es2015"]
+          presets: ["es2015"],
+          sourceMap: "inline"
         }
       })
     })

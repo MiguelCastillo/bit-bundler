@@ -4,5 +4,6 @@
     "ignoreNotFound": false
   },
   "bundler": {
+    "sourceMap": true
   }
 }
