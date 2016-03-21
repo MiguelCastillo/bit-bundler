@@ -1,4 +1,4 @@
-<img src="img/bit-bundler_white.png" width="100%"></img>
+<img src="https://raw.githubusercontent.com/MiguelCastillo/bit-bundler/master/img/bit-bundler_white.png" width="100%"></img>
 
 > Generate application bundles with ease.
 
