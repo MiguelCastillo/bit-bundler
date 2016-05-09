@@ -1,12 +1,12 @@
-import Renderit from './renderer/render-it';
+import RenderIt from './renderer/render-it';
 
-class Other extends Renderit {
+class Other extends RenderIt {
   constructor() {
     super();
   }
 
   render() {
-    this.super();
+    super.render();
     console.log(`render:other`);
   }
 }
