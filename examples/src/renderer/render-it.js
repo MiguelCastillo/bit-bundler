@@ -6,3 +6,5 @@ class RenderIt {
     console.log('base render-it!');
   }
 }
+
+export default RenderIt;
