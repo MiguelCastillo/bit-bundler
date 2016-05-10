@@ -23,5 +23,5 @@ bitbundler
   .then(function() {
     console.log("splitter bundle complete");
   }, function(err) {
-    console.log(err);
+    console.log(err && err.stack ? err.stack : err);
   });

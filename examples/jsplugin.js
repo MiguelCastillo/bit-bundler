@@ -13,5 +13,5 @@ bitbundler
   .then(function() {
     console.log("jsplugin bundle complete");
   }, function(err) {
-    console.log(err);
+    console.log(err && err.stack ? err.stack : err);
   });
