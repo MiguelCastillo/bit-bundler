@@ -114,7 +114,7 @@ function configureFetch(options) {
       }
     }
 
-    return readFile(meta).then(utils.noop, handleError);
+    return readFile(meta).then(utils.identity, handleError);
   };
 }
 
