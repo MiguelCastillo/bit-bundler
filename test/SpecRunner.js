@@ -1,1 +1,1 @@
-import 'test/spec/index';
+import "./spec/index";

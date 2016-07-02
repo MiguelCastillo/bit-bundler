@@ -1,16 +1,14 @@
 var Bitloader = require("bit-loader");
-var types = require("dis-isa");
 var utils = require("belty");
 var configurator = require("./configurator")();
 var logger = require("loggero").create("bundler/loader");
 var loggerLevel = require("loggero/src/levels");
 var resolvePath = require("bit-bundler-utils/resolvePath");
 var readFile = require("bit-bundler-utils/readFile");
-var pluginCounter = 1;
 
 
 function Loader(options) {
-  this._provider = new Bitloader({
+  Bitloader.call(this, {
     resolve: configureResolve(options),
     fetch: configureFetch(options)
   });
@@ -19,10 +17,8 @@ function Loader(options) {
 }
 
 
-Loader.prototype.configure = function(options) {
-  configurator.configure(this, options);
-  return this;
-};
+Loader.prototype = Object.create(Bitloader.prototype);
+Loader.prototype.constructor = Loader;
 
 
 Loader.prototype.log = function(level) {
@@ -39,39 +35,6 @@ Loader.prototype.log = function(level) {
   }
 
   return this;
-};
-
-
-Loader.prototype.getModule = function(id) {
-  return this._provider.getModule(id);
-};
-
-
-Loader.prototype.fetch = function(files) {
-  return this._provider.fetch(files);
-};
-
-
-Loader.prototype.ignore = function(ignore) {
-  this._provider.ignore(ignore);
-  return this;
-};
-
-
-Loader.prototype.plugins = function(plugins) {
-  var loader = this;
-
-  if (!types.isArray(plugins)) {
-    plugins = [plugins];
-  }
-
-  plugins
-    .map(configurePlugin)
-    .forEach(function(plugin) {
-      loader._provider.plugin(plugin.name, plugin.settings);
-    });
-
-  return loader;
 };
 
 
@@ -115,18 +78,6 @@ function configureFetch(options) {
     }
 
     return readFile(meta).then(utils.identity, handleError);
-  };
-}
-
-
-function configurePlugin(options) {
-  var name = options.name || "bundler-plugin-" + pluginCounter++;
-  var settings = utils.extend({}, options);
-  delete settings.name;
-
-  return {
-    name: name,
-    settings: settings
   };
 }
 
