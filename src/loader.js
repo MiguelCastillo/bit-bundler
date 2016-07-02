@@ -1,6 +1,5 @@
 var Bitloader = require("bit-loader");
 var utils = require("belty");
-var configurator = require("./configurator")();
 var logger = require("loggero").create("bundler/loader");
 var loggerLevel = require("loggero/src/levels");
 var resolvePath = require("bit-bundler-utils/resolvePath");
@@ -8,12 +7,10 @@ var readFile = require("bit-bundler-utils/readFile");
 
 
 function Loader(options) {
-  Bitloader.call(this, {
+  Bitloader.call(this, utils.extend({
     resolve: configureResolve(options),
     fetch: configureFetch(options)
-  });
-
-  configurator.configure(this, options);
+  }, options));
 }
 
 
