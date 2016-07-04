@@ -39,7 +39,7 @@ File.prototype.setDest = function(file) {
   return this;
 };
 
-function factory(files, cwd) {
+function create(files, cwd) {
   return utils.toArray(files).map(function(file) {
     return new File(file, cwd);
   });
@@ -75,6 +75,6 @@ function parseOptions(options) {
 }
 
 module.exports = File;
-module.exports.factory = factory;
+module.exports.create = create;
 module.exports.src = src;
 module.exports.dest = dest;
