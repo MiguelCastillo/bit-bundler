@@ -1,7 +1,7 @@
 var glob = require("glob");
 var path = require("path");
 var types = require("dis-isa");
-var toArray = require("./toArray");
+var utils = require("belty");
 var configurator = require("setopt")();
 var _cwd = process.cwd();
 
@@ -40,13 +40,13 @@ File.prototype.setDest = function(file) {
 };
 
 function factory(files, cwd) {
-  return toArray(files).map(function(file) {
+  return utils.toArray(files).map(function(file) {
     return new File(file, cwd);
   });
 }
 
 function src(files, baseDir) {
-  return toArray(files).reduce(function(result, file) {
+  return utils.toArray(files).reduce(function(result, file) {
     var globResult = types.isString(file) ?
       glob.sync(file, { cwd: baseDir, realpath: true }) :
       [file];
