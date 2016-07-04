@@ -23,7 +23,7 @@ describe("Bundler test suite", function() {
       var result;
 
       beforeEach(function() {
-        return bundler.bundle("./test/sample/X").then(function(ctx) {
+        return bundler.bundle("test/sample/X.js").then(function(ctx) {
           result = ctx.bundle.result.replace(/\n/g, "");
         });
       });
@@ -52,7 +52,7 @@ describe("Bundler test suite", function() {
       var result;
 
       beforeEach(function() {
-        return bundler.bundle("./test/sample/X").then(function(ctx) {
+        return bundler.bundle("test/sample/X.js").then(function(ctx) {
           result = ctx.bundle.result.replace(/\n/g, "");
         });
       });
