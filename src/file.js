@@ -2,7 +2,7 @@ var glob = require("glob");
 var path = require("path");
 var types = require("dis-isa");
 var toArray = require("./toArray");
-var configurator = require("./configurator")();
+var configurator = require("setopt")();
 var _cwd = process.cwd();
 
 function File(options, cwd) {
