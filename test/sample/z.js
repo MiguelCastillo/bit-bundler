@@ -1,3 +1,4 @@
+/*eslint no-console: ["off"]*/
 module.exports = {
   roast: "this",
   potatoes: function() {
