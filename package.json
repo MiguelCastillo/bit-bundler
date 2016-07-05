@@ -11,7 +11,8 @@
     "loggero": "^2.0.1",
     "mkdirp": "^0.5.1",
     "p-stream": "^1.0.3",
-    "setopt": "^1.0.0"
+    "setopt": "^1.0.0",
+    "src-dest": "^1.0.0"
   },
   "main": "src/index.js",
   "scripts": {

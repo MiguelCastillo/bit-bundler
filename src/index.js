@@ -1,9 +1,9 @@
 var defaultOptions = require("./defaultOptions");
 var utils = require("belty");
+var File = require("src-dest");
 var Loader = require("./loader");
 var Bundler = require("./bundler");
 var Context = require("./context");
-var File = require("./file");
 var bundleWriter = require("./bundleWriter");
 
 
