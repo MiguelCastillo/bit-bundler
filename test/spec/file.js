@@ -25,10 +25,6 @@ describe("File unit test", function() {
     it("then the current directory contains bit-bundler", function() {
       expect(result.cwd).to.contain("/bit-bundler");
     });
-
-    it("then the current directory is the same as the base directory", function() {
-      expect(result.cwd).to.be.equal(result.baseDir);
-    });
   });
 
   describe("When creating a File with only a string as the input", function() {
@@ -47,10 +43,6 @@ describe("File unit test", function() {
 
     it("then the current directory contains bit-bundler", function() {
       expect(result.cwd).to.contain("/bit-bundler");
-    });
-
-    it("then the current directory is the same as the base directory", function() {
-      expect(result.cwd).to.be.equal(result.baseDir);
     });
   });
 
@@ -74,10 +66,6 @@ describe("File unit test", function() {
 
     it("then the current directory contains bit-bundler", function() {
       expect(result.cwd).to.contain("/bit-bundler");
-    });
-
-    it("then the current directory is the same as the base directory", function() {
-      expect(result.cwd).to.be.equal(result.baseDir);
     });
   });
 
@@ -104,10 +92,6 @@ describe("File unit test", function() {
 
     it("then the current directory contains bit-bundler", function() {
       expect(result.cwd).to.contain("/bit-bundler");
-    });
-
-    it("then the current directory is the same as the base directory", function() {
-      expect(result.cwd).to.be.equal(result.baseDir);
     });
   });
 });
