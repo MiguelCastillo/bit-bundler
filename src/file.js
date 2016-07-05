@@ -38,25 +38,25 @@ File.prototype.setDest = function(file) {
   return this;
 };
 
-function list(files, base) {
+function list(files, cwd) {
   return utils.toArray(files).map(function(file) {
-    return new File(file, base);
+    return new File(file, cwd);
   });
 }
 
-function src(files, base) {
+function src(files, cwd) {
   return utils.toArray(files).reduce(function(result, file) {
     var globResult = types.isString(file) ?
-      glob.sync(file, { cwd: base, realpath: true }) :
+      glob.sync(file, { cwd: cwd, realpath: true }) :
       [file];
 
     return result.concat(globResult);
   }, []);
 }
 
-function dest(file, base) {
+function dest(file, cwd) {
   return types.isString(file) ?
-    path.isAbsolute(file) ? file : path.join(base, file) :
+    path.isAbsolute(file) ? file : path.join(cwd, file) :
     file;
 }
 
