@@ -19,45 +19,44 @@ function File(options, cwd) {
     };
   }
 
-  var currCwd = options.cwd || cwd || _cwd;
-  var baseDir = _cwd === currCwd ? currCwd : path.join(_cwd, currCwd);
+  cwd = options.cwd || cwd || _cwd;
+  cwd = _cwd === cwd || path.isAbsolute(cwd) ? cwd : path.join(_cwd, cwd);
 
   this.src = [];
   this.dest = null;
-  this.cwd = currCwd;
-  this.baseDir = baseDir;
+  this.cwd = cwd;
   configurator.configure(this, parseOptions(options));
 }
 
 File.prototype.setSrc = function(files) {
-  this.src = src(files, this.baseDir);
+  this.src = src(files, this.cwd);
   return this;
 };
 
 File.prototype.setDest = function(file) {
-  this.dest = dest(file, this.cwd);
+  this.dest = dest(file, _cwd);
   return this;
 };
 
-function create(files, cwd) {
+function list(files, base) {
   return utils.toArray(files).map(function(file) {
-    return new File(file, cwd);
+    return new File(file, base);
   });
 }
 
-function src(files, baseDir) {
+function src(files, base) {
   return utils.toArray(files).reduce(function(result, file) {
     var globResult = types.isString(file) ?
-      glob.sync(file, { cwd: baseDir, realpath: true }) :
+      glob.sync(file, { cwd: base, realpath: true }) :
       [file];
 
     return result.concat(globResult);
   }, []);
 }
 
-function dest(file, cwd) {
+function dest(file, base) {
   return types.isString(file) ?
-    path.isAbsolute(file) ? file : path.join(cwd, file) :
+    path.isAbsolute(file) ? file : path.join(base, file) :
     file;
 }
 
@@ -75,6 +74,6 @@ function parseOptions(options) {
 }
 
 module.exports = File;
-module.exports.create = create;
+module.exports.list = list;
 module.exports.src = src;
 module.exports.dest = dest;
