@@ -1,13 +1,16 @@
 var utils = require("belty");
 var types = require("dis-isa");
+var File = require("src-dest");
 
 var defaults = {
   file: null,
   bundle: null,
   cache: {},
   exclude: [],
-  modules: [],
-  parts: {}
+  modules: null,
+  parts: {},
+  loader: null,
+  bundler: null
 };
 
 function Context(options) {
@@ -26,9 +29,25 @@ Context.prototype.configure = function(options) {
   return new Context(utils.extend({}, this, options));
 };
 
+Context.prototype.execute = function(files) {
+  var context = this;
+
+  return context.loader
+    .fetch(files)
+    .then(function(modules) {
+      return context.configure({
+        cache: createCache(context.loader, modules),
+        modules: context.modules ? context.modules : modules
+      });
+    })
+    .then(function(result) {
+      return result.bundler.bundle(result);
+    });
+};
+
 Context.prototype.setFile = function(file) {
   return this.configure({
-    file: file
+    file: new File(file)
   });
 };
 
@@ -72,5 +91,25 @@ Context.prototype.addExclude = function(exclude) {
     exclude: Object.keys(exclude)
   });
 };
+
+function createCache(loader, modules) {
+  var i = 0;
+  var stack = modules.slice(0);
+  var id, mod, cache = {};
+
+  while (stack.length !== i) {
+    id = stack[i++].id;
+
+    if (cache.hasOwnProperty(id)) {
+      continue;
+    }
+
+    mod = loader.getModule(id);
+    stack = stack.concat(mod.deps);
+    cache[mod.id] = mod;
+  }
+
+  return cache;
+}
 
 module.exports = Context;

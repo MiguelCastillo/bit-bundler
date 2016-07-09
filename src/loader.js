@@ -11,6 +11,8 @@ function Loader(options) {
     resolve: configureResolve(options),
     fetch: configureFetch(options)
   }, options));
+
+  this.log(options.log);
 }
 
 
