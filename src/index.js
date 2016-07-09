@@ -6,71 +6,47 @@ var Bundler = require("./bundler");
 var Context = require("./context");
 var bundleWriter = require("./bundleWriter");
 
-
 function Runner(options) {
-  if (!(this instanceof Runner)) {
-    return new Runner(options);
-  }
-
-  options = options || {};
-  this.loader = createLoader(options.loader);
-  this.bundler = createBundler(options.bundler);
+  this.options = options || {};
+  this.context = null;
 }
 
-
 Runner.prototype.bundle = function(files) {
-  var runner = this;
-
-  if (!files) {
-    throw new TypeError("Must provide or configure Files to bundle");
-  }
-
   var file = new File(files);
 
-  return this.loader.fetch(file.src)
-    .then(function(modules) {
-      return new Context({
-        cache: createCache(runner.loader, modules),
-        file: file,
-        modules: modules
-      });
-    })
-    .then(function(context) {
-      return runner.bundler.bundle(context);
-    });
+  if (!this.context) {
+    this.context = createContext(file, this.options);
+  }
+
+  return this.context
+    .execute(file.src)
+    .then(setContext.bind(this));
 };
 
+function createContext(file, options) {
+  return new Context({
+    file: file,
+    loader: createLoader(options.loader),
+    bundler: createBundler(options.bundler)
+  });
+}
 
 function createLoader(options) {
   return new Loader(utils.merge({}, defaultOptions.loader, options));
 }
 
-
 function createBundler(options) {
   return new Bundler(utils.merge({}, defaultOptions.bundler, options));
 }
 
-
-function createCache(loader, modules) {
-  var i = 0;
-  var stack = modules.slice(0);
-  var id, mod, cache = {};
-
-  while (stack.length !== i) {
-    id = stack[i++].id;
-
-    if (cache.hasOwnProperty(id)) {
-      continue;
-    }
-
-    mod = loader.getModule(id);
-    stack = stack.concat(mod.deps);
-    cache[mod.id] = mod;
+function setContext(ctx) {
+  if (!(ctx instanceof Context)) {
+    console.warn("Context was not returned after bundling");
   }
 
-  return cache;
+  this.context = ctx;
+  return ctx;
 }
-
 
 Runner.dest = bundleWriter;
 Runner.Context = Context;
