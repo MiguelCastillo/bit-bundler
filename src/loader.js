@@ -1,7 +1,6 @@
 var Bitloader = require("bit-loader");
 var utils = require("belty");
 var logger = require("loggero").create("bundler/loader");
-var loggerLevel = require("loggero/src/levels");
 var resolvePath = require("bit-bundler-utils/resolvePath");
 var readFile = require("bit-bundler-utils/readFile");
 
@@ -21,16 +20,18 @@ Loader.prototype.constructor = Loader;
 
 
 Loader.prototype.log = function(level) {
-  if (level === true) {
-    level = "info";
-  }
+  var logger = Bitloader.logger;
 
   if (level) {
-    Bitloader.logger.enableAll();
-    Bitloader.logger.level(loggerLevel[level]);
+    if (level === true) {
+      level = "info";
+    }
+
+    logger.enable();
+    logger.level(logger.levels[level]);
   }
   else {
-    Bitloader.logger.disable();
+    logger.disable();
   }
 
   return this;

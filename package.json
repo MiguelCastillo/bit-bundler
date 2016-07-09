@@ -6,6 +6,7 @@
     "bit-bundler-browserpack": "^3.0.2",
     "bit-bundler-utils": "^2.0.3",
     "bit-loader": "^4.0.0",
+    "chokidar": "^1.6.0",
     "dis-isa": "^1.2.3",
     "glob": "^7.0.5",
     "loggero": "^2.0.1",
