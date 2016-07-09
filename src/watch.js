@@ -44,18 +44,14 @@ function watch(context, options) {
       context.execute(paths).then(function(ctx) {
         context = ctx;
         paths.forEach(function(path) {
-          console.log("[changed]", path);
+          console.log("[updated]", path);
         });
 
-        inProgress = false;
-
-        var pendingPaths = Object.keys(nextPaths);
-
-        if (pendingPaths.length) {
-          nextPaths = {};
-          onChange(pendingPaths);
-        }
-      }, logError);
+        executePending();
+      }, function(err) {
+        logError(err);
+        executePending();
+      });
     }
   }
 
@@ -68,6 +64,17 @@ function watch(context, options) {
   function onDelete(path) {
     if (context.cache.hasOwnProperty(path)) {
       console.warn("[removed]", path);
+    }
+  }
+
+  function executePending() {
+    inProgress = false;
+
+    var pendingPaths = Object.keys(nextPaths);
+
+    if (pendingPaths.length) {
+      nextPaths = {};
+      onChange(pendingPaths);
     }
   }
 }
