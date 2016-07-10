@@ -77,6 +77,8 @@ function watch(context, options) {
       onChange(pendingPaths);
     }
   }
+
+  return context;
 }
 
 module.exports = watch;
