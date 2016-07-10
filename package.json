@@ -37,6 +37,7 @@
     "grunt-contrib-connect": "~1.0.2",
     "grunt-contrib-uglify": "~1.0.1",
     "grunt-contrib-watch": "~1.0.0",
+    "grunt-doctoc": "^0.1.1",
     "grunt-eslint": "^19.0.0",
     "grunt-mocha": "~1.0.2",
     "grunt-release": "^0.14.0",
