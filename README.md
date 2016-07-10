@@ -225,9 +225,9 @@ When calling the methods for generating bundles, `bit-bundler` returns a promise
 - **`modules`** { Array[object] } - Array of root modules of the module graph. These modules have an `id` that are used as keys into the `cache` to get full module objects.
 - **`parts`** { object } - Map of bundle parts pulled out of the main `bundle` in the context. This map will have items created by plugins like [bundle splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) that can extract modules and generate separate bundles.
 
-> The context is generally used by plugins and post processors such as [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter), [Bitbundler.dest](#bitbundlerdestdestination--function), and [Bitbundler.watch](#bitbundlerwatchcontext-options--function).
+> The context is generally used by plugins and post processors such as [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter), [Bitbundler.dest](#bitbundlerdestdestination--function), and [Bitbundler.watch](#bitbundlerwatchcontext-options--context).
 
-Once you have a context, you can call the method `execute` with a list of files that need to be reprocessed and to generate new bundles. This exactly what [Bitbundler.watch](#bitbundlerwatchcontext-options--function) uses.
+Once you have a context, you can call the method `execute` with a list of files that need to be reprocessed and to generate new bundles. This exactly what [Bitbundler.watch](#bitbundlerwatchcontext-options--context) uses.
 
 
 ## Loader Plugins
