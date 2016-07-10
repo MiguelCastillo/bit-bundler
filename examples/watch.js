@@ -16,7 +16,7 @@ Bitbundler.bundle({
   },
   bundler: {
     plugins: [
-      // splitBundle("dest/watch-vendor.js"),
+      splitBundle("dest/watch-other.js", { match: { fileName: "other.js" } }),
       splitBundle("dest/watch-renderer.js", { match: { path: /src\/renderer/ } })
     ]
   }

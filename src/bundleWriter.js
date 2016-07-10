@@ -12,10 +12,19 @@ function bundleWriter(dest) {
     Object
       .keys(context.parts)
       .map(function(dest) {
-        writeBundle(context.parts[dest], stream(dest));
+        if (!context.parts[dest]) {
+          console.log(dest, "is an empty bundle part");
+        }
+
+        if (context.parts[dest]) {
+          writeBundle(context.parts[dest], stream(dest));
+        }
       });
 
-    writeBundle(context.bundle, stream(file.dest));
+    if (context.bundle) {
+      writeBundle(context.bundle, stream(file.dest));
+    }
+
     return context;
   };
 }

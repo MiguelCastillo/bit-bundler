@@ -43,7 +43,10 @@ Context.prototype.execute = function(files) {
       return context.configure({
         cache: utils.merge(context.cache, updates),
         modules: context.modules ? context.modules : modules,
-        lastUpdatedModules: updates
+        lastUpdatedModules: updates,
+        bundle: null,
+        parts: {},
+        exclude: []
       });
     })
     .then(function(context) {
