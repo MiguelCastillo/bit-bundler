@@ -136,3 +136,46 @@ Run:
 ```
 $ node splitter
 ```
+
+
+#### Some file watching, please!
+
+Probably the most common setup would be to include file watching functionality. This setup is pretty much the same as the splitter example, but it just passed `watch: true` to enable file watching.
+
+Setup:
+``` javascript
+var jsPlugin = require("bit-loader-js");
+var babel = require("babel-bits");
+var splitBundle = require("bit-bundler-splitter");
+var Bitbundler = require("bit-bundler");
+
+var bitbundler = new Bitbundler({
+  watch: true,
+  loader: {
+    plugins: jsPlugin({
+      transform: babel
+    })
+  },
+  bundler: {
+    plugins: [
+      splitBundle("dest/watch-renderer.js", { match: { path: /src\/renderer/ } }),
+      splitBundle("dest/watch-other.js", { match: { fileName: "other.js" } })
+    ]
+  }
+});
+
+bitbundler.bundle({
+    src: "src/main.js",
+    dest: "dest/watch-main.js"
+  })
+  .then(function() {
+    console.log("watch bundle complete.");
+  }, function(err) {
+    console.error(err && err.stack ? err.stack : err);
+  });
+```
+
+Run:
+```
+$ node watch
+```
