@@ -15,14 +15,18 @@ that loads `src/main.js` and bundles it.
 
 Setup:
 ``` javascript
-var Bitbundler = require('bit-bundler');
+var Bitbundler = require("bit-bundler");
 var bitbundler = new Bitbundler();
 
 bitbundler
-  .bundle('src/main.js')
-  .then(Bitbundler.dest('dest/basic.js'))
+  .bundle({
+    src: "src/main.js",
+    dest: "dest/basic.js"
+  })
   .then(function() {
-    console.log('Finished bundling');
+    console.log("basic bundle complete");
+  }, function(err) {
+    console.log(err && err.stack ? err.stack : err);
   });
 ```
 
@@ -39,8 +43,8 @@ By default, `bit-bundler` does not understand how to process module dependencies
 
 Setup:
 ``` javascript
-var jsPlugin = require('bit-loader-js');
-var Bitbundler = require('bit-bundler');
+var jsPlugin = require("bit-loader-js");
+var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
   loader: {
@@ -49,10 +53,14 @@ var bitbundler = new Bitbundler({
 });
 
 bitbundler
-  .bundle('src/main.js')
-  .then(Bitbundler.dest('dest/jsplugin.js'))
+  .bundle({
+    src: "src/main.js",
+    dest: "dest/jsplugin.js"
+  })
   .then(function() {
-    console.log('Finished bundling');
+    console.log("jsplugin bundle complete");
+  }, function(err) {
+    console.log(err && err.stack ? err.stack : err);
   });
 ```
 
@@ -63,20 +71,21 @@ $ node jsplugin
 
 #### Bundle JavaScript and transform it with Babel??
 
-Yes please! This setup relies on a transform called [babel-bits](https://github.com/MiguelCastillo/babel-bits).
+Yes please! This setup relies on a helper module called [babel-bits](https://github.com/MiguelCastillo/babel-bits).
 
 Setup:
 ``` javascript
-var jsPlugin = require('bit-loader-js');
-var babel = require('babel-bits');
-var Bitbundler = require('bit-bundler');
+var jsPlugin = require("bit-loader-js");
+var babel = require("babel-bits");
+var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
   loader: {
     plugins: jsPlugin({
       transform: babel.config({
         options: {
-          presets: ['es2015']
+          presets: ["es2015"],
+          sourceMap: "inline"
         }
       })
     })
@@ -84,10 +93,14 @@ var bitbundler = new Bitbundler({
 });
 
 bitbundler
-  .bundle('src/main.js')
-  .then(Bitbundler.dest('dest/babel.js'))
-  .then(function(context) {
-    console.log(context.bundle);
+  .bundle({
+    src: "src/main.js",
+    dest: "dest/babel.js"
+  })
+  .then(function() {
+    console.log("babel bundle complete");
+  }, function(err) {
+    console.log(err && err.stack ? err.stack : err);
   });
 ```
 
@@ -105,10 +118,10 @@ Yup, use the bundler plugin [bit-bundler-splitter](https://github.com/MiguelCast
 
 Setup:
 ``` javascript
-var jsPlugin = require('bit-loader-js');
-var babel = require('babel-bits');
-var splitBundle = require('bit-bundler-splitter');
-var Bitbundler = require('bit-bundler');
+var jsPlugin = require("bit-loader-js");
+var babel = require("babel-bits");
+var splitBundle = require("bit-bundler-splitter");
+var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
   loader: {
@@ -118,17 +131,21 @@ var bitbundler = new Bitbundler({
   },
   bundler: {
     plugins: [
-      splitBundle('out/vendor.js'),
-      splitBundle('out/renderer', { match: { path: /src\/renderer/ } })
+      splitBundle("dest/vendor.js"),
+      splitBundle("dest/renderer.js", { match: { path: /src\/renderer/ } })
     ]
   }
 });
 
 bitbundler
-  .bundle('src/main.js')
-  .then(Bitbundler.dest('dest/splitter.js'))
-  .then(function(context) {
-    console.log(context.bundle);
+  .bundle({
+    src: "src/main.js",
+    dest: "dest/splitter.js"
+  })
+  .then(function() {
+    console.log("splitter bundle complete");
+  }, function(err) {
+    console.log(err && err.stack ? err.stack : err);
   });
 ```
 
@@ -150,7 +167,6 @@ var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
-  watch: true,
   loader: {
     plugins: jsPlugin({
       transform: babel
@@ -161,10 +177,12 @@ var bitbundler = new Bitbundler({
       splitBundle("dest/watch-renderer.js", { match: { path: /src\/renderer/ } }),
       splitBundle("dest/watch-other.js", { match: { fileName: "other.js" } })
     ]
-  }
+  },
+  watch: true
 });
 
-bitbundler.bundle({
+bitbundler
+  .bundle({
     src: "src/main.js",
     dest: "dest/watch-main.js"
   })

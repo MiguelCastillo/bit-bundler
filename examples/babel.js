@@ -16,8 +16,10 @@ var bitbundler = new Bitbundler({
 });
 
 bitbundler
-  .bundle("src/main.js")
-  .then(Bitbundler.dest("dest/babel.js"))
+  .bundle({
+    src: "src/main.js",
+    dest: "dest/babel.js"
+  })
   .then(function() {
     console.log("babel bundle complete");
   }, function(err) {

@@ -18,8 +18,10 @@ var bitbundler = new Bitbundler({
 });
 
 bitbundler
-  .bundle("src/main.js")
-  .then(Bitbundler.dest("dest/splitter.js"))
+  .bundle({
+    src: "src/main.js",
+    dest: "dest/splitter.js"
+  })
   .then(function() {
     console.log("splitter bundle complete");
   }, function(err) {
