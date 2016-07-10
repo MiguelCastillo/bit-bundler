@@ -20,15 +20,11 @@ This example bundles JavaScript with node.js dependencies, transforms your asset
 > By default, `bit-bundler` does not understand how to process module dependencies.  So we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to help us out here.
 
 
-Configure `bit-bundler` to generate your bundles:
+Configure `bit-bundler` to generate your bundles and enable watch:
 
 ``` javascript
-var babel = require("babel-bits");
-var jsPlugin = require("bit-loader-js");
-var splitBundle = require("bit-bundler-splitter");
-var Bitbundler = require("bit-bundler");
-
 var bitbundler = new Bitbundler({
+  watch: true,
   loader: {
     plugins: jsPlugin({
       transform: babel
@@ -42,32 +38,9 @@ var bitbundler = new Bitbundler({
   }
 });
 
-bitbundler
-  .bundle("src/main.js")
-  .then(Bitbundler.dest("dest/app.js"));
-```
-
-You can also use the built in watcher
-
-``` javascript
-var bitbundler = new Bitbundler({
-  watch: true,
-  loader: {
-    plugins: jsPlugin({
-      transform: babel
-    })
-  },
-  bundler: {
-    plugins: [
-      splitBundle("dest/watch-renderer.js", { match: { path: /src\/renderer/ } }),
-      splitBundle("dest/watch-other.js", { match: { fileName: "other.js" } })
-    ]
-  }
-});
-
 bitbundler.bundle({
   src: "src/main.js",
-  dest: "dest/watch-main.js"
+  dest: "dest/app.js"
 });
 ```
 
@@ -121,7 +94,7 @@ var bitbundler = new Bitbundler({
 });
 ```
 
-### bitbundler.bundle(files) : Promise
+### bundle(files) : Promise
 
 Method to bundle a list of files. Calling this method returns a promise that when resolved returns a context with the bundle along with information about it. *The context is generally used by post processors.*
 
@@ -132,7 +105,7 @@ The context is generated with the following information:
 - **`bundle`** { {string: result} } - Object with a `result` string, which is the actual string to be written to disk.
 - **`cache`** { object } - Map of modules by module `id`.
 - **`exclude`** { Array[string] } - Array of module `ids` to exclude from `bundle`. TODO: [Allow matching more than module ids](https://github.com/MiguelCastillo/bit-bundler/issues/47)
-- **`file`** { { Array[string] : src, string : dest } } - Object with `src` files to bundle and `dest` where the bundle is to be written to.
+- **`file`** { { Array[string] : src, string : dest } } - Object with `src` files to bundle and `dest` is where the bundle is to be written to.
 - **`modules`** { Array[object] } - Array of root modules of the module graph. These modules have an `id` that are used as keys into the `cache` to get full module objects.
 - **`parts`** { object } - Map of bundle parts pulled out of the main `bundle` in the context. This map will have items created by plugins like [bundle splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) that can extract modules and generate separate bundles.
 
