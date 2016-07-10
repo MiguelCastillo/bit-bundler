@@ -5,8 +5,13 @@ var Loader = require("./loader");
 var Bundler = require("./bundler");
 var Context = require("./context");
 var bundleWriter = require("./bundleWriter");
+var watch = require("./watch");
 
 function Runner(options) {
+  if (!(this instanceof Runner)) {
+    return new Runner(options);
+  }
+
   this.options = options || {};
   this.context = null;
 }
@@ -20,7 +25,12 @@ Runner.prototype.bundle = function(files) {
 
   return this.context
     .execute(file.src)
-    .then(setContext.bind(this));
+    .then(setContext.bind(this))
+    .then(initWatch.bind(this));
+};
+
+Runner.bundle = function(files, settings) {
+  return new Runner(settings).bundle(files);
 };
 
 function createContext(file, options) {
@@ -48,7 +58,17 @@ function setContext(ctx) {
   return ctx;
 }
 
+function initWatch(ctx) {
+  if (this.options.watch && !this.watching) {
+    this.watching = true;
+    watch(ctx);
+  }
+
+  return ctx;
+}
+
 Runner.dest = bundleWriter;
+Runner.watch = watch;
 Runner.Context = Context;
 Runner.File = File;
 module.exports = Runner;

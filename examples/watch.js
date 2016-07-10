@@ -11,19 +11,20 @@ var bitbundler = new Bitbundler({
   },
   bundler: {
     plugins: [
-      splitBundle("dest/vendor.js"),
-      splitBundle("dest/renderer.js", { match: { path: /src\/renderer/ } })
+      splitBundle("dest/watch-renderer.js", { match: { path: /src\/renderer/ } }),
+      splitBundle("dest/watch-other.js", { match: { fileName: "other.js" } })
     ]
-  }
+  },
+  watch: true
 });
 
 bitbundler
   .bundle({
     src: "src/main.js",
-    dest: "dest/splitter.js"
+    dest: "dest/watch-main.js"
   })
   .then(function() {
-    console.log("splitter bundle complete");
+    console.log("watch bundle complete.");
   }, function(err) {
-    console.log(err && err.stack ? err.stack : err);
+    console.error(err && err.stack ? err.stack : err);
   });

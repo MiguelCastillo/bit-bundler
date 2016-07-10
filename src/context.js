@@ -1,6 +1,7 @@
 var utils = require("belty");
 var types = require("dis-isa");
 var File = require("src-dest");
+var bundleWriter = require("./bundleWriter");
 
 var defaults = {
   file: null,
@@ -10,7 +11,8 @@ var defaults = {
   modules: null,
   parts: {},
   loader: null,
-  bundler: null
+  bundler: null,
+  lastUpdatedModules: null
 };
 
 function Context(options) {
@@ -35,13 +37,24 @@ Context.prototype.execute = function(files) {
   return context.loader
     .fetch(files)
     .then(function(modules) {
+      var updates = flattenModules(context.loader, modules);
+      updates = context.lastUpdatedModules ? onlyChanged(files, updates) : updates;
+
       return context.configure({
-        cache: createCache(context.loader, modules),
-        modules: context.modules ? context.modules : modules
+        cache: utils.merge(context.cache, updates),
+        modules: context.modules ? context.modules : modules,
+        lastUpdatedModules: updates,
+        bundle: null,
+        parts: {},
+        exclude: []
       });
     })
-    .then(function(result) {
-      return result.bundler.bundle(result);
+    .then(function(context) {
+      return context.bundler.bundle(context);
+    })
+    .then(function(context) {
+      bundleWriter(context.file.dest)(context);
+      return context;
     });
 };
 
@@ -92,15 +105,19 @@ Context.prototype.addExclude = function(exclude) {
   });
 };
 
-function createCache(loader, modules) {
+function flattenModules(loader, modules) {
   var i = 0;
   var stack = modules.slice(0);
   var id, mod, cache = {};
 
   while (stack.length !== i) {
+    if (!stack[i].id) {
+      console.warn("not found:", stack[i]);
+    }
+
     id = stack[i++].id;
 
-    if (cache.hasOwnProperty(id)) {
+    if (!id || cache.hasOwnProperty(id)) {
       continue;
     }
 
@@ -110,6 +127,13 @@ function createCache(loader, modules) {
   }
 
   return cache;
+}
+
+function onlyChanged(src, cache) {
+  return src.reduce(function(changedModules, item) {
+    changedModules[item] = cache[item];
+    return changedModules;
+  }, {});
 }
 
 module.exports = Context;
