@@ -11,6 +11,6 @@ module.exports = function(grunt) {
   taskConfig.pkg = pkg;
   grunt.initConfig(taskConfig);
 
-  grunt.registerTask("build", ["eslint:all"]);
+  grunt.registerTask("build", ["eslint:all", "doctoc:examples", "doctoc:main"]);
   grunt.registerTask("test", ["connect:test", "mocha:test"]);
 };
