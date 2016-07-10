@@ -9,7 +9,6 @@ Bitbundler.bundle({
   }, {
   watch: true,
   loader: {
-    log: "error",
     plugins: jsPlugin({
       transform: babel
     })
