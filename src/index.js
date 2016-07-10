@@ -8,6 +8,10 @@ var bundleWriter = require("./bundleWriter");
 var watch = require("./watch");
 
 function Runner(options) {
+  if (!(this instanceof Runner)) {
+    return new Runner(options);
+  }
+
   this.options = options || {};
   this.context = null;
 }
@@ -64,6 +68,7 @@ function initWatch(ctx) {
 }
 
 Runner.dest = bundleWriter;
+Runner.watch = watch;
 Runner.Context = Context;
 Runner.File = File;
 module.exports = Runner;
