@@ -47,6 +47,30 @@ bitbundler
   .then(Bitbundler.dest("dest/app.js"));
 ```
 
+You can also use the built in watcher
+
+``` javascript
+var bitbundler = new Bitbundler({
+  watch: true,
+  loader: {
+    plugins: jsPlugin({
+      transform: babel
+    })
+  },
+  bundler: {
+    plugins: [
+      splitBundle("dest/watch-renderer.js", { match: { path: /src\/renderer/ } }),
+      splitBundle("dest/watch-other.js", { match: { fileName: "other.js" } })
+    ]
+  }
+});
+
+bitbundler.bundle({
+  src: "src/main.js",
+  dest: "dest/watch-main.js"
+});
+```
+
 Now just include the output in your HTML
 
 ``` html
