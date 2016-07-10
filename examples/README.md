@@ -1,4 +1,15 @@
-## bit-bundler Examples
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of Contents
+
+- [Most basic example](#most-basic-example)
+- [Bundle JavaScript with node.js dependencies](#bundle-javascript-with-nodejs-dependencies)
+- [Bundle JavaScript and transform it with Babel??](#bundle-javascript-and-transform-it-with-babel)
+- [How about splitting bundles??](#how-about-splitting-bundles)
+- [Some file watching, please!](#some-file-watching-please!)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 These are some examples/recipes to get you started with. These examples cover concepts that range from the most basic setup to a more advanced setup where bundles are split.
 
 You can certainly run these examples too.
