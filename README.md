@@ -5,6 +5,30 @@
 But we already a bunch of bundlers out there... Why another one???  `bit-bundler` aims to simplify the process of generating application bundles with a fluid and intuitive API. The problem we are trying to solve is around setup complexity while providing a flexible environment that scales to meet more intricate requirements. No unwieldy streams or unconventional config string params. Just JSON, functions, and Promises.
 
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of Contents
+
+- [Install](#install)
+- [Example](#example)
+- [API](#api)
+  - [Bitbundler(options) : Bitbundler](#bitbundleroptions--bitbundler)
+  - [bundle(files) : Promise](#bundlefiles--promise)
+  - [Bitbundler.bundle(files, options) : Promise](#bitbundlerbundlefiles-options--promise)
+  - [Bitbundler.dest(destination) : Function](#bitbundlerdestdestination--function)
+  - [Bitbundler.watch(context, options) : Context](#bitbundlerwatchcontext-options--context)
+- [Context](#context)
+- [Loader Plugins](#loader-plugins)
+- [Loader Transforms](#loader-transforms)
+- [Bundler Plugins](#bundler-plugins)
+- [Integrations](#integrations)
+- [Tech summary](#tech-summary)
+- [Processing flow](#processing-flow)
+- [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+
 ## Install
 
 ```
