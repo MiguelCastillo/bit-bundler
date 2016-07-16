@@ -61,7 +61,7 @@ function setContext(ctx) {
 function initWatch(ctx) {
   if (this.options.watch && !this.watching) {
     this.watching = true;
-    watch(ctx);
+    watch(ctx, this.options.watch);
   }
 
   return ctx;
