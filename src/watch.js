@@ -1,20 +1,22 @@
 var utils = require("belty");
 var chokidar = require("chokidar");
+var File = require("src-dest");
 var logError = require("./logError");
 
 function watch(context, options) {
-  if (options === true) {
+  if (options === true || !options) {
     options = {};
   }
 
-  var settings = utils.merge({ followSymlinks: false }, options);
+  var include = new File(options.include);
+  var settings = utils.merge({ followSymlinks: false }, utils.omit(options, ["include"]));
 
   if (!settings.hasOwnProperty("ignored")) {
     settings.ignored = [/[\/\\]\./, /node_modules\//];
   }
 
   var nextPaths = {}, inProgress;
-  var filesToWatch = Object.keys(context.cache);
+  var filesToWatch = Object.keys(context.cache).concat(include.src);
   var watcher = chokidar.watch(filesToWatch, settings);
 
   console.log("Watching...");
