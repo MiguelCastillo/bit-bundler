@@ -55,16 +55,19 @@ function watch(context, options) {
         executePending();
       });
     }
+    else {
+      console.log("[changed]", path);
+    }
   }
 
   function onAdd(path) {
-    if (context.cache.hasOwnProperty(path)) {
+    if (context.cache.hasOwnProperty(path) || include.src.indexOf(path) !== -1) {
       console.log("[watched]", path);
     }
   }
 
   function onDelete(path) {
-    if (context.cache.hasOwnProperty(path)) {
+    if (context.cache.hasOwnProperty(path) || include.src.indexOf(path) !== -1) {
       console.warn("[removed]", path);
     }
   }
