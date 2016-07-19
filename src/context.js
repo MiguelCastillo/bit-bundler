@@ -38,7 +38,12 @@ Context.prototype.execute = function(files) {
     .fetch(files)
     .then(function(modules) {
       var updates = flattenModules(context.loader, modules);
-      updates = context.lastUpdatedModules ? onlyChanged(files, updates) : updates;
+
+      // TODO:
+      // https://github.com/MiguelCastillo/bit-bundler/issues/81
+      // Add logic to handle ability to also include new dependencies.
+      // But in the meantime, we will just reprocess everything.
+      //updates = context.lastUpdatedModules ? onlyChanged(files, updates) : updates;
 
       return context.configure({
         cache: utils.merge(context.cache, updates),
@@ -129,11 +134,12 @@ function flattenModules(loader, modules) {
   return cache;
 }
 
-function onlyChanged(src, cache) {
-  return src.reduce(function(changedModules, item) {
-    changedModules[item] = cache[item];
-    return changedModules;
-  }, {});
-}
+// https://github.com/MiguelCastillo/bit-bundler/issues/81
+// function onlyChanged(src, cache) {
+//   return src.reduce(function(changedModules, item) {
+//     changedModules[item] = cache[item];
+//     return changedModules;
+//   }, {});
+// }
 
 module.exports = Context;
