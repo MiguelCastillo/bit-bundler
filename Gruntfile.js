@@ -12,5 +12,4 @@ module.exports = function(grunt) {
   grunt.initConfig(taskConfig);
 
   grunt.registerTask("build", ["eslint:all"]);
-  grunt.registerTask("test", ["connect:test", "mocha:test"]);
 };
