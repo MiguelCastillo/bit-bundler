@@ -74,8 +74,8 @@ describe("Bundler test suite", function() {
         },
         bundler: {
           plugins: [
-            splitBundle("dest/Y.js", { match: { fileName: "Y.js" }}),
-            splitBundle("dest/Z.js", { match: { fileName: "z.js" } })
+            splitBundle("test/dest/Y.js", { match: { fileName: "Y.js" }}),
+            splitBundle("test/dest/Z.js", { match: { fileName: "z.js" } })
           ]
         }
       };
@@ -107,20 +107,20 @@ describe("Bundler test suite", function() {
         expect(trimResult(result.bundle.result)).to.be.equal(`require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){/*eslint no-console: ["off"]*/var Y = require("./Y");function X() {  console.log("Say X");  this._y = new Y();}module.exports = new X();},{"./Y":2}]},{},[1])`);
       });
 
-      it("then splitter created a part for 'dest/Y.js'", function() {
-        expect(result.parts).to.have.property("dest/Y.js");
+      it("then splitter created a part for 'test/dest/Y.js'", function() {
+        expect(result.parts).to.have.property("test/dest/Y.js");
       });
 
-      it("then splitter created a part for 'dest/Y.js' with the correct bundle result", function() {
-        expect(trimResult(result.parts["dest/Y.js"].result)).to.be.equal(`require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({2:[function(require,module,exports){/*eslint no-console: ["off"]*/var z = require("./z");function Y() {  console.log("Say Y");  z.potatoes();}module.exports = Y;},{"./z":3}],3:[function(require,module,exports){/*eslint no-console: ["off"]*/module.exports = {  roast: "this",  potatoes: function() {    console.log("Say potatoes");  }};},{}]},{},[2])`);
+      it("then splitter created a part for 'test/dest/Y.js' with the correct bundle result", function() {
+        expect(trimResult(result.parts["test/dest/Y.js"].result)).to.be.equal(`require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({2:[function(require,module,exports){/*eslint no-console: ["off"]*/var z = require("./z");function Y() {  console.log("Say Y");  z.potatoes();}module.exports = Y;},{"./z":3}],3:[function(require,module,exports){/*eslint no-console: ["off"]*/module.exports = {  roast: "this",  potatoes: function() {    console.log("Say potatoes");  }};},{}]},{},[2])`);
       });
 
-      it("then splitter created a part for 'dest/Z.js'", function() {
-        expect(result.parts).to.have.property("dest/Z.js");
+      it("then splitter created a part for 'test/dest/Z.js'", function() {
+        expect(result.parts).to.have.property("test/dest/Z.js");
       });
 
-      it("then splitter created a part for 'dest/Z.js' with the correct bundle result", function() {
-        expect(trimResult(result.parts["dest/Z.js"].result)).to.be.equal(`require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({3:[function(require,module,exports){/*eslint no-console: ["off"]*/module.exports = {  roast: "this",  potatoes: function() {    console.log("Say potatoes");  }};},{}]},{},[3])`);
+      it("then splitter created a part for 'test/dest/Z.js' with the correct bundle result", function() {
+        expect(trimResult(result.parts["test/dest/Z.js"].result)).to.be.equal(`require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({3:[function(require,module,exports){/*eslint no-console: ["off"]*/module.exports = {  roast: "this",  potatoes: function() {    console.log("Say potatoes");  }};},{}]},{},[3])`);
       });
     });
   });

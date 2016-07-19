@@ -1,4 +1,5 @@
 /examples/dest
+/test/dest
 
 .DS_Store
 /dist
