@@ -3,3 +3,4 @@
 Gruntfile.js
 test
 /examples/dest
+.vscode
