@@ -39,18 +39,18 @@ $ npm install --save-dev bit-bundler
 
 The following example does a few things. It bundles JavaScript with node dependencies, transforms your assets with babel, creates multiple bundles, and watches for files changes.
 
-> By default, `bit-bundler` does not understand how to process [node dependencies](https://nodejs.org/api/modules.html#modules_all_together).  So we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to help us out here.
+> By default, `bit-bundler` does not understand how to process [node dependencies](https://nodejs.org/api/modules.html#modules_all_together).  So we will rely on [bit-loader-npm](https://github.com/MiguelCastillo/bit-loader-npm) to help us out here.
 
 ``` javascript
 var babel = require("babel-bits");
-var jsPlugin = require("bit-loader-js");
+var npmPlugin = require("bit-loader-npm");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
   watch: true,
   loader: {
-    plugins: jsPlugin({
+    plugins: npmPlugin({
       transform: babel
     })
   },
@@ -108,12 +108,12 @@ Head over to [examples](https://github.com/MiguelCastillo/bit-bundler/tree/maste
 
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var jsPlugin = require("bit-loader-js");
+var npmPlugin = require("bit-loader-npm");
 
 var bitbundler = new Bitbundler({
   loader: {
     log: "warn",
-    plugins: [ jsPlugin() ]
+    plugins: [ npmPlugin() ]
   },
   bundler: {
     printInfo: true
@@ -256,15 +256,16 @@ Once you have a context, you can call the method `execute` with a list of files 
 
 ## Loader Plugins
 
-Loader plugins enable loading and processing of your assets via transforms and other loader hooks. Generally speaking, you will be using at least [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to load your JavaScript assets and perhaps configure transforms.
+Loader plugins enable loading and processing of your assets via transforms and other loader hooks. Generally speaking, you will be using at least [bit-loader-npm](https://github.com/MiguelCastillo/bit-loader-npm) to load your JavaScript assets and perhaps configure transforms.
 
 List of core loader plugins:
 
-- [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) for loading and processing JavaScript assets
+- [bit-loader-npm](https://github.com/MiguelCastillo/bit-loader-npm) for loading and processing JavaScript assets with npm module support
 - [bit-loader-json](https://github.com/MiguelCastillo/bit-loader-json) for loading and processing JSON assets
 - [bit-loader-css](https://github.com/MiguelCastillo/bit-loader-css) for loading and processing css assets
 - [bit-loader-text](https://github.com/MiguelCastillo/bit-loader-text) for loading and processing text assets such as HTML
 - [bit-loader-builtins](https://github.com/MiguelCastillo/bit-loader-builtins) for handling built in node.js modules
+- [bit-loader-shimmer](https://github.com/MiguelCastillo/bit-loader-shimmer) for handling module shimming
 
 
 ## Loader Transforms
@@ -292,7 +293,7 @@ Bundler plugins enable processing of bundles. A useful bundler plugin is for spl
 
 `bit-bundler` uses [bit-loader](https://github.com/MiguelCastillo/bit-loader) as module loading system. With `bit-loader`'s configurable pipeline for loading and processing modules you can configure how modules are loaded, transformed, and how dependencies are processed. The output from `bit-loader` is a module graph wrapped in a `context` that is passed on to the bundler. The bundler can be configured, although it seldom needs to be. By default, the bundler is [js bundler](https://github.com/MiguelCastillo/bit-bundler-browserpack), which is a wapper for browserpack.
 
-> bit-bundler uses [node-browser-resolve](https://github.com/defunctzombie/node-browser-resolve) to support [node dependencies](https://nodejs.org/api/modules.html#modules_all_together) modules resolution. However, bit-bundler does not speak CJS (`require` statements) out of the box. But... For this, you can use [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js).
+> bit-bundler uses [node-browser-resolve](https://github.com/defunctzombie/node-browser-resolve) to support [node dependencies](https://nodejs.org/api/modules.html#modules_all_together) modules resolution. However, bit-bundler does not speak CJS (`require` statements) out of the box. But... For this, you can use [bit-loader-npm](https://github.com/MiguelCastillo/bit-loader-npm).
 
 
 ## Processing flow
