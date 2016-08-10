@@ -4,8 +4,8 @@
   "dependencies": {
     "belty": "^4.0.2",
     "bit-bundler-browserpack": "^3.0.2",
-    "bit-bundler-utils": "^2.0.3",
-    "bit-loader": "^4.0.0",
+    "bit-bundler-utils": "^2.0.4",
+    "bit-loader": "^4.0.1",
     "chokidar": "^1.6.0",
     "dis-isa": "^1.2.3",
     "glob": "^7.0.5",
@@ -27,7 +27,7 @@
     "babel-register": "^6.11.6",
     "bit-bundler-splitter": "^1.0.2",
     "bit-imports": "^2.0.5",
-    "bit-loader-js": "^1.0.0",
+    "bit-loader-js": "^1.1.1",
     "chai": "~3.5.0",
     "config-grunt-tasks": "^1.0.3",
     "eslint-tap": "^1.1.0",
@@ -40,7 +40,9 @@
     "sinon": "~1.17.5",
     "spromise": "^1.0.0"
   },
-  "browser": {},
+  "browser": {
+    
+  },
   "directories": {
     "test": "test"
   },
