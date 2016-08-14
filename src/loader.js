@@ -42,22 +42,20 @@ function configureResolve(options) {
   var resolver = resolvePath.configure({baseUrl: options.baseUrl});
 
   return function resolveName(meta) {
-    return resolver(meta).then(function(result) {
-      if (!result) {
-        if (options.ignoreNotFound) {
-          return {
-            path: ""
-          };
-        }
-        else {
-          var error = buildModuleNotFoundError(meta);
-          logger.error(error);
-          throw new Error(error);
-        }
-      }
+    function handleError(err) {
+      var message = err && err.message;
 
-      return result;
-    });
+      if (message && message.indexOf("Cannot find module") === 0 && options.ignoreNotFound) {
+        logger.warn("Ignored module not found", buildModuleNotFoundError(meta));
+      }
+      else {
+        err = buildModuleNotFoundError(meta);
+        logger.error(err);
+        throw new Error(err);
+      }
+    }
+
+    return resolver(meta).then(utils.identity, handleError);
   };
 }
 
@@ -65,19 +63,14 @@ function configureResolve(options) {
 function configureFetch(options) {
   return function fetchModule(meta) {
     function handleError(err) {
-      if (options.ignoreNotFound) {
-        return {
-          source: ""
-        };
-      }
-      else {
-          var error = buildModuleNotFoundError(meta, err);
-          logger.error(error);
-          throw new Error(error);
-      }
+      var error = buildModuleNotFoundError(meta, err);
+      logger.error(error);
+      throw new Error(error);
     }
 
-    return readFile(meta).then(utils.identity, handleError);
+    return !meta.path && options.ignoreNotFound ?
+      Promise.resolve({ source: "" }) :
+      readFile(meta).then(utils.identity, handleError);
   };
 }
 
