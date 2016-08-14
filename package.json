@@ -1,6 +1,6 @@
 {
   "name": "bit-bundler",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "dependencies": {
     "belty": "^4.0.3",
     "bit-bundler-browserpack": "^3.0.2",
@@ -40,9 +40,7 @@
     "sinon": "~1.17.5",
     "spromise": "^1.0.0"
   },
-  "browser": {
-    
-  },
+  "browser": {},
   "directories": {
     "test": "test"
   },
