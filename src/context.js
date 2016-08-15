@@ -1,5 +1,4 @@
 var utils = require("belty");
-var types = require("dis-isa");
 var File = require("src-dest");
 var bundleWriter = require("./bundleWriter");
 
@@ -94,12 +93,8 @@ Context.prototype.removePart = function(name) {
 };
 
 Context.prototype.addExclude = function(exclude) {
-  if (!types.isArray(exclude)) {
-    exclude = [exclude];
-  }
-
   exclude = this.exclude
-    .concat(exclude)
+    .concat(utils.toArray(exclude))
     .reduce(function(container, item) {
       container[item] = true;
       return container;
