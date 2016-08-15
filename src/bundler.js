@@ -1,4 +1,4 @@
-var types = require("dis-isa");
+var utils = require("belty");
 var jsBundler = require("bit-bundler-browserpack");
 var configurator = require("setopt")();
 
@@ -31,11 +31,7 @@ Bundler.prototype.plugins = function(plugins) {
     throw new TypeError("Must provide plugins to register");
   }
 
-  if (!types.isArray(plugins)) {
-    plugins = [plugins];
-  }
-
-  this._plugins = this._plugins.concat(plugins);
+  this._plugins = this._plugins.concat(utils.toArray(plugins));
   return this;
 };
 
