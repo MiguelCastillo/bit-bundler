@@ -46,13 +46,18 @@ function configureResolve(options) {
       var message = err && err.message;
 
       if (message && message.indexOf("Cannot find module") === 0 && options.ignoreNotFound) {
-        logger.warn("Ignored module not found", buildModuleNotFoundError(meta));
+        logger.warn("Module not found", buildModuleNotFoundError(meta));
       }
       else {
         err = buildModuleNotFoundError(meta);
         logger.error(err);
         throw new Error(err);
       }
+
+      return {
+        id: "@notfound",
+        path: ""
+      };
     }
 
     return resolver(meta).then(utils.identity, handleError);
@@ -68,7 +73,7 @@ function configureFetch(options) {
       throw new Error(error);
     }
 
-    return !meta.path && options.ignoreNotFound ?
+    return meta.id === "@notfound" && options.ignoreNotFound ?
       Promise.resolve({ source: "" }) :
       readFile(meta).then(utils.identity, handleError);
   };
