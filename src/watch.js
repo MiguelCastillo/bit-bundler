@@ -18,6 +18,7 @@ function watch(context, options) {
   var nextPaths = {}, inProgress;
   var filesToWatch = Object.keys(context.cache).concat(include.src);
   var watcher = chokidar.watch(filesToWatch, settings);
+  var watching = utils.arrayToObject(filesToWatch);
 
   console.log("Watching...");
 
@@ -27,9 +28,11 @@ function watch(context, options) {
     .on("unlink", onDelete);
 
   function onChange(path) {
-    var paths = utils.toArray(path).filter(function(path) {
-      return context.cache.hasOwnProperty(path);
-    });
+    var paths = utils
+      .toArray(path)
+      .filter(function(path) {
+        return context.cache.hasOwnProperty(path);
+      });
 
     if (inProgress) {
       paths.forEach(function(path) {
@@ -49,6 +52,16 @@ function watch(context, options) {
           console.log("[updated]", path);
         });
 
+        var newFiles = Object
+          .keys(ctx.lastUpdatedModules)
+          .filter(function(moduleId) {
+            return !watching[moduleId];
+          });
+
+        if (newFiles.length) {
+          watcher.add(newFiles);
+        }
+
         executePending();
       }, function(err) {
         logError(err);
@@ -62,7 +75,7 @@ function watch(context, options) {
 
   function onAdd(path) {
     if (context.cache.hasOwnProperty(path) || include.src.indexOf(path) !== -1) {
-      console.log("[watched]", path);
+      console.log("[watching]", path);
     }
   }
 
