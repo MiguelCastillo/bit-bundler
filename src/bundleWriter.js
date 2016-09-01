@@ -2,6 +2,7 @@ var fs = require("fs");
 var path = require("path");
 var mkdirp = require("mkdirp");
 var types = require("dis-isa");
+var logger = require("loggero").create("bundler/writer");
 
 function bundleWriter(dest) {
   var stream = streamFactory(dest);
@@ -13,7 +14,7 @@ function bundleWriter(dest) {
       .keys(context.parts)
       .map(function(dest) {
         if (!context.parts[dest]) {
-          console.log(dest, "is an empty bundle part");
+          logger.log(dest, "is an empty bundle part");
         }
 
         if (context.parts[dest]) {

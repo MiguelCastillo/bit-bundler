@@ -2,6 +2,7 @@ var utils = require("belty");
 var chokidar = require("chokidar");
 var File = require("src-dest");
 var logError = require("./logError");
+var logger = require("loggero").create("bundler/watch");
 
 function watch(context, options) {
   if (options === true || !options) {
@@ -20,7 +21,7 @@ function watch(context, options) {
   var watcher = chokidar.watch(filesToWatch, settings);
   var watching = utils.arrayToObject(filesToWatch);
 
-  console.log("Watching...");
+  logger.log("watching started...");
 
   watcher
     .on("add", onAdd)
@@ -49,7 +50,7 @@ function watch(context, options) {
       context.execute(paths).then(function(ctx) {
         context = ctx;
         paths.forEach(function(path) {
-          console.log("[updated]", path);
+          logger.log("[updated]", path);
         });
 
         var newFiles = Object
@@ -69,19 +70,19 @@ function watch(context, options) {
       });
     }
     else {
-      console.log("[changed]", path);
+      logger.log("[changed]", path);
     }
   }
 
   function onAdd(path) {
     if (context.cache.hasOwnProperty(path) || include.src.indexOf(path) !== -1) {
-      console.log("[watching]", path);
+      logger.log("[watching]", path);
     }
   }
 
   function onDelete(path) {
     if (context.cache.hasOwnProperty(path) || include.src.indexOf(path) !== -1) {
-      console.warn("[removed]", path);
+      logger.log("[removed]", path);
     }
   }
 

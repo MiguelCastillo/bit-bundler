@@ -10,32 +10,11 @@ function Loader(options) {
     resolve: configureResolve(options),
     fetch: configureFetch(options)
   }, options));
-
-  this.log(options.log);
 }
 
 
 Loader.prototype = Object.create(Bitloader.prototype);
 Loader.prototype.constructor = Loader;
-
-
-Loader.prototype.log = function(level) {
-  var logger = Bitloader.logger;
-
-  if (level) {
-    if (level === true) {
-      level = "info";
-    }
-
-    logger.enable();
-    logger.level(logger.levels[level]);
-  }
-  else {
-    logger.disable();
-  }
-
-  return this;
-};
 
 
 function configureResolve(options) {

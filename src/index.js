@@ -6,6 +6,10 @@ var Bundler = require("./bundler");
 var Context = require("./context");
 var bundleWriter = require("./bundleWriter");
 var watch = require("./watch");
+var types = require("dis-isa");
+var Logger = require("loggero");
+var logger = Logger.create("bundler/runner");
+var logStream = require("./logStream");
 
 function Runner(options) {
   if (!(this instanceof Runner)) {
@@ -14,6 +18,7 @@ function Runner(options) {
 
   this.options = options || {};
   this.context = null;
+  configureLogger(this.options.log);
 }
 
 Runner.prototype.bundle = function(files) {
@@ -51,7 +56,7 @@ function createBundler(options) {
 
 function setContext(ctx) {
   if (!(ctx instanceof Context)) {
-    console.warn("Context was not returned after bundling");
+    logger.error("Context was not returned after bundling");
   }
 
   this.context = ctx;
@@ -66,6 +71,28 @@ function initWatch(ctx) {
 
   return ctx;
 }
+
+function configureLogger(options) {
+  if (options) {
+    if (options === true) {
+      options = {
+        level: "info"
+      };
+    }
+    else if (types.isString(options)) {
+      options = {
+        level: options
+      };
+    }
+
+    Logger.enableAll();
+    Logger.level(Logger.levels[options.level]);
+    Logger.pipe(options.stream || logStream);
+  }
+  else {
+    Logger.disable();
+  }
+};
 
 Runner.dest = bundleWriter;
 Runner.watch = watch;
