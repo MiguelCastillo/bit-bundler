@@ -4,6 +4,7 @@ var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
+  log: "info",
   loader: {
     plugins: jsPlugin({
       transform: babel
