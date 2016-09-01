@@ -128,6 +128,7 @@ describe("Bundler test suite", function() {
 
 function trimResult(data) {
   return data
+    .toString()
     .replace(/\n/g, "")
     .replace(/\/\/# sourceMappingURL=.*/, "");
 }

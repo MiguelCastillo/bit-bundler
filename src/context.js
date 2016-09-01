@@ -1,6 +1,7 @@
 var utils = require("belty");
 var File = require("src-dest");
 var bundleWriter = require("./bundleWriter");
+var logger = require("loggero").create("bundler/context");
 
 var defaults = {
   file: null,
@@ -112,7 +113,7 @@ function flattenModules(loader, modules) {
 
   while (stack.length !== i) {
     if (!stack[i].id) {
-      console.warn("not found:", stack[i]);
+      logger.warn("not found:", stack[i]);
     }
 
     id = stack[i++].id;

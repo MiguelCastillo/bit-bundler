@@ -3,12 +3,13 @@
   "version": "2.1.7",
   "dependencies": {
     "belty": "^4.0.3",
-    "bit-bundler-browserpack": "^3.0.2",
+    "bit-bundler-browserpack": "^3.1.0",
     "bit-bundler-utils": "^3.0.1",
     "bit-loader": "^4.0.2",
+    "chalk": "^1.1.3",
     "chokidar": "^1.6.0",
     "dis-isa": "^1.2.3",
-    "glob": "^7.0.5",
+    "glob": "^7.0.6",
     "loggero": "^2.0.1",
     "mkdirp": "^0.5.1",
     "p-stream": "^1.0.3",
@@ -22,11 +23,11 @@
   },
   "devDependencies": {
     "babel-bits": "^1.0.1",
-    "babel-core": "^6.13.2",
-    "babel-preset-es2015": "^6.13.2",
-    "babel-register": "^6.11.6",
+    "babel-core": "^6.14.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-register": "^6.14.0",
     "bit-bundler-splitter": "^1.0.3",
-    "bit-imports": "^2.0.6",
+    "bit-imports": "^2.0.8",
     "bit-loader-js": "^1.2.0",
     "chai": "~3.5.0",
     "config-grunt-tasks": "^1.0.3",
@@ -40,9 +41,7 @@
     "sinon": "~1.17.5",
     "spromise": "^1.0.0"
   },
-  "browser": {
-    
-  },
+  "browser": {},
   "directories": {
     "test": "test"
   },
