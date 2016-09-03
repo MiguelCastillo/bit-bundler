@@ -21,7 +21,7 @@ function watch(context, options) {
   var watcher = chokidar.watch(filesToWatch, settings);
   var watching = utils.arrayToObject(filesToWatch);
 
-  logger.log("watching started...");
+  logger.log("started");
 
   watcher
     .on("add", onAdd)
@@ -50,7 +50,7 @@ function watch(context, options) {
       context.execute(paths).then(function(ctx) {
         context = ctx;
         paths.forEach(function(path) {
-          logger.log("[updated]", path);
+          logger.log("updated", path);
         });
 
         var newFiles = Object
@@ -70,19 +70,19 @@ function watch(context, options) {
       });
     }
     else {
-      logger.log("[changed]", path);
+      logger.log("changed", path);
     }
   }
 
   function onAdd(path) {
     if (context.cache.hasOwnProperty(path) || include.src.indexOf(path) !== -1) {
-      logger.log("[watching]", path);
+      logger.log("watching", path);
     }
   }
 
   function onDelete(path) {
     if (context.cache.hasOwnProperty(path) || include.src.indexOf(path) !== -1) {
-      logger.log("[removed]", path);
+      logger.log("removed", path);
     }
   }
 

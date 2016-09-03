@@ -2,9 +2,12 @@ var jsPlugin = require("bit-loader-js");
 var babel = require("babel-bits");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
+var buildstatsStream = require("bit-bundler/streams/buildstats");
 
 var bitbundler = new Bitbundler({
-  log: "info",
+  log: {
+    stream: buildstatsStream()
+  },
   loader: {
     plugins: jsPlugin({
       transform: babel
