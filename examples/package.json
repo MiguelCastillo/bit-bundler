@@ -9,6 +9,7 @@
   "author": "Miguel Castillo <manchagnu@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "JSONStream": "^1.1.4",
     "babel-bits": "^1.0.1",
     "babel-core": "^6.13.2",
     "babel-preset-es2015": "^6.13.2",

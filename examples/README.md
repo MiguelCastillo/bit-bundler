@@ -7,6 +7,7 @@
 - [Bundle JavaScript and transform it with Babel??](#bundle-javascript-and-transform-it-with-babel)
 - [How about splitting bundles??](#how-about-splitting-bundles)
 - [Some file watching, please!](#some-file-watching-please)
+- [Custom stream to log messages as JSONLines](#custom-stream-to-log-messages-as-jsonlines)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -211,4 +212,44 @@ bitbundler
 Run:
 ```
 $ node watch
+```
+
+
+#### Custom stream to log messages as JSONLines
+
+This is very useful if you are looking to log messages to some external data store.
+
+Setup:
+``` javascript
+var Bitbundler = require("bit-bundler");
+var jsPlugin = require("bit-loader-js");
+var JSONStream = require("JSONStream");
+
+var logStream = JSONStream.stringify(false);
+logStream.pipe(process.stdout);
+
+var bitbundler = new Bitbundler({
+  log: {
+    stream: logStream
+  },
+  loader: {
+    plugins: jsPlugin()
+  }
+});
+
+bitbundler
+  .bundle({
+    src: "src/main.js",
+    dest: "dest/jsplugin.js"
+  })
+  .then(function() {
+    console.log("jsplugin bundle complete");
+  }, function(err) {
+    console.log(err && err.stack ? err.stack : err);
+  });
+```
+
+Run:
+```
+$ node stream
 ```
