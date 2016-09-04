@@ -9,6 +9,7 @@ var watch = require("./watch");
 var types = require("dis-isa");
 var Logger = require("loggero");
 var logger = Logger.create("bundler/runner");
+var Bitloader = require("bit-loader");
 
 function Runner(options) {
   if (!(this instanceof Runner)) {
@@ -17,7 +18,9 @@ function Runner(options) {
 
   this.options = options || {};
   this.context = null;
-  configureLogger(this.options.log);
+
+  configureLogger(this.options.log, Logger);
+  configureLogger(this.options.log, Bitloader.logger);
 }
 
 Runner.prototype.bundle = function(files) {
@@ -71,7 +74,7 @@ function initWatch(ctx) {
   return ctx;
 }
 
-function configureLogger(options) {
+function configureLogger(options, Logger) {
   if (options) {
     if (options === true) {
       options = {
