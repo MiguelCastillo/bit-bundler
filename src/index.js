@@ -9,7 +9,6 @@ var watch = require("./watch");
 var types = require("dis-isa");
 var Logger = require("loggero");
 var logger = Logger.create("bundler/runner");
-var logStream = require("./logStream");
 
 function Runner(options) {
   if (!(this instanceof Runner)) {
@@ -86,8 +85,11 @@ function configureLogger(options) {
     }
 
     Logger.enableAll();
-    Logger.level(Logger.levels[options.level]);
-    Logger.pipe(options.stream || logStream);
+    Logger.level(Logger.levels[options.level || "info"]);
+
+    if (options.stream) {
+      Logger.pipe(options.stream);
+    }
   }
   else {
     Logger.disable();

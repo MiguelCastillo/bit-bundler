@@ -34,6 +34,8 @@ Context.prototype.configure = function(options) {
 Context.prototype.execute = function(files) {
   var context = this;
 
+  logger.log("build-start", files);
+
   return context.loader
     .fetch(files)
     .then(function(modules) {
@@ -59,6 +61,7 @@ Context.prototype.execute = function(files) {
     })
     .then(function(context) {
       bundleWriter(context.file.dest)(context);
+      logger.log("build-end", context);
       return context;
     });
 };
@@ -113,7 +116,7 @@ function flattenModules(loader, modules) {
 
   while (stack.length !== i) {
     if (!stack[i].id) {
-      logger.warn("not found:", stack[i]);
+      logger.warn("not-found", stack[i]);
     }
 
     id = stack[i++].id;
