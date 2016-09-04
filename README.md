@@ -2,7 +2,7 @@
 
 > Generate application bundles with ease.
 
-But we already a bunch of bundlers out there... Why another one???  `bit-bundler` aims to simplify the process of generating application bundles with a fluid and intuitive API. The problem we are trying to solve is around setup complexity while providing a flexible environment that scales to meet more intricate requirements. No unwieldy streams or unconventional config string params. Just JSON, functions, and Promises.
+But we already a bunch of bundlers out there... Why another one???  `bit-bundler` aims to simplify the process of generating application bundles with a fluid and intuitive API. The problem we are trying to solve is around setup complexity while providing a flexible environment that scales to meet more intricate requirements.
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
