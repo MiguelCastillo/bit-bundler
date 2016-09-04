@@ -3,10 +3,15 @@ var babel = require("babel-bits");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
 var buildstatsStream = require("bit-bundler/streams/buildstats");
+var warningsStream = require("bit-bundler/streams/warnings");
+var watchStream = require("bit-bundler/streams/watch");
+
+var logStream = watchStream();
+logStream.pipe(buildstatsStream()).pipe(warningsStream());
 
 var bitbundler = new Bitbundler({
   log: {
-    stream: buildstatsStream()
+    stream: logStream
   },
   loader: {
     plugins: jsPlugin({

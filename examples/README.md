@@ -178,10 +178,15 @@ var babel = require("babel-bits");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
 var buildstatsStream = require("bit-bundler/streams/buildstats");
+var warningsStream = require("bit-bundler/streams/warnings");
+var watchStream = require("bit-bundler/streams/watch");
+
+var logStream = watchStream();
+logStream.pipe(buildstatsStream()).pipe(warningsStream());
 
 var bitbundler = new Bitbundler({
   log: {
-    stream: buildstatsStream()
+    stream: logStream
   },
   loader: {
     plugins: jsPlugin({
@@ -217,7 +222,7 @@ $ node watch
 
 #### Custom stream to log messages as JSONLines
 
-This is very useful if you are looking to log messages to some external data store.
+This is very useful if you are looking to log messages to some external data store. Also, take a look at the watch example to see how to use a few of the built in logging streams.
 
 Setup:
 ``` javascript
