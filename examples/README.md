@@ -7,6 +7,7 @@
 - [Bundle JavaScript and transform it with Babel??](#bundle-javascript-and-transform-it-with-babel)
 - [How about splitting bundles??](#how-about-splitting-bundles)
 - [Some file watching, please!](#some-file-watching-please)
+- [Custom stream to log messages as JSONLines](#custom-stream-to-log-messages-as-jsonlines)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
