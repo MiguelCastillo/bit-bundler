@@ -90,37 +90,23 @@ Head over to [examples](https://github.com/MiguelCastillo/bit-bundler/tree/maste
 
 `bit-bundler` constructor.  Valid options are:
 
+- **`log`** { string | boolean | object } (error) - By default only errors are logged. You can change the log level by specifying one of the following values `'info'`, `'warn'`, `'error'`, or completely disable it with `false`. You can futher customize logging by specifying an object with a stream to write log messages to. When you specify an object, logging level is changed to log *all* messages.
+  - **`stream`** { Stream } - Writable stream to write log messages to. There are a couple of sample streams in the [streams directory](https://github.com/MiguelCastillo/bit-bundler/tree/master/streams).
+  - **`level`** { string } - Log level to fine tune the types of messages that can be logged. Valid values are `'info'`, `'warn'`, `'error'`.
+
 - **`loader`** { object } - Options to be passed on to the module loader.
   - **`plugins`** { Array[Plugin] | Plugin } - Plugins to be registerer with the module loader. These plugins are for procesing modules before they are bundled.
   - **`ignoreNotFound`** { boolean } (false) - Flag to ignore modules not found on disk. When set to true, these modules will just be empty entries in the bundle.
-  - **`log`** { string } (error) - Log level. By default only errors are logged. Valid values are `'info'`, `'warn'`, `'error'`, and `false`.
 
 - **`bundler`** { object } - Options to be passed on to the bundler.
   - **`sourceMap`** { boolean } (true) - Enables/disables the generation of inline source maps.
   - **`plugins`** { Array[Plugin] | Plugin } - Plugins to be registered with the bundler. Plugins can be used for processing the module graph in order to create and manipulate bundles.
   - **`umd`** { string } - String name for the `UMD` module to be exported. `UMD` is a configuration that allows bundles to run in node.js, requirejs, and traditional script tags. If running in the browser, provide this setting for maximum compatibility. The name you provide is exported so that other modules can consume the bundle using that name. [This is some literature on it](https://github.com/umdjs/umd).
-  - **`printInfo`** { boolean } (false) - Flag to print to console basic information about the modules in bundles.
   - **`filePathAsId`** { boolean } (false) - Flag to tell the bundler to use modules' full path as ids instead of numeric values when generating bundles.
   - **`provider`** { { function: bundle } } - Option for defining a custom bundler to process the module graph. By default, this is set to [js bundler](https://github.com/MiguelCastillo/bit-bundler-browserpack). But you can override this if you would like to provide a custom way of generating bundles.
 
 - **`watch`** { boolean | object } (false) - Flag to enable file watching functionality. You can optionally pass in an object to specify settings for [chokidar](https://github.com/paulmillr/chokidar).
 
-
-``` javascript
-var Bitbundler = require("bit-bundler");
-var jsPlugin = require("bit-loader-js");
-
-var bitbundler = new Bitbundler({
-  loader: {
-    log: "warn",
-    plugins: [ jsPlugin() ]
-  },
-  bundler: {
-    printInfo: true
-  },
-  watch: true
-});
-```
 
 ### bundle(files) : Promise
 
@@ -168,7 +154,8 @@ Static factory method that configures `bit-bundler` and bundles files. In contra
 ``` javascript
 var Bitbundler = require("bit-bundler");
 
-Bitbundler.bundle({
+Bitbundler
+  .bundle({
     src: ["path/to/file.js"],
     dest: "output/bundle.js"
   }, {
@@ -209,7 +196,8 @@ Vanilla setup.
 ``` javascript
 var Bitbundler = require("bit-bundler");
 
-Bitbundler.bundle({
+Bitbundler
+  .bundle({
     src: ["path/to/file.js"],
     dest: "output/bundle.js"
   })
@@ -224,7 +212,8 @@ Setup with options for [chokidar](https://github.com/paulmillr/chokidar).
 ``` javascript
 var Bitbundler = require("bit-bundler");
 
-Bitbundler.bundle({
+Bitbundler
+  .bundle({
     src: ["path/to/file.js"],
     dest: "output/bundle.js"
   })
