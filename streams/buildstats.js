@@ -1,4 +1,5 @@
 var es = require("event-stream");
+var filesize = require("filesize");
 
 function buildstatsStreamFactory() {
   var startChunk;
@@ -9,7 +10,22 @@ function buildstatsStreamFactory() {
         startChunk = chunk;
       }
       else if (chunk.data[0] === "build-end") {
-        console.log("build time: " + (chunk.date - startChunk.date) + "ms");
+        console.log("build time:", (chunk.date - startChunk.date) + "ms");
+
+        var context = chunk.data[1];
+
+        if (context.bundle && context.bundle.result) {
+          console.log("bundle:", filesize(context.bundle.result.length));
+        }
+
+        Object
+          .keys(context.parts)
+          .filter(function(dest) {
+            return context.parts[dest];
+          })
+          .forEach(function(dest) {
+            console.log("bundle part", "[" + dest + "]:", filesize(context.parts[dest].result.length));
+          });
       }
     }
 
