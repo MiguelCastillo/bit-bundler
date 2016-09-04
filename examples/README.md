@@ -3,11 +3,23 @@
 **Table of Contents**
 
 - [Most basic example](#most-basic-example)
+  - [Setup:](#setup)
+  - [Run:](#run)
 - [Bundle JavaScript with node.js dependencies](#bundle-javascript-with-nodejs-dependencies)
+  - [Setup:](#setup-1)
+  - [Run:](#run-1)
 - [Bundle JavaScript and transform it with Babel??](#bundle-javascript-and-transform-it-with-babel)
+  - [Setup:](#setup-2)
+  - [Run:](#run-2)
 - [How about splitting bundles??](#how-about-splitting-bundles)
+  - [Setup:](#setup-3)
+  - [Run:](#run-3)
 - [Some file watching, please!](#some-file-watching-please)
+  - [Setup:](#setup-4)
+  - [Run:](#run-4)
 - [Custom stream to log messages as JSONLines](#custom-stream-to-log-messages-as-jsonlines)
+  - [Setup:](#setup-5)
+  - [Run:](#run-5)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -21,11 +33,11 @@ $ node basic
 $ node jsplugin
 ```
 
-#### Most basic example
+## Most basic example
 
 that loads `src/main.js` and bundles it.
 
-Setup:
+### Setup:
 ``` javascript
 var Bitbundler = require("bit-bundler");
 var bitbundler = new Bitbundler();
@@ -42,18 +54,16 @@ bitbundler
   });
 ```
 
-Run:
+### Run:
 ```
 $ node basic
 ```
 
-#### Bundle JavaScript with node.js dependencies
+## Bundle JavaScript with node.js dependencies
 
 By default, `bit-bundler` does not understand how to process module dependencies.  So we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to help us out here.
 
-> Note: Running this example will fail because the example is written with ES2015 features, so it requires transpiling. We illustrate how to configure [babel](http://babeljs.io/) a little later to tie this whole thing together.
-
-Setup:
+### Setup:
 ``` javascript
 var jsPlugin = require("bit-loader-js");
 var Bitbundler = require("bit-bundler");
@@ -76,16 +86,16 @@ bitbundler
   });
 ```
 
-Run:
+### Run:
 ```
 $ node jsplugin
 ```
 
-#### Bundle JavaScript and transform it with Babel??
+## Bundle JavaScript and transform it with Babel??
 
 Yes please! This setup relies on a helper module called [babel-bits](https://github.com/MiguelCastillo/babel-bits).
 
-Setup:
+### Setup:
 ``` javascript
 var jsPlugin = require("bit-loader-js");
 var babel = require("babel-bits");
@@ -116,19 +126,19 @@ bitbundler
   });
 ```
 
-Run:
+### Run:
 ```
 $ node babel
 ```
 
 
-#### How about splitting bundles??
+## How about splitting bundles??
 
 Yup, use the bundler plugin [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) to help us here.
 
 > You can configure multiple bundle splitters with matching rules to generate multiple bundles.
 
-Setup:
+### Setup:
 ``` javascript
 var jsPlugin = require("bit-loader-js");
 var babel = require("babel-bits");
@@ -161,17 +171,17 @@ bitbundler
   });
 ```
 
-Run:
+### Run:
 ```
 $ node splitter
 ```
 
 
-#### Some file watching, please!
+## Some file watching, please!
 
 Probably the most common setup would be to include file watching functionality. This setup is pretty much the same as the splitter example, but it just passed `watch: true` to enable file watching.
 
-Setup:
+### Setup:
 ``` javascript
 var jsPlugin = require("bit-loader-js");
 var babel = require("babel-bits");
@@ -214,17 +224,17 @@ bitbundler
   });
 ```
 
-Run:
+### Run:
 ```
 $ node watch
 ```
 
 
-#### Custom stream to log messages as JSONLines
+## Custom stream to log messages as JSONLines
 
 This is very useful if you are looking to log messages to some external data store. Also, take a look at the watch example to see how to use a few of the built in logging streams.
 
-Setup:
+### Setup:
 ``` javascript
 var Bitbundler = require("bit-bundler");
 var jsPlugin = require("bit-loader-js");
@@ -254,7 +264,7 @@ bitbundler
   });
 ```
 
-Run:
+### Run:
 ```
 $ node stream
 ```
