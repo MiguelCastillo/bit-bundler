@@ -4,26 +4,24 @@ var mkdirp = require("mkdirp");
 var types = require("dis-isa");
 var logger = require("loggero").create("bundler/writer");
 
-function bundleWriter(dest) {
-  var stream = streamFactory(dest);
-
+function bundleWriter(defaultDest) {
   return function writerDelegate(context) {
     var file = context.file;
 
     Object
       .keys(context.parts)
-      .map(function(dest) {
+      .forEach(function(dest) {
         if (!context.parts[dest]) {
           logger.log(dest, "is an empty bundle part");
         }
 
         if (context.parts[dest]) {
-          writeBundle(context.parts[dest], stream(dest));
+          writeBundle(context.parts[dest], streamFactory(dest));
         }
       });
 
     if (context.bundle) {
-      writeBundle(context.bundle, stream(file.dest));
+      writeBundle(context.bundle, streamFactory(file.dest || defaultDest));
     }
 
     return context;
@@ -42,15 +40,12 @@ function fileStream(dest) {
 }
 
 function streamFactory(dest) {
-  return function streamFactoryDelegate(out) {
-    out = out || dest;
+  if (types.isFunction(dest)) {
+    dest = dest();
+  }
 
-    if (types.isFunction(out)) {
-      out = out();
-    }
-
-    return types.isString(out) ? fileStream(out) : out;
-  };
+  return types.isString(dest) ? fileStream(dest) : dest;
 }
 
+bundleWriter.stream = streamFactory;
 module.exports = bundleWriter;
