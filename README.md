@@ -103,7 +103,6 @@ Head over to [examples](https://github.com/MiguelCastillo/bit-bundler/tree/maste
   - **`plugins`** { Array[Plugin] | Plugin } - Plugins to be registered with the bundler. Plugins can be used for processing the module graph in order to create and manipulate bundles.
   - **`umd`** { string } - String name for the `UMD` module to be exported. `UMD` is a configuration that allows bundles to run in node.js, requirejs, and traditional script tags. If running in the browser, provide this setting for maximum compatibility. The name you provide is exported so that other modules can consume the bundle using that name. [This is some literature on it](https://github.com/umdjs/umd).
   - **`filePathAsId`** { boolean } (false) - Flag to tell the bundler to use modules' full path as ids instead of numeric values when generating bundles.
-  - **`provider`** { { function: bundle } } - Option for defining a custom bundler to process the module graph. By default, this is set to [js bundler](https://github.com/MiguelCastillo/bit-bundler-browserpack). But you can override this if you would like to provide a custom way of generating bundles.
 
 - **`watch`** { boolean | object } (false) - Flag to enable file watching functionality. You can optionally pass in an object to specify settings for [chokidar](https://github.com/paulmillr/chokidar).
 
