@@ -15,6 +15,7 @@
     "babel-preset-es2015": "^6.14.0",
     "bit-bundler": "^3.0.0",
     "bit-bundler-splitter": "^1.0.3",
+    "bit-eslint": "^1.0.1",
     "bit-loader-js": "^1.2.0"
   }
 }
