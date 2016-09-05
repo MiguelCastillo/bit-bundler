@@ -1,13 +1,14 @@
 var jsPlugin = require("bit-loader-js");
-var babel = require("babel-bits");
+var babelPlugin = require("bit-loader-babel");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
   loader: {
-    plugins: jsPlugin({
-      transform: babel
-    })
+    plugins: [
+      jsPlugin(),
+      babelPlugin()
+    ]
   },
   bundler: {
     plugins: [

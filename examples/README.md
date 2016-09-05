@@ -93,24 +93,25 @@ $ node jsplugin
 
 ## Bundle JavaScript and transform it with Babel??
 
-Yes please! This setup relies on a helper module called [babel-bits](https://github.com/MiguelCastillo/babel-bits).
+Yes please! This setup relies on a helper module called [bit-loader-babel](https://github.com/MiguelCastillo/bit-loader-babel).
 
 ### Setup
 ``` javascript
 var jsPlugin = require("bit-loader-js");
-var babel = require("babel-bits");
+var babelPlugin = require("bit-loader-babel");
 var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
   loader: {
-    plugins: jsPlugin({
-      transform: babel.config({
+    plugins: [
+      jsPlugin(),
+      babelPlugin({
         options: {
           presets: ["es2015"],
           sourceMap: "inline"
         }
       })
-    })
+    ]
   }
 });
 
@@ -141,15 +142,16 @@ Yup, use the bundler plugin [bit-bundler-splitter](https://github.com/MiguelCast
 ### Setup
 ``` javascript
 var jsPlugin = require("bit-loader-js");
-var babel = require("babel-bits");
+var babelPlugin = require("bit-loader-babel");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
   loader: {
-    plugins: jsPlugin({
-      transform: babel
-    })
+    plugins: [
+      jsPlugin(),
+      babelPlugin()
+    ]
   },
   bundler: {
     plugins: [
@@ -184,7 +186,7 @@ Probably the most common setup would be to include file watching functionality. 
 ### Setup
 ``` javascript
 var jsPlugin = require("bit-loader-js");
-var babel = require("babel-bits");
+var babelPlugin = require("bit-loader-babel");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
 var buildstatsStream = require("bit-bundler/streams/buildstats");
@@ -199,9 +201,10 @@ var bitbundler = new Bitbundler({
     stream: logStream
   },
   loader: {
-    plugins: jsPlugin({
-      transform: babel
-    })
+    plugins: [
+      jsPlugin(),
+      babelPlugin()
+    ]
   },
   bundler: {
     plugins: [
