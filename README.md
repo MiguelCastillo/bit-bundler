@@ -42,7 +42,7 @@ The following example does a few things. It bundles JavaScript with node depende
 > By default, `bit-bundler` does not understand how to process [node dependencies](https://nodejs.org/api/modules.html#modules_all_together).  So we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to help us out here.
 
 ``` javascript
-var babel = require("babel-bits");
+var babelPlugin = require("bit-loader-babel");
 var jsPlugin = require("bit-loader-js");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
@@ -50,9 +50,10 @@ var Bitbundler = require("bit-bundler");
 var bitbundler = new Bitbundler({
   watch: true,
   loader: {
-    plugins: jsPlugin({
-      transform: babel
-    })
+    plugins: [
+      jsPlugin(),
+      babelPlugin()
+    ]
   },
   bundler: {
     plugins: [
