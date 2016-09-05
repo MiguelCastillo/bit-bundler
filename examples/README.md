@@ -20,6 +20,9 @@
 - [Custom stream to log messages as JSONLines](#custom-stream-to-log-messages-as-jsonlines)
   - [Setup](#setup-5)
   - [Run](#run-5)
+- [ESLint plugin](#eslint-plugin)
+  - [Setup](#setup-6)
+  - [Run](#run-6)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -270,4 +273,37 @@ bitbundler
 ### Run
 ```
 $ node stream
+```
+
+## ESLint plugin
+
+### Setup
+``` javascript
+var Bitbundler = require("bit-bundler");
+var jsPlugin = require("bit-loader-js");
+var eslintPlugin = require("bit-eslint");
+
+var bitloader = new Bitbundler({
+  watch: true,
+  loader: {
+    plugins: [
+      jsPlugin(),
+      eslintPlugin()
+    ]
+  }
+});
+
+bitloader
+  .bundle({
+    src: "src/main.js",
+    dest: "dest/eslint-build.js"
+  })
+  .then(function() {
+    console.log("eslint bundle done");
+  });
+```
+
+### Run
+```
+$ node eslint
 ```

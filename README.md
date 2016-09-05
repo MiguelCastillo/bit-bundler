@@ -248,6 +248,7 @@ Loader plugins enable loading and processing of your assets via transforms and o
 
 List of core loader plugins:
 
+- [bit-eslint](https://github.com/MiguelCastillo/bit-eslint) for integrating with eslint
 - [bit-loader-babel](https://github.com/MiguelCastillo/bit-loader-babel) for transpiling your code with babeljs
 - [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) for loading and processing JavaScript assets
 - [bit-loader-json](https://github.com/MiguelCastillo/bit-loader-json) for loading and processing JSON assets
