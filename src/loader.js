@@ -25,12 +25,12 @@ function configureResolve(options) {
       var message = err && err.message;
 
       if (message && message.indexOf("Cannot find module") === 0 && options.ignoreNotFound) {
-        logger.warn("Module not found", buildModuleNotFoundError(meta));
+        logger.warn("Module not found. Skipping it.", moduleNotFoundError(meta));
       }
       else {
-        err = buildModuleNotFoundError(meta);
-        logger.error(err);
-        throw new Error(err);
+        var error = moduleNotResolvedError(meta, err);
+        logger.error(error);
+        throw err;
       }
 
       return {
@@ -47,9 +47,9 @@ function configureResolve(options) {
 function configureFetch(options) {
   return function fetchModule(meta) {
     function handleError(err) {
-      var error = buildModuleNotFoundError(meta, err);
+      var error = moduleNotLoadedError(meta, err);
       logger.error(error);
-      throw new Error(error);
+      throw err;
     }
 
     return meta.id === "@notfound" && options.ignoreNotFound ?
@@ -59,12 +59,15 @@ function configureFetch(options) {
 }
 
 
-function buildModuleNotFoundError(meta, err) {
-  var error = "Unable find module \"" + meta.name + "\".";
+var moduleNotFoundError = buildError.bind(null, "Unable to find module");
+var moduleNotLoadedError = buildError.bind(null, "Unable to load module");
+var moduleNotResolvedError = buildError.bind(null, "Unable to resolve module");
+
+function buildError(title, meta, err) {
+  var error = title + " \"" + meta.name + "\".";
   error += meta.referrer ? " Referrer " + JSON.stringify(meta.referrer.path) : "";
   error += err ? "\n" + err : "";
   return error;
 }
-
 
 module.exports = Loader;
