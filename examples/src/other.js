@@ -1,4 +1,5 @@
 import RenderIt from './renderer/render-it';
+import mainRecursive from './main';
 
 class Other extends RenderIt {
   constructor() {
@@ -8,6 +9,7 @@ class Other extends RenderIt {
   render() {
     super.render();
     console.log(`render:other`);
+    console.log('test recursive', mainRecursive);
   }
 }
 
