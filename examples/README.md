@@ -23,6 +23,9 @@
 - [ESLint plugin](#eslint-plugin)
   - [Setup](#setup-6)
   - [Run](#run-6)
+- [logstash to elasticsearch... Why not?](#logstash-to-elasticsearch-why-not)
+  - [Setup](#setup-7)
+  - [Run](#run-7)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -306,4 +309,46 @@ bitloader
 ### Run
 ```
 $ node eslint
+```
+
+## logstash to elasticsearch... Why not?
+
+I have used elasticsearch to store the module information out from the loader, and then do post analisys on it. It has been helpful. Make sure to checkout the logstash.config file.
+
+> This example was setup to run against elasticsearch and logstash 2.4.0.
+
+### Setup
+``` javascript
+var Bitbundler = require("bit-bundler");
+var loaderStream = require("bit-bundler/streams/loader");
+var jsPlugin = require("bit-loader-js");
+var JSONStream = require("JSONStream");
+
+var logStream = loaderStream();
+logStream
+  .pipe(JSONStream.stringify(false))
+  .pipe(process.stdout);
+
+var bitbundler = new Bitbundler({
+  log: {
+    stream: logStream
+  },
+  loader: {
+    plugins: jsPlugin()
+  }
+});
+
+bitbundler
+  .bundle({
+    src: "src/main.js",
+    dest: "dest/jsplugin.js"
+  })
+  .then(function() {}, function(err) {
+    console.log(err && err.stack ? err.stack : err);
+  });
+```
+
+### Run
+```
+$ node logstash.js | logstash -f logstash.config
 ```
