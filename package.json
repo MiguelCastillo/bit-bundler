@@ -14,6 +14,7 @@
     "glob": "^7.0.6",
     "loggero": "^2.0.1",
     "mkdirp": "^0.5.1",
+    "ora": "^0.3.0",
     "p-stream": "^1.0.3",
     "pretty-hrtime": "^1.0.2",
     "setopt": "^1.0.0",
