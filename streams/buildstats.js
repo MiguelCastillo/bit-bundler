@@ -1,20 +1,21 @@
 var es = require("event-stream");
 var filesize = require("filesize");
+var prettyHrtime = require("pretty-hrtime");
 
 function buildstatsStreamFactory() {
-  var startChunk;
+  var startTime;
 
   return es.map(function(chunk, callback) {
     if (chunk.name === "bundler/context") {
       if (chunk.data[0] === "build-start") {
-        startChunk = chunk;
+        startTime = process.hrtime();
       }
       else if (chunk.data[0] === "build-end") {
-        console.log("build time:", (chunk.date - startChunk.date) + "ms");
+        console.log("build time:", prettyHrtime(process.hrtime(startTime)));
 
         var context = chunk.data[1];
 
-        if (context.bundle && context.bundle.result) {
+        if (context.bundle && context.bundle.result && context.bundle.modules.length) {
           console.log("bundle:", filesize(context.bundle.result.length));
         }
 
