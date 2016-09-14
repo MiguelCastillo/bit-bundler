@@ -10,6 +10,7 @@ var types = require("dis-isa");
 var Logger = require("loggero");
 var logger = Logger.create("bundler/runner");
 var Bitloader = require("bit-loader");
+var stream = require("stream");
 
 function Runner(options) {
   if (!(this instanceof Runner)) {
@@ -84,6 +85,11 @@ function configureLogger(options, Logger) {
     else if (types.isString(options)) {
       options = {
         level: options
+      };
+    }
+    else if (options instanceof stream) {
+      options = {
+        stream: options
       };
     }
 
