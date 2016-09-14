@@ -360,10 +360,10 @@ $ node logstash.js | logstash -f logstash.config
 
 This example illustrates a way to integrate with elasticsearch to read and write modules to. An alternative approach to just caching modules on disk in a text file.
 
-Because this plugin is a lil bit bigger, I am just going to specify a (link to it)[https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/elasticsearch.js].
+Because this plugin is a lil bit bigger, I am just going to specify a [link to it](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/elasticsearch.js).
 
 ### Link
-(link to file)[https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/elasticsearch.js]
+[link to file](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/elasticsearch.js)
 
 ### Run
 ```
