@@ -249,6 +249,10 @@ Once you have a context, you can call the method `execute` with a list of files 
 
 Loader plugins enable loading and processing of your assets via transforms and other loader hooks. Generally speaking, you will be using at least [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to load your JavaScript assets and perhaps configure transforms.
 
+This is the list of npm [bit-loader-plugin](https://www.npmjs.com/browse/keyword/bit-loader-plugin) modules with the `bit-loader-plugin` keyword.
+
+> Add `bit-loader-plugin` as a keyword to the package.json of you plugin so that it shows up in the npm list of bit loader plugins.
+
 List of core loader plugins:
 
 - [bit-eslint](https://github.com/MiguelCastillo/bit-eslint) for integrating with eslint
