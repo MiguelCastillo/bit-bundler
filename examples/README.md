@@ -26,6 +26,9 @@
 - [logstash to elasticsearch... Why not?](#logstash-to-elasticsearch-why-not)
   - [Setup](#setup-7)
   - [Run](#run-7)
+- [May as well integrate with elasticsearch for caching modules...](#may-as-well-integrate-with-elasticsearch-for-caching-modules)
+  - [Link](#link)
+  - [Run](#run-8)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -313,7 +316,7 @@ $ node eslint
 
 ## logstash to elasticsearch... Why not?
 
-I have used elasticsearch to store the module information out from the loader, and then do post analisys on it. It has been helpful. Make sure to checkout the logstash.config file.
+I have used elasticsearch to store the module information out from the loader, and then do post analisys on it. It has been helpful. Make sure to checkout the [logstash.config](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/logstash.config) file.
 
 > This example was setup to run against elasticsearch and logstash 2.4.0.
 
@@ -351,4 +354,18 @@ bitbundler
 ### Run
 ```
 $ node logstash.js | logstash -f logstash.config
+```
+
+## May as well integrate with elasticsearch for caching modules...
+
+This example illustrates a way to integrate with elasticsearch to read and write modules to. An alternative approach to just caching modules on disk in a text file.
+
+Because this plugin is a lil bit bigger, I am just going to specify a (link to it)[https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/elasticsearch.js].
+
+### Link
+(link to file)[https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/elasticsearch.js]
+
+### Run
+```
+$ node elasticsearch.js
 ```
