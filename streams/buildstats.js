@@ -1,22 +1,29 @@
 var es = require("event-stream");
 var filesize = require("filesize");
 var prettyHrtime = require("pretty-hrtime");
+var ora = require("ora");
 
 function buildstatsStreamFactory() {
-  var startTime;
+  var startTime, spinner;
 
   return es.map(function(chunk, callback) {
     if (chunk.name === "bundler/context") {
       if (chunk.data[0] === "build-start") {
+        spinner = ora({
+          text: "do not disturb... build in progress",
+          spinner: "bouncingBall"
+        }).start();
+
         startTime = process.hrtime();
       }
       else if (chunk.data[0] === "build-end") {
-        console.log("build time:", prettyHrtime(process.hrtime(startTime)));
+        spinner.stop();
+        process.stdout.write("build time: " + prettyHrtime(process.hrtime(startTime)) + "\n");
 
         var context = chunk.data[1];
 
         if (context.bundle && context.bundle.result && context.bundle.modules.length) {
-          console.log("bundle:", filesize(context.bundle.result.length));
+          process.stdout.write("bundle: " + filesize(context.bundle.result.length) + "\n");
         }
 
         Object
@@ -25,7 +32,7 @@ function buildstatsStreamFactory() {
             return context.parts[dest];
           })
           .forEach(function(dest) {
-            console.log("bundle part", "[" + dest + "]:", filesize(context.parts[dest].result.length));
+            process.stdout.write("bundle part " + "[" + dest + "]: " + filesize(context.parts[dest].result.length) + "\n");
           });
       }
     }
