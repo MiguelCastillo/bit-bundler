@@ -28,7 +28,7 @@ bitbundler
 
 /**
  * elasticsearch plugin for reading and writing modules. This includes a checksum
- * to determine the file stored in elasticsearch are current.
+ * to determine if the files stored in elasticsearch are current.
  */
 function elasticsearchPlugin(options) {
   options = options || {};
