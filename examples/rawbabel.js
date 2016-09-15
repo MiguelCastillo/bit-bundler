@@ -1,8 +1,10 @@
+var Bitbundler = require("bit-bundler");
+var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 var babel = require("babel-core");
-var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
+  log: buildstats(),
   loader: {
     plugins: jsPlugin({
       transform: function(meta) {
@@ -22,9 +24,4 @@ bitbundler
   .bundle({
     src: "src/main.js",
     dest: "dest/rawbabel.js"
-  })
-  .then(function() {
-    console.log("babel bundle complete");
-  }, function(err) {
-    console.log(err && err.stack ? err.stack : err);
   });

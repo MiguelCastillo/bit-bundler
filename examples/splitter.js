@@ -1,9 +1,11 @@
+var Bitbundler = require("bit-bundler");
+var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 var babelPlugin = require("bit-loader-babel");
 var splitBundle = require("bit-bundler-splitter");
-var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
+  log: buildstats(),
   loader: {
     plugins: [
       jsPlugin(),
@@ -12,8 +14,8 @@ var bitbundler = new Bitbundler({
   },
   bundler: {
     plugins: [
-      splitBundle("dest/vendor.js"),
-      splitBundle("dest/renderer.js", { match: { path: /src\/renderer/ } })
+      splitBundle("dest/splitter-vendor.js"),
+      splitBundle("dest/splitter-renderer.js", { match: { path: /src\/renderer/ } })
     ]
   }
 });
@@ -21,10 +23,5 @@ var bitbundler = new Bitbundler({
 bitbundler
   .bundle({
     src: "src/main.js",
-    dest: "dest/splitter.js"
-  })
-  .then(function() {
-    console.log("splitter bundle complete");
-  }, function(err) {
-    console.log(err && err.stack ? err.stack : err);
+    dest: "dest/splitter-main.js"
   });
