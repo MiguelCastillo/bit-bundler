@@ -23,7 +23,7 @@
 - [Module caching plugin!!](#module-caching-plugin)
   - [Setup](#setup-6)
   - [Run](#run-6)
-- [logstash to elasticsearch... Why not?](#logstash-to-elasticsearch-why-not)
+- [Stream to logstash to elasticsearch... Why not?](#stream-to-logstash-to-elasticsearch-why-not)
   - [Setup](#setup-7)
   - [Run](#run-7)
 
@@ -324,9 +324,11 @@ $ node cache_plugin.js
 ```
 
 
-## logstash to elasticsearch... Why not?
+## Stream to logstash to elasticsearch... Why not?
 
-I have used elasticsearch to store the module information out from the loader, and then do post analisys on it. It has been helpful. Make sure to checkout the [logstash.config](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/logstash.config) file.
+The following example illustrates the use of streams to filter and format data. The data is then streamed to process.stdout so that the output of but-bundler can be piped to logstash.
+
+Make sure to checkout the [logstash.config](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/logstash.config) file.
 
 > This example was setup to run against elasticsearch and logstash 2.4.0.
 
