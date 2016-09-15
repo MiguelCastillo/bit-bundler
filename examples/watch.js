@@ -2,9 +2,9 @@ var jsPlugin = require("bit-loader-js");
 var babelPlugin = require("bit-loader-babel");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
-var buildstatsStream = require("bit-bundler/streams/buildstats");
-var warningsStream = require("bit-bundler/streams/warnings");
-var watchStream = require("bit-bundler/streams/watch");
+var buildstatsStream = require("bit-bundler/loggers/buildstats");
+var warningsStream = require("bit-bundler/loggers/warnings");
+var watchStream = require("bit-bundler/loggers/watch");
 
 var logStream = watchStream();
 logStream.pipe(buildstatsStream()).pipe(warningsStream());

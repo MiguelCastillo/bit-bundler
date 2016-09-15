@@ -1,5 +1,5 @@
 var Bitbundler = require("bit-bundler");
-var loaderStream = require("bit-bundler/streams/loader");
+var loaderStream = require("bit-bundler/loggers/loader");
 var jsPlugin = require("bit-loader-js");
 var JSONStream = require("JSONStream");
 
