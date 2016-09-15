@@ -19,7 +19,6 @@ But we already a bunch of bundlers out there... Why another one???  `bit-bundler
   - [Bitbundler.watch(context, options) : Context](#bitbundlerwatchcontext-options--context)
 - [Context](#context)
 - [Loader Plugins](#loader-plugins)
-- [Loader Transforms](#loader-transforms)
 - [Bundler Plugins](#bundler-plugins)
 - [Integrations](#integrations)
 - [Tech summary](#tech-summary)
@@ -170,7 +169,7 @@ Bitbundler
 
 ### Bitbundler.dest(destination) : Function
 
-Static method to define where to write bundles to. This will handle writing bundle parts as well. This exposed for convenience purposes if you want to do your own setup. Otherwise passing in `dest` to [bundle](#bitbundlerbundlefiles--promise) is the way to go because it is compatible with file watching functionality.
+Static method to define where to write bundles to. This will handle writing bundle parts as well. This is exposed for convenience purposes in case you want to hand roll your own setup. Otherwise passing in `dest` to [bundle](#bitbundlerbundlefiles--promise) is the way to go because that is compatible with file watching functionality.
 
 - **`destination`** { function | string | WritableStream } - `destination` can be a `string`, in which case the internal stream factory creates a file stream to write bundles to. If `destination` is a `function`, it is called. If the call returns a `string`, then the internal stream factory creates a file stream with it, otherwise the bundle writer expects a writable stream to be used. Use a `function` if you need to create custom streams to write bundles to.
 
@@ -247,11 +246,11 @@ Once you have a context, you can call the method `execute` with a list of files 
 
 ## Loader Plugins
 
-Loader plugins enable loading and processing of your assets via transforms and other loader hooks. Generally speaking, you will be using at least [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to load your JavaScript assets and perhaps configure transforms.
+Loader plugins enable loading and processing of your assets via transforms and other loader hooks. Generally speaking, you will be using at least [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to load your JavaScript assets.
 
 This is the list of npm [bit-loader-plugin](https://www.npmjs.com/browse/keyword/bit-loader-plugin) modules with the `bit-loader-plugin` keyword.
 
-> Add `bit-loader-plugin` as a keyword to the package.json of you plugin so that it shows up in the npm list of bit loader plugins.
+> It is recommended that you add `bit-loader-plugin` as a keyword in your plugin's package.json.
 
 List of core loader plugins:
 
@@ -263,14 +262,8 @@ List of core loader plugins:
 - [bit-loader-text](https://github.com/MiguelCastillo/bit-loader-text) for loading and processing text assets such as HTML
 - [bit-loader-builtins](https://github.com/MiguelCastillo/bit-loader-builtins) for handling built in node.js modules
 - [bit-loader-shimmer](https://github.com/MiguelCastillo/bit-loader-shimmer) for handling module shimming
-
-
-## Loader Transforms
-
-Probably the more common loader hook you will use are transforms, which allow you to transform your modules before they are bundled.
-
-- [babel-bits](https://github.com/MiguelCastillo/babel-bits) for transpiling your JavaScript assets with [babel](http://babeljs.io/)
-- [sassy-bits](https://github.com/MiguelCastillo/sassy-bits) for transpiling your SASS assets
+- [bit-loader-cache](https://github.com/MiguelCastillo/bit-loader-cache) for loading modules from cache
+- [bit-loader-extensions](https://github.com/MiguelCastillo/bit-loader-extensions) for supporting loading modules without file extensions
 
 
 ## Bundler Plugins
