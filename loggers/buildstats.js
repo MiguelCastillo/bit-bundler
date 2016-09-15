@@ -2,6 +2,7 @@ var es = require("event-stream");
 var filesize = require("filesize");
 var prettyHrtime = require("pretty-hrtime");
 var ora = require("ora");
+var warnings = require("./warnings");
 
 function buildstatsStreamFactory(options) {
   options = options || {};
@@ -52,16 +53,13 @@ function buildstatsStreamFactory(options) {
         }
 
         process.stdout.write("build time: " + prettyHrtime(process.hrtime(startTime)) + "\n");
-        process.stderr.write("build failed:\n" + errorString(chunk.data[1]) + "\n");
       }
+
+      warnings.logWarningsAndErrors(chunk);
     }
 
     callback(null, chunk);
   });
-}
-
-function errorString(err) {
-  return err && err.stack || err;
 }
 
 module.exports = buildstatsStreamFactory;
