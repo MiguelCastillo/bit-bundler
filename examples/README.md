@@ -195,17 +195,15 @@ var jsPlugin = require("bit-loader-js");
 var babelPlugin = require("bit-loader-babel");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
-var buildstatsStream = require("bit-bundler/loggers/buildstats");
-var warningsStream = require("bit-bundler/loggers/warnings");
-var watchStream = require("bit-bundler/loggers/watch");
+var buildstatsLogger = require("bit-bundler/loggers/buildstats");
+var warningsLogger = require("bit-bundler/loggers/warnings");
+var watchLogger = require("bit-bundler/loggers/watch");
 
-var logStream = watchStream();
-logStream.pipe(buildstatsStream()).pipe(warningsStream());
+var logger = watchLogger();
+logger.pipe(buildstatsLogger()).pipe(warningsLogger());
 
 var bitbundler = new Bitbundler({
-  log: {
-    stream: logStream
-  },
+  log: logger,
   loader: {
     plugins: [
       jsPlugin(),
@@ -282,7 +280,7 @@ The following example illustrates how to setup a module caching plugin. This is 
 var Bitbundler = require("bit-bundler");
 var jsPlugin = require("bit-loader-js");
 var cachePlugin = require("bit-loader-cache");
-var buildstatus = require("bit-bundler/loggers/buildstats");
+var buildstats = require("bit-bundler/loggers/buildstats");
 
 /**
  * By default the cache plugin will save and load from disk. But you can create/configure
@@ -293,7 +291,7 @@ var buildstatus = require("bit-bundler/loggers/buildstats");
 // var elasticsearchConnector = require("bit-loader-cache/connectors/elasticsearch");
 
 var bitbundler = new Bitbundler({
-  log: buildstatus(),
+  log: buildstats(),
   loader: {
     plugins: [
       jsPlugin(),
@@ -335,17 +333,17 @@ I have used elasticsearch to store the module information out from the loader, a
 ### Setup
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var loaderStream = require("bit-bundler/loggers/loader");
+var loaderLogger = require("bit-bundler/loggers/loader");
 var jsPlugin = require("bit-loader-js");
 var JSONStream = require("JSONStream");
 
-var logStream = loaderStream();
-logStream
+var logger = loaderLogger();
+logger
   .pipe(JSONStream.stringify(false))
   .pipe(process.stdout);
 
 var bitbundler = new Bitbundler({
-  log: logStream,
+  log: logger,
   loader: {
     plugins: jsPlugin()
   }

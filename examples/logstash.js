@@ -1,17 +1,15 @@
 var Bitbundler = require("bit-bundler");
-var loaderStream = require("bit-bundler/loggers/loader");
+var loaderLogger = require("bit-bundler/loggers/loader");
 var jsPlugin = require("bit-loader-js");
 var JSONStream = require("JSONStream");
 
-var logStream = loaderStream();
-logStream
+var logger = loaderLogger();
+logger
   .pipe(JSONStream.stringify(false))
   .pipe(process.stdout);
 
 var bitbundler = new Bitbundler({
-  log: {
-    stream: logStream
-  },
+  log: logger,
   loader: {
     plugins: jsPlugin()
   }
