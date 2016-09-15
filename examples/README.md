@@ -186,11 +186,10 @@ var babelPlugin = require("bit-loader-babel");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
 var buildstatsLogger = require("bit-bundler/loggers/buildstats");
-var warningsLogger = require("bit-bundler/loggers/warnings");
 var watchLogger = require("bit-bundler/loggers/watch");
 
 var logger = watchLogger();
-logger.pipe(buildstatsLogger()).pipe(warningsLogger());
+logger.pipe(buildstatsLogger());
 
 var bitbundler = new Bitbundler({
   log: logger,
