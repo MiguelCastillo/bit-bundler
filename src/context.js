@@ -61,8 +61,11 @@ Context.prototype.execute = function(files) {
     })
     .then(function(context) {
       bundleWriter(context.file.dest)(context);
-      logger.log("build-end", utils.omit(context, ["loader", "bundler"]));
+      logger.log("build-success", utils.omit(context, ["loader", "bundler"]));
       return context;
+    }, function(err) {
+      logger.error("build-failed", err);
+      throw err;
     });
 };
 
