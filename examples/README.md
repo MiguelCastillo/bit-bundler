@@ -23,7 +23,7 @@
 - [Module caching plugin!!](#module-caching-plugin)
   - [Setup](#setup-6)
   - [Run](#run-6)
-- [logstash to elasticsearch... Why not?](#logstash-to-elasticsearch-why-not)
+- [Stream to logstash to elasticsearch... Why not?](#stream-to-logstash-to-elasticsearch-why-not)
   - [Setup](#setup-7)
   - [Run](#run-7)
 
@@ -195,17 +195,15 @@ var jsPlugin = require("bit-loader-js");
 var babelPlugin = require("bit-loader-babel");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
-var buildstatsStream = require("bit-bundler/loggers/buildstats");
-var warningsStream = require("bit-bundler/loggers/warnings");
-var watchStream = require("bit-bundler/loggers/watch");
+var buildstatsLogger = require("bit-bundler/loggers/buildstats");
+var warningsLogger = require("bit-bundler/loggers/warnings");
+var watchLogger = require("bit-bundler/loggers/watch");
 
-var logStream = watchStream();
-logStream.pipe(buildstatsStream()).pipe(warningsStream());
+var logger = watchLogger();
+logger.pipe(buildstatsLogger()).pipe(warningsLogger());
 
 var bitbundler = new Bitbundler({
-  log: {
-    stream: logStream
-  },
+  log: logger,
   loader: {
     plugins: [
       jsPlugin(),
@@ -282,7 +280,7 @@ The following example illustrates how to setup a module caching plugin. This is 
 var Bitbundler = require("bit-bundler");
 var jsPlugin = require("bit-loader-js");
 var cachePlugin = require("bit-loader-cache");
-var buildstatus = require("bit-bundler/loggers/buildstats");
+var buildstats = require("bit-bundler/loggers/buildstats");
 
 /**
  * By default the cache plugin will save and load from disk. But you can create/configure
@@ -293,7 +291,7 @@ var buildstatus = require("bit-bundler/loggers/buildstats");
 // var elasticsearchConnector = require("bit-loader-cache/connectors/elasticsearch");
 
 var bitbundler = new Bitbundler({
-  log: buildstatus(),
+  log: buildstats(),
   loader: {
     plugins: [
       jsPlugin(),
@@ -326,26 +324,28 @@ $ node cache_plugin.js
 ```
 
 
-## logstash to elasticsearch... Why not?
+## Stream to logstash to elasticsearch... Why not?
 
-I have used elasticsearch to store the module information out from the loader, and then do post analisys on it. It has been helpful. Make sure to checkout the [logstash.config](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/logstash.config) file.
+The following example illustrates the use of streams to filter and format data. The data is then streamed to process.stdout so that the output of but-bundler can be piped to logstash.
+
+Make sure to checkout the [logstash.config](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/logstash.config) file.
 
 > This example was setup to run against elasticsearch and logstash 2.4.0.
 
 ### Setup
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var loaderStream = require("bit-bundler/loggers/loader");
+var loaderLogger = require("bit-bundler/loggers/loader");
 var jsPlugin = require("bit-loader-js");
 var JSONStream = require("JSONStream");
 
-var logStream = loaderStream();
-logStream
+var logger = loaderLogger();
+logger
   .pipe(JSONStream.stringify(false))
   .pipe(process.stdout);
 
 var bitbundler = new Bitbundler({
-  log: logStream,
+  log: logger,
   loader: {
     plugins: jsPlugin()
   }

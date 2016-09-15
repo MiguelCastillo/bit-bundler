@@ -1,7 +1,7 @@
 var Bitbundler = require("bit-bundler");
 var jsPlugin = require("bit-loader-js");
 var cachePlugin = require("bit-loader-cache");
-var buildstatus = require("bit-bundler/loggers/buildstats");
+var buildstats = require("bit-bundler/loggers/buildstats");
 
 /**
  * By default the cache plugin will save and load from disk. But you can create/configure
@@ -12,7 +12,7 @@ var buildstatus = require("bit-bundler/loggers/buildstats");
 // var elasticsearchConnector = require("bit-loader-cache/connectors/elasticsearch");
 
 var bitbundler = new Bitbundler({
-  log: buildstatus(),
+  log: buildstats(),
   loader: {
     plugins: [
       jsPlugin(),
