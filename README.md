@@ -45,7 +45,7 @@ var babelPlugin = require("bit-loader-babel");
 var jsPlugin = require("bit-loader-js");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
-var buildtats = require("bit-bundler/streams/buildstats");
+var buildtats = require("bit-bundler/loggers/buildstats");
 
 var bitbundler = new Bitbundler({
   watch: true,
@@ -93,7 +93,7 @@ Head over to [examples](https://github.com/MiguelCastillo/bit-bundler/tree/maste
 `bit-bundler` constructor.  Valid options are:
 
 - **`log`** { string | boolean | object | stream } (error) - By default only errors are logged. You can change the log level by specifying one of the following values `'info'`, `'warn'`, `'error'`, a stream, or completely disable it with `false`. You can futher customize logging by specifying an object with a stream to write log messages to. When you specify an object or a stream, logging level is changed to log *all* messages.
-  - **`stream`** { Stream } - Writable stream to write log messages to. There are a couple of sample streams in the [streams directory](https://github.com/MiguelCastillo/bit-bundler/tree/master/streams).
+  - **`stream`** { Stream } - Writable stream to write log messages to. There are several of sample streams in the [loggers directory](https://github.com/MiguelCastillo/bit-bundler/tree/master/loggers).
   - **`level`** { string } - Log level to fine tune the types of messages that can be logged. Valid values are `'info'`, `'warn'`, `'error'`.
 
 - **`loader`** { object } - Options to be passed on to the module loader.
