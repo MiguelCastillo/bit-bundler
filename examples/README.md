@@ -17,18 +17,15 @@
 - [Some file watching, please!](#some-file-watching-please)
   - [Setup](#setup-4)
   - [Run](#run-4)
-- [Custom stream to log messages as JSONLines](#custom-stream-to-log-messages-as-jsonlines)
+- [ESLint plugin](#eslint-plugin)
   - [Setup](#setup-5)
   - [Run](#run-5)
-- [ESLint plugin](#eslint-plugin)
+- [Module caching plugin!!](#module-caching-plugin)
   - [Setup](#setup-6)
   - [Run](#run-6)
 - [logstash to elasticsearch... Why not?](#logstash-to-elasticsearch-why-not)
   - [Setup](#setup-7)
   - [Run](#run-7)
-- [May as well integrate with elasticsearch for caching modules...](#may-as-well-integrate-with-elasticsearch-for-caching-modules)
-  - [Link](#link)
-  - [Run](#run-8)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -242,45 +239,6 @@ $ node watch
 ```
 
 
-## Custom stream to log messages as JSONLines
-
-This is very useful if you are looking to log messages to some external data store. Also, take a look at the watch example to see how to use a few of the built in logging streams.
-
-### Setup
-``` javascript
-var Bitbundler = require("bit-bundler");
-var jsPlugin = require("bit-loader-js");
-var JSONStream = require("JSONStream");
-
-var logStream = JSONStream.stringify(false);
-logStream.pipe(process.stdout);
-
-var bitbundler = new Bitbundler({
-  log: {
-    stream: logStream
-  },
-  loader: {
-    plugins: jsPlugin()
-  }
-});
-
-bitbundler
-  .bundle({
-    src: "src/main.js",
-    dest: "dest/jsplugin.js"
-  })
-  .then(function() {
-    console.log("jsplugin bundle complete");
-  }, function(err) {
-    console.log(err && err.stack ? err.stack : err);
-  });
-```
-
-### Run
-```
-$ node stream
-```
-
 ## ESLint plugin
 
 ### Setup
@@ -314,6 +272,60 @@ bitloader
 $ node eslint
 ```
 
+
+## Module caching plugin!!
+
+The following example illustrates how to setup a module caching plugin. This is primarily for improving load time after bit bundler has already processed all the modules previously. By default, the cache plugin writes to disk but you can use connectors to use other data sources. The cache plugin includes with an elasticsearch connector.
+
+### Setup
+``` javascript
+var Bitbundler = require("bit-bundler");
+var jsPlugin = require("bit-loader-js");
+var cachePlugin = require("bit-loader-cache");
+var buildstatus = require("bit-bundler/streams/buildstats");
+
+/**
+ * By default the cache plugin will save and load from disk. But you can create/configure
+ * cache connectors to use other data sources. The code commented out in the cache plugin
+ * configuration is for caching data out to elasticsearch.
+ */
+
+// var elasticsearchConnector = require("bit-loader-cache/connectors/elasticsearch");
+
+var bitbundler = new Bitbundler({
+  log: buildstatus(),
+  loader: {
+    plugins: [
+      jsPlugin(),
+      cachePlugin({
+        // connector: elasticsearchConnector({
+        //   host: "localhost:9200",
+        //   index: "cache_example",
+        //   type: "modules"
+        // })
+      })
+    ]
+  }
+});
+
+bitbundler
+  .bundle({
+    src: "src/main.js",
+    dest: "dest/cache_plugin.js"
+  })
+  .then(function() {
+    console.log("done");
+  }, function(err) {
+    console.log(err && err.stack ? err.stack : err);
+  });
+```
+
+### Run
+```
+$ node cache_plugin.js
+```
+
+
 ## logstash to elasticsearch... Why not?
 
 I have used elasticsearch to store the module information out from the loader, and then do post analisys on it. It has been helpful. Make sure to checkout the [logstash.config](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/logstash.config) file.
@@ -333,9 +345,7 @@ logStream
   .pipe(process.stdout);
 
 var bitbundler = new Bitbundler({
-  log: {
-    stream: logStream
-  },
+  log: logStream,
   loader: {
     plugins: jsPlugin()
   }
@@ -354,18 +364,4 @@ bitbundler
 ### Run
 ```
 $ node logstash.js | logstash -f logstash.config
-```
-
-## May as well integrate with elasticsearch for caching modules...
-
-This example illustrates a way to integrate with elasticsearch to read and write modules to. An alternative approach to just caching modules on disk in a text file.
-
-Because this plugin is a lil bit bigger, I am just going to specify a [link to it](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/elasticsearch.js).
-
-### Link
-[link to file](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/elasticsearch.js)
-
-### Run
-```
-$ node elasticsearch.js
 ```
