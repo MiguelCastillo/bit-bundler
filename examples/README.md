@@ -275,7 +275,7 @@ $ node eslint
 
 ## Module caching plugin!!
 
-The following example illustrates how to setup a module caching plugin. This is primarily for improving load time after after initial load. By default, the cache plugin writes to disk but you can use connectors to use other data sources. The cache plugin includes an elasticsearch connector.
+The following example illustrates how to setup a module caching plugin. This is primarily for improving load time after initial load. By default, the cache plugin writes to disk but you can use connectors to use other data sources. The cache plugin includes an elasticsearch connector.
 
 ### Setup
 ``` javascript
