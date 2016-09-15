@@ -1,7 +1,6 @@
 var utils = require("belty");
 var chokidar = require("chokidar");
 var File = require("src-dest");
-var logError = require("./logError");
 var logger = require("loggero").create("bundler/watch");
 
 function watch(context, options) {
@@ -64,8 +63,7 @@ function watch(context, options) {
         }
 
         executePending();
-      }, function(err) {
-        logError(err);
+      }, function() {
         executePending();
       });
     }
