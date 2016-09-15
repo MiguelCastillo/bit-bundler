@@ -298,7 +298,7 @@ var bitbundler = new Bitbundler({
     plugins: [
       jsPlugin(),
       cachePlugin({
-        // connection: elasticsearchConnector({
+        // connector: elasticsearchConnector({
         //   host: "localhost:9200",
         //   index: "cache_example",
         //   type: "modules"
