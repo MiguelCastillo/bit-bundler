@@ -195,9 +195,9 @@ var jsPlugin = require("bit-loader-js");
 var babelPlugin = require("bit-loader-babel");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
-var buildstatsStream = require("bit-bundler/streams/buildstats");
-var warningsStream = require("bit-bundler/streams/warnings");
-var watchStream = require("bit-bundler/streams/watch");
+var buildstatsStream = require("bit-bundler/loggers/buildstats");
+var warningsStream = require("bit-bundler/loggers/warnings");
+var watchStream = require("bit-bundler/loggers/watch");
 
 var logStream = watchStream();
 logStream.pipe(buildstatsStream()).pipe(warningsStream());
@@ -282,7 +282,7 @@ The following example illustrates how to setup a module caching plugin. This is 
 var Bitbundler = require("bit-bundler");
 var jsPlugin = require("bit-loader-js");
 var cachePlugin = require("bit-loader-cache");
-var buildstatus = require("bit-bundler/streams/buildstats");
+var buildstatus = require("bit-bundler/loggers/buildstats");
 
 /**
  * By default the cache plugin will save and load from disk. But you can create/configure
@@ -335,7 +335,7 @@ I have used elasticsearch to store the module information out from the loader, a
 ### Setup
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var loaderStream = require("bit-bundler/streams/loader");
+var loaderStream = require("bit-bundler/loggers/loader");
 var jsPlugin = require("bit-loader-js");
 var JSONStream = require("JSONStream");
 
