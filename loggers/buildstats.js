@@ -3,21 +3,32 @@ var filesize = require("filesize");
 var prettyHrtime = require("pretty-hrtime");
 var ora = require("ora");
 
-function buildstatsStreamFactory() {
+function buildstatsStreamFactory(options) {
+  options = options || {};
   var startTime, spinner;
+  var animation = options.animation;
 
   return es.map(function(chunk, callback) {
     if (chunk.name === "bundler/context") {
       if (chunk.data[0] === "build-start") {
-        spinner = ora({
-          text: "do not disturb... build in progress",
-          spinner: "bouncingBall"
-        }).start();
+
+        if (animation) {
+          spinner = ora({
+            text: "do not disturb... build in progress",
+            spinner: "bouncingBall"
+          }).start();
+        }
+        else {
+          process.stdout.write("build started...\n");
+        }
 
         startTime = process.hrtime();
       }
       else if (chunk.data[0] === "build-success") {
-        spinner.stop();
+        if (spinner) {
+          spinner.stop();
+        }
+
         process.stdout.write("build time: " + prettyHrtime(process.hrtime(startTime)) + "\n");
 
         var context = chunk.data[1];
@@ -36,7 +47,10 @@ function buildstatsStreamFactory() {
           });
       }
       else if (chunk.data[0] === "build-failed") {
-        spinner.stop();
+        if (spinner) {
+          spinner.stop();
+        }
+
         process.stdout.write("build time: " + prettyHrtime(process.hrtime(startTime)) + "\n");
         process.stderr.write("build failed:\n" + errorString(chunk.data[1]) + "\n");
       }

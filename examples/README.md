@@ -46,23 +46,22 @@ that loads `src/main.js` and bundles it.
 ### Setup
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var bitbundler = new Bitbundler();
+var buildstats = require("bit-bundler/loggers/buildstats");
+
+var bitbundler = new Bitbundler({
+  log: buildstats()
+});
 
 bitbundler
   .bundle({
     src: "src/main.js",
     dest: "dest/basic.js"
-  })
-  .then(function() {
-    console.log("basic bundle complete");
-  }, function(err) {
-    console.log(err && err.stack ? err.stack : err);
   });
 ```
 
 ### Run
 ```
-$ node basic
+$ node basic.js
 ```
 
 ## Bundle JavaScript with node.js dependencies
@@ -71,10 +70,12 @@ By default, `bit-bundler` does not understand how to process module dependencies
 
 ### Setup
 ``` javascript
-var jsPlugin = require("bit-loader-js");
 var Bitbundler = require("bit-bundler");
+var buildstats = require("bit-bundler/loggers/buildstats");
+var jsPlugin = require("bit-loader-js");
 
 var bitbundler = new Bitbundler({
+  log: buildstats(),
   loader: {
     plugins: jsPlugin()
   }
@@ -84,17 +85,12 @@ bitbundler
   .bundle({
     src: "src/main.js",
     dest: "dest/jsplugin.js"
-  })
-  .then(function() {
-    console.log("jsplugin bundle complete");
-  }, function(err) {
-    console.log(err && err.stack ? err.stack : err);
   });
 ```
 
 ### Run
 ```
-$ node jsplugin
+$ node jsplugin.js
 ```
 
 ## Bundle JavaScript and transform it with Babel??
@@ -103,11 +99,13 @@ Yes please! This setup relies on a helper module called [bit-loader-babel](https
 
 ### Setup
 ``` javascript
+var Bitbundler = require("bit-bundler");
+var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 var babelPlugin = require("bit-loader-babel");
-var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
+  log: buildstats(),
   loader: {
     plugins: [
       jsPlugin(),
@@ -125,11 +123,6 @@ bitbundler
   .bundle({
     src: "src/main.js",
     dest: "dest/babel.js"
-  })
-  .then(function() {
-    console.log("babel bundle complete");
-  }, function(err) {
-    console.log(err && err.stack ? err.stack : err);
   });
 ```
 
@@ -147,12 +140,14 @@ Yup, use the bundler plugin [bit-bundler-splitter](https://github.com/MiguelCast
 
 ### Setup
 ``` javascript
+var Bitbundler = require("bit-bundler");
+var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 var babelPlugin = require("bit-loader-babel");
 var splitBundle = require("bit-bundler-splitter");
-var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
+  log: buildstats(),
   loader: {
     plugins: [
       jsPlugin(),
@@ -161,8 +156,8 @@ var bitbundler = new Bitbundler({
   },
   bundler: {
     plugins: [
-      splitBundle("dest/vendor.js"),
-      splitBundle("dest/renderer.js", { match: { path: /src\/renderer/ } })
+      splitBundle("dest/splitter-vendor.js"),
+      splitBundle("dest/splitter-renderer.js", { match: { path: /src\/renderer/ } })
     ]
   }
 });
@@ -170,12 +165,7 @@ var bitbundler = new Bitbundler({
 bitbundler
   .bundle({
     src: "src/main.js",
-    dest: "dest/splitter.js"
-  })
-  .then(function() {
-    console.log("splitter bundle complete");
-  }, function(err) {
-    console.log(err && err.stack ? err.stack : err);
+    dest: "dest/splitter-main.js"
   });
 ```
 
@@ -223,11 +213,6 @@ bitbundler
   .bundle({
     src: "src/main.js",
     dest: "dest/watch-main.js"
-  })
-  .then(function() {
-    console.log("watch bundle complete.");
-  }, function(err) {
-    console.error(err && err.stack ? err.stack : err);
   });
 ```
 
@@ -242,11 +227,13 @@ $ node watch
 ### Setup
 ``` javascript
 var Bitbundler = require("bit-bundler");
+var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 var eslintPlugin = require("bit-eslint");
 
 var bitloader = new Bitbundler({
   watch: true,
+  log: buildstats(),
   loader: {
     plugins: [
       jsPlugin(),
@@ -259,9 +246,6 @@ bitloader
   .bundle({
     src: "src/main.js",
     dest: "dest/eslint-build.js"
-  })
-  .then(function() {
-    console.log("eslint bundle done");
   });
 ```
 
@@ -278,9 +262,9 @@ The following example illustrates how to setup a module caching plugin. This is 
 ### Setup
 ``` javascript
 var Bitbundler = require("bit-bundler");
+var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 var cachePlugin = require("bit-loader-cache");
-var buildstats = require("bit-bundler/loggers/buildstats");
 
 /**
  * By default the cache plugin will save and load from disk. But you can create/configure
@@ -310,11 +294,6 @@ bitbundler
   .bundle({
     src: "src/main.js",
     dest: "dest/cache_plugin.js"
-  })
-  .then(function() {
-    console.log("done");
-  }, function(err) {
-    console.log(err && err.stack ? err.stack : err);
   });
 ```
 

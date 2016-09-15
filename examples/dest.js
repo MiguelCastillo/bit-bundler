@@ -1,8 +1,8 @@
+var Bitbundler = require("bit-bundler");
+var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 var babelPlugin = require("bit-loader-babel");
 var splitBundle = require("bit-bundler-splitter");
-var Bitbundler = require("bit-bundler");
-var buildstats = require("bit-bundler/loggers/buildstats");
 
 var bitbundler = new Bitbundler({
   log: buildstats(),
@@ -22,9 +22,4 @@ var bitbundler = new Bitbundler({
 
 bitbundler
   .bundle("src/main.js")
-  .then(Bitbundler.dest("dest/dest-main.js"))
-  .then(function() {
-    console.log("dest bundle complete.");
-  }, function(err) {
-    console.error(err && err.stack ? err.stack : err);
-  });
+  .then(Bitbundler.dest("dest/dest-main.js"));
