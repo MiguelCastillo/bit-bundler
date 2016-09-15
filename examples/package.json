@@ -16,6 +16,7 @@
     "bit-bundler-splitter": "^1.0.3",
     "bit-eslint": "^1.0.1",
     "bit-loader-babel": "^1.0.1",
+    "bit-loader-cache": "^1.0.2",
     "bit-loader-js": "^1.2.0",
     "elasticsearch": "^11.0.1"
   }
