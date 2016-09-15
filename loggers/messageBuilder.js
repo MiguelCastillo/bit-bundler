@@ -6,7 +6,7 @@ function messageBuilder(chunk) {
 
       return typeof val === "string" ? val :
         Buffer.isBuffer(val) ? val.toString() :
-        JSON.stringify(val);
+        val instanceof Error ? val.stack : JSON.stringify(val);
     });
 }
 

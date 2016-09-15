@@ -30,9 +30,4 @@ bitbundler
   .bundle({
     src: "src/main.js",
     dest: "dest/watch-main.js"
-  })
-  .then(function() {
-    console.log("watch bundle complete.");
-  }, function(err) {
-    console.error(err && err.stack ? err.stack : err);
   });

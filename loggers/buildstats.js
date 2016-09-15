@@ -16,7 +16,7 @@ function buildstatsStreamFactory() {
 
         startTime = process.hrtime();
       }
-      else if (chunk.data[0] === "build-end") {
+      else if (chunk.data[0] === "build-success") {
         spinner.stop();
         process.stdout.write("build time: " + prettyHrtime(process.hrtime(startTime)) + "\n");
 
@@ -35,10 +35,19 @@ function buildstatsStreamFactory() {
             process.stdout.write("bundle part " + "[" + dest + "]: " + filesize(context.parts[dest].result.length) + "\n");
           });
       }
+      else if (chunk.data[0] === "build-failed") {
+        spinner.stop();
+        process.stdout.write("build time: " + prettyHrtime(process.hrtime(startTime)) + "\n");
+        process.stderr.write("build failed:\n" + errorString(chunk.data[1]) + "\n");
+      }
     }
 
     callback(null, chunk);
   });
+}
+
+function errorString(err) {
+  return err && err.stack || err;
 }
 
 module.exports = buildstatsStreamFactory;
