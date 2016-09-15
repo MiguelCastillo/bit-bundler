@@ -54,10 +54,9 @@ function buildstatsStreamFactory(options) {
 
         process.stdout.write("build time: " + prettyHrtime(process.hrtime(startTime)) + "\n");
       }
-
-      warnings.logWarningsAndErrors(chunk);
     }
 
+    warnings.logWarningsAndErrors(chunk);
     callback(null, chunk);
   });
 }
