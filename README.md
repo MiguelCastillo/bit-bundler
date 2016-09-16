@@ -97,6 +97,7 @@ Head over to [examples](https://github.com/MiguelCastillo/bit-bundler/tree/maste
 - **`loader`** { object } - Options to be passed on to the module loader.
   - **`plugins`** { Array[Plugin] | Plugin } - Plugins to be registerer with the module loader. These plugins are for procesing modules before they are bundled.
   - **`ignoreNotFound`** { boolean } (false) - Flag to ignore modules not found on disk. When set to true, these modules will just be empty entries in the bundle.
+  - **`builtins`** { boolean } (true) - Flag to disable processing of builtin node modules.
 
 - **`bundler`** { object } - Options to be passed on to the bundler.
   - **`sourceMap`** { boolean } (true) - Enables/disables the generation of inline source maps.
