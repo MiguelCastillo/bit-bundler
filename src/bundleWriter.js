@@ -2,7 +2,7 @@ var fs = require("fs");
 var path = require("path");
 var mkdirp = require("mkdirp");
 var types = require("dis-isa");
-var logger = require("loggero").create("bundler/writer");
+var logger = require("./logger").create("bundler/writer");
 
 function bundleWriter(defaultDest) {
   return function writerDelegate(context) {

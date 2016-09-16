@@ -1,17 +1,17 @@
 var defaultOptions = require("./defaultOptions");
 var utils = require("belty");
 var File = require("src-dest");
+var types = require("dis-isa");
+var stream = require("stream");
 var Loader = require("./loader");
 var Bundler = require("./bundler");
 var Context = require("./context");
 var bundleWriter = require("./bundleWriter");
 var watch = require("./watch");
+var loggerFactory = require("./logger");
 var buildstats = require("../loggers/buildstats");
-var types = require("dis-isa");
-var Logger = require("loggero");
-var logger = Logger.create("bundler/runner");
-var Bitloader = require("bit-loader");
-var stream = require("stream");
+
+var logger = loggerFactory.create("bundler/runner");
 
 function Runner(options) {
   if (!(this instanceof Runner)) {
@@ -21,8 +21,7 @@ function Runner(options) {
   this.options = options || {};
   this.context = null;
 
-  configureLogger(this.options.log, Logger);
-  configureLogger(this.options.log, Bitloader.logger);
+  configureLogger(this.options.log, loggerFactory);
 }
 
 Runner.prototype.bundle = function(files) {
@@ -76,7 +75,7 @@ function initWatch(ctx) {
   return ctx;
 }
 
-function configureLogger(options, Logger) {
+function configureLogger(options, logger) {
   if (options !== false) {
     options = options || {};
 
@@ -96,15 +95,16 @@ function configureLogger(options, Logger) {
       };
     }
 
-    Logger.enableAll();
-    Logger.level(Logger.levels[options.level || "info"]);
-    Logger.pipe(options.stream || buildstats());
+    logger.enableAll();
+    logger.level(logger.levels[options.level || "info"]);
+    logger.pipe(options.stream || buildstats());
   }
   else {
-    Logger.disable();
+    logger.disable();
   }
 };
 
+Runner.logger = logger;
 Runner.dest = bundleWriter;
 Runner.watch = watch;
 Runner.Context = Context;
