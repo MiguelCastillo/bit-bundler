@@ -44,7 +44,7 @@ function buildstatsStreamFactory(options) {
             return context.shards[dest];
           })
           .forEach(function(dest) {
-            process.stdout.write("bundle part " + "[" + dest + "]: " + filesize(context.shards[dest].result.length) + "\n");
+            process.stdout.write("bundle shard " + "[" + dest + "]: " + filesize(context.shards[dest].result.length) + "\n");
           });
       }
       else if (chunk.data[0] === "build-failed") {
