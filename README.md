@@ -120,11 +120,7 @@ Basic setup for bundling a file and getting a hold of the generated context.
 var Bitbundler = require("bit-bundler");
 var bitbundler = new Bitbundler();
 
-bitbundler
-  .bundle(["path/to/file.js"])
-  .then(function(context) {
-    console.log("Bundle ready", context.bundle.result);
-  });
+bitbundler.bundle(["path/to/file.js"])
 ```
 
 You can specify the destination of the bundle.
@@ -133,14 +129,10 @@ You can specify the destination of the bundle.
 var Bitbundler = require("bit-bundler");
 var bitbundler = new Bitbundler();
 
-bitbundler
-  .bundle({
-    src: ["path/to/file.js"],
-    dest: "output/bundle.js"
-  })
-  .then(function(context) {
-    console.log("Bundle ready", context.bundle.result);
-  });
+bitbundler.bundle({
+  src: ["path/to/file.js"],
+  dest: "output/bundle.js"
+});
 ```
 
 ### Bitbundler.bundle(files, options) : Promise
@@ -159,9 +151,6 @@ Bitbundler
     dest: "output/bundle.js"
   }, {
     watch: true
-  })
-  .then(function(context) {
-    console.log("Bundle ready", context.bundle.result);
   });
 ```
 
@@ -177,10 +166,7 @@ var bitbundler = new Bitbundler();
 
 bitbundler
   .bundle(["path/to/file.js"])
-  .then(Bitbundler.dest("output/path/file.js"))
-  .then(function() {
-    console.log("Bundle ready");
-  });
+  .then(Bitbundler.dest("output/path/file.js"));
 ```
 
 ### Bitbundler.watch(context, options) : Context
@@ -200,10 +186,7 @@ Bitbundler
     src: ["path/to/file.js"],
     dest: "output/bundle.js"
   })
-  .then(Bitloader.watch)
-  .then(function(context) {
-    console.log("Bundle ready", context.bundle.result);
-  });
+  .then(Bitloader.watch);
 ```
 
 Setup with options for [chokidar](https://github.com/paulmillr/chokidar).
