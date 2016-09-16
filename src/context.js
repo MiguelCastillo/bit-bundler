@@ -1,7 +1,9 @@
 var utils = require("belty");
 var File = require("src-dest");
 var bundleWriter = require("./bundleWriter");
-var logger = require("loggero").create("bundler/context");
+var loggerFactory = require("./logger");
+
+var logger = loggerFactory.create("bundler/context");
 
 var defaults = {
   file: null,
@@ -110,6 +112,10 @@ Context.prototype.addExclude = function(exclude) {
   return this.configure({
     exclude: Object.keys(exclude)
   });
+};
+
+Context.prototype.getLogger = function(name) {
+  return loggerFactory.create(name);
 };
 
 function flattenModules(loader, modules) {

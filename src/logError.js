@@ -1,4 +1,4 @@
-var logger = require("loggero").create("bundler/error-logger");
+var logger = require("./logger").create("bundler/error-logger");
 
 function logError(err) {
   var errStr = err && err.stack || err;

@@ -1,8 +1,8 @@
 var Bitloader = require("bit-loader");
 var utils = require("belty");
-var logger = require("loggero").create("bundler/loader");
 var resolvePath = require("bit-bundler-utils/resolvePath");
 var readFile = require("bit-bundler-utils/readFile");
+var logger = require("./logger").create("bundler/loader");
 
 
 function Loader(options) {

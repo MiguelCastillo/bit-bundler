@@ -1,7 +1,7 @@
 var utils = require("belty");
 var chokidar = require("chokidar");
 var File = require("src-dest");
-var logger = require("loggero").create("bundler/watch");
+var logger = require("./logger").create("bundler/watch");
 
 function watch(context, options) {
   if (options === true || !options) {
