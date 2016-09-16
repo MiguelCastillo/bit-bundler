@@ -39,12 +39,12 @@ function buildstatsStreamFactory(options) {
         }
 
         Object
-          .keys(context.parts)
+          .keys(context.shards)
           .filter(function(dest) {
-            return context.parts[dest];
+            return context.shards[dest];
           })
           .forEach(function(dest) {
-            process.stdout.write("bundle part " + "[" + dest + "]: " + filesize(context.parts[dest].result.length) + "\n");
+            process.stdout.write("bundle part " + "[" + dest + "]: " + filesize(context.shards[dest].result.length) + "\n");
           });
       }
       else if (chunk.data[0] === "build-failed") {
