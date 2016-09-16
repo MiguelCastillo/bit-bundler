@@ -46,11 +46,7 @@ that loads `src/main.js` and bundles it.
 ### Setup
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var buildstats = require("bit-bundler/loggers/buildstats");
-
-var bitbundler = new Bitbundler({
-  log: buildstats()
-});
+var bitbundler = new Bitbundler();
 
 bitbundler
   .bundle({
@@ -71,11 +67,9 @@ By default, `bit-bundler` does not understand how to process module dependencies
 ### Setup
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 
 var bitbundler = new Bitbundler({
-  log: buildstats(),
   loader: {
     plugins: jsPlugin()
   }
@@ -100,12 +94,10 @@ Yes please! This setup relies on a helper module called [bit-loader-babel](https
 ### Setup
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 var babelPlugin = require("bit-loader-babel");
 
 var bitbundler = new Bitbundler({
-  log: buildstats(),
   loader: {
     plugins: [
       jsPlugin(),
@@ -141,13 +133,11 @@ Yup, use the bundler plugin [bit-bundler-splitter](https://github.com/MiguelCast
 ### Setup
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 var babelPlugin = require("bit-loader-babel");
 var splitBundle = require("bit-bundler-splitter");
 
 var bitbundler = new Bitbundler({
-  log: buildstats(),
   loader: {
     plugins: [
       jsPlugin(),
@@ -226,13 +216,11 @@ $ node watch
 ### Setup
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 var eslintPlugin = require("bit-eslint");
 
 var bitloader = new Bitbundler({
   watch: true,
-  log: buildstats(),
   loader: {
     plugins: [
       jsPlugin(),
@@ -261,7 +249,6 @@ The following example illustrates how to setup a module caching plugin. This is 
 ### Setup
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 var cachePlugin = require("bit-loader-cache");
 
@@ -274,7 +261,6 @@ var cachePlugin = require("bit-loader-cache");
 // var elasticsearchConnector = require("bit-loader-cache/connectors/elasticsearch");
 
 var bitbundler = new Bitbundler({
-  log: buildstats(),
   loader: {
     plugins: [
       jsPlugin(),

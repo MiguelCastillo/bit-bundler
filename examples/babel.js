@@ -1,10 +1,8 @@
 var Bitbundler = require("bit-bundler");
-var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 var babelPlugin = require("bit-loader-babel");
 
 var bitbundler = new Bitbundler({
-  log: buildstats(),
   loader: {
     plugins: [
       jsPlugin(),

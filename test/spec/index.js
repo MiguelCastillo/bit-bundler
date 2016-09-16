@@ -40,6 +40,7 @@ describe("Bundler test suite", function() {
   describe("When creating a bundler with the JS plugin", function() {
     beforeEach(function() {
       config = {
+        log: false,
         loader: {
           plugins: jsPlugin()
         }
@@ -69,6 +70,7 @@ describe("Bundler test suite", function() {
   describe("When creating a bundler with the JS plugin and spitting bundles", function() {
     beforeEach(function() {
       config = {
+        log: false,
         loader: {
           plugins: jsPlugin()
         },

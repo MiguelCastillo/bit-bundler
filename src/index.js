@@ -6,6 +6,7 @@ var Bundler = require("./bundler");
 var Context = require("./context");
 var bundleWriter = require("./bundleWriter");
 var watch = require("./watch");
+var buildstats = require("../loggers/buildstats");
 var types = require("dis-isa");
 var Logger = require("loggero");
 var logger = Logger.create("bundler/runner");
@@ -76,7 +77,9 @@ function initWatch(ctx) {
 }
 
 function configureLogger(options, Logger) {
-  if (options) {
+  if (options !== false) {
+    options = options || {};
+
     if (options === true) {
       options = {
         level: "info"
@@ -95,10 +98,7 @@ function configureLogger(options, Logger) {
 
     Logger.enableAll();
     Logger.level(Logger.levels[options.level || "info"]);
-
-    if (options.stream) {
-      Logger.pipe(options.stream);
-    }
+    Logger.pipe(options.stream || buildstats());
   }
   else {
     Logger.disable();

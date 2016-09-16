@@ -1,9 +1,5 @@
 var Bitbundler = require("bit-bundler");
-var buildstats = require("bit-bundler/loggers/buildstats");
-
-var bitbundler = new Bitbundler({
-  log: buildstats()
-});
+var bitbundler = new Bitbundler();
 
 bitbundler
   .bundle({
