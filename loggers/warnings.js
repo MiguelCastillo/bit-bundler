@@ -19,7 +19,10 @@ function logWarningsAndErrors(chunk) {
     var msgs = messageBuilder(chunk);
 
     if (msgs.length) {
-      console.log(color(">> [" + chunk.name + "]"));
+      if (chunk.name) {
+        console.log(color(">> [" + chunk.name + "]"));
+      }
+
       msgs.forEach(function(d) { console.log("  " + d); });
       console.log("");
     }
