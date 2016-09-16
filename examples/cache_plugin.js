@@ -1,5 +1,4 @@
 var Bitbundler = require("bit-bundler");
-var buildstats = require("bit-bundler/loggers/buildstats");
 var jsPlugin = require("bit-loader-js");
 var cachePlugin = require("bit-loader-cache");
 
@@ -12,7 +11,6 @@ var cachePlugin = require("bit-loader-cache");
 // var elasticsearchConnector = require("bit-loader-cache/connectors/elasticsearch");
 
 var bitbundler = new Bitbundler({
-  log: buildstats(),
   loader: {
     plugins: [
       jsPlugin(),
