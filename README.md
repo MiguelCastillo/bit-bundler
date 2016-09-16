@@ -2,7 +2,7 @@
 
 > Generate application bundles with ease.
 
-But we already a bunch of bundlers out there... Why another one???  `bit-bundler` aims to simplify the process of generating application bundles with a fluid and intuitive API. The problem we are trying to solve is around setup complexity while providing a flexible environment that scales to meet more intricate requirements.
+But we already have a bunch of bundlers out there... Why another one???  `bit-bundler` aims to simplify the process of generating application bundles with a fluid and intuitive API. The problem we are trying to solve is around setup complexity while providing a flexible environment that scales to meet more intricate requirements.
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -45,11 +45,9 @@ var babelPlugin = require("bit-loader-babel");
 var jsPlugin = require("bit-loader-js");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
-var buildtats = require("bit-bundler/loggers/buildstats");
 
 var bitbundler = new Bitbundler({
   watch: true,
-  log: buildtats(),
   loader: {
     plugins: [
       jsPlugin(),
@@ -92,8 +90,8 @@ Head over to [examples](https://github.com/MiguelCastillo/bit-bundler/tree/maste
 
 `bit-bundler` constructor.  Valid options are:
 
-- **`log`** { string | boolean | object | stream } (error) - By default only errors are logged. You can change the log level by specifying one of the following values `'info'`, `'warn'`, `'error'`, a stream, or completely disable it with `false`. You can futher customize logging by specifying an object with a stream to write log messages to. When you specify an object or a stream, logging level is changed to log *all* messages.
-  - **`stream`** { Stream } - Writable stream to write log messages to. There are several of sample streams in the [loggers directory](https://github.com/MiguelCastillo/bit-bundler/tree/master/loggers).
+- **`log`** { stream | { stream: WritableStream, level: string } } (buildstats) - By default warnings, errors, and build information are logged. You can also control the log level by specifying one of the following values `'info'`, `'warn'`, `'error'`.
+  - **`stream`** { WritableStream } - Writable stream to write log messages to. There are several of sample streams in the [loggers directory](https://github.com/MiguelCastillo/bit-bundler/tree/master/loggers).
   - **`level`** { string } - Log level to fine tune the types of messages that can be logged. Valid values are `'info'`, `'warn'`, `'error'`.
 
 - **`loader`** { object } - Options to be passed on to the module loader.
@@ -222,9 +220,6 @@ Bitbundler
     return Bitloader.watch(context, {
       followSymlinks: true
     });
-  })
-  .then(function(context) {
-    console.log("Bundle ready", context.bundle.result);
   });
 ```
 
@@ -288,7 +283,7 @@ Bundler plugins enable processing of bundles. A useful bundler plugin is for spl
 
 ## Processing flow
 
-The way that `bit-bundler` works is simple. The files to be bundled are handed off to `bit-loader`. `bit-loader` loads these files from disk, applies any transforms, and *recursively* loads and processes all module dependencies. The output of this is a module graph. The pipeline that does all this work can be configured via plugins, which are relatively simple to create. The settings for `bit-loader` step are the `loader` options passed in to the `bit-bundler` constructor.
+The way that `bit-bundler` works is simple. The files to be bundled are handed off to `bit-loader`. `bit-loader` loads these files from disk, applies any transforms, and *recursively* loads and processes all module dependencies. The output of this is a module graph. The pipeline that does all this work can be configured via plugins, which are relatively simple to create. The settings for `bit-loader` are the `loader` options passed to the `bit-bundler` constructor.
 
 `bit-bundler` then creates a `context`, which has the module graph created by `bit-loader`. The `context` also has a `cache`, which is a flattened map of the module graph with the module `ids` as the keys.  This `context` is passed to the [bundler](https://github.com/MiguelCastillo/bit-bundler-browserpack), which is a wrapper for browserpack. What you get at the end is the `context` with the `bundle` as well other information that's generally of interest if you are looking to do any further processing on the generated `bundle`.
 
