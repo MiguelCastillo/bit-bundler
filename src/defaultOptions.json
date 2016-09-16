@@ -1,7 +1,8 @@
 {
   "loader": {
     "log": "error",
-    "ignoreNotFound": false
+    "ignoreNotFound": false,
+    "builtins": true
   },
   "bundler": {
     "sourceMap": true

@@ -1,5 +1,6 @@
 var Bitloader = require("bit-loader");
 var utils = require("belty");
+var nodeBuiltins = require("bit-loader-builtins");
 var resolvePath = require("bit-bundler-utils/resolvePath");
 var readFile = require("bit-bundler-utils/readFile");
 var logger = require("./logger").create("bundler/loader");
@@ -10,6 +11,10 @@ function Loader(options) {
     resolve: configureResolve(options),
     fetch: configureFetch(options)
   }, options));
+
+  if (options.builtins) {
+    this.plugin(nodeBuiltins());
+  }
 }
 
 
@@ -28,8 +33,7 @@ function configureResolve(options) {
         logger.warn("Module not found. Skipping it.", moduleNotFoundError(meta));
       }
       else {
-        var error = moduleNotResolvedError(meta, err);
-        logger.error(error);
+        logger.error(moduleNotResolvedError(meta), err);
         throw err;
       }
 
@@ -47,8 +51,7 @@ function configureResolve(options) {
 function configureFetch(options) {
   return function fetchModule(meta) {
     function handleError(err) {
-      var error = moduleNotLoadedError(meta, err);
-      logger.error(error);
+      logger.error(moduleNotLoadedError(meta), err);
       throw err;
     }
 
@@ -63,11 +66,8 @@ var moduleNotFoundError = buildError.bind(null, "Unable to find module");
 var moduleNotLoadedError = buildError.bind(null, "Unable to load module");
 var moduleNotResolvedError = buildError.bind(null, "Unable to resolve module");
 
-function buildError(title, meta, err) {
-  var error = title + " \"" + meta.name + "\".";
-  error += meta.referrer ? " Referrer " + JSON.stringify(meta.referrer.path) : "";
-  error += err ? "\n" + err : "";
-  return error;
+function buildError(title, meta) {
+  return title + " \"" + meta.name + "\"." + (meta.referrer ? " Referrer " + JSON.stringify(meta.referrer.path) : "");
 }
 
 module.exports = Loader;
