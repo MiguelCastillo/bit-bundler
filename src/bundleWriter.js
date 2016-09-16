@@ -9,14 +9,14 @@ function bundleWriter(defaultDest) {
     var file = context.file;
 
     Object
-      .keys(context.parts)
+      .keys(context.shards)
       .forEach(function(dest) {
-        if (!context.parts[dest]) {
-          logger.log(dest, "is an empty bundle part");
+        if (!context.shards[dest]) {
+          logger.log(dest, "is an empty bundle shard");
         }
 
-        if (context.parts[dest]) {
-          writeBundle(context.parts[dest], streamFactory(dest));
+        if (context.shards[dest]) {
+          writeBundle(context.shards[dest], streamFactory(dest));
         }
       });
 

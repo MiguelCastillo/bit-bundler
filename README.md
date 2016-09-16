@@ -169,7 +169,7 @@ Bitbundler
 
 ### Bitbundler.dest(destination) : Function
 
-Static method to define where to write bundles to. This will handle writing bundle parts as well. This is exposed for convenience purposes in case you want to hand roll your own setup. Otherwise passing in `dest` to [bundle](#bitbundlerbundlefiles--promise) is the way to go because that is compatible with file watching functionality.
+Static method to define where to write bundles to. This will handle writing bundle shards as well. This is exposed for convenience purposes in case you want to hand roll your own setup. Otherwise, passing in `dest` to [bundle](#bitbundlerbundlefiles--promise) is the way to go because that is compatible with file watching functionality.
 
 - **`destination`** { function | string | WritableStream } - `destination` can be a `string`, in which case the internal stream factory creates a file stream to write bundles to. If `destination` is a `function`, it is called. If the call returns a `string`, then the internal stream factory creates a file stream with it, otherwise the bundle writer expects a writable stream to be used. Use a `function` if you need to create custom streams to write bundles to.
 
@@ -237,7 +237,7 @@ When calling the methods for generating bundles, `bit-bundler` returns a promise
 - **`exclude`** { Array[string] } - Array of module `ids` to exclude from `bundle`. This is used by post processor for features like bundle splitting.
 - **`file`** { { Array[string] : src, string : dest } } - Object with `src` files to bundle and `dest` is where the bundle is to be written to.
 - **`modules`** { Array[object] } - Array of root modules of the module graph. These modules have an `id` that are used as keys into the `cache` to get full module objects.
-- **`parts`** { object } - Map of bundle parts pulled out of the main `bundle` in the context. This map will have items created by plugins like [bundle splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) that can extract modules and generate separate bundles.
+- **`shards`** { object } - Map of shards pulled out of the main `bundle` in the context. This map will have items created by plugins like [bundle splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) that can extract modules and generate separate bundles.
 
 > The context is generally used by plugins and post processors such as [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter), [Bitbundler.dest](#bitbundlerdestdestination--function), and [Bitbundler.watch](#bitbundlerwatchcontext-options--context).
 
@@ -292,7 +292,7 @@ The way that `bit-bundler` works is simple. The files to be bundled are handed o
 
 `bit-bundler` then creates a `context`, which has the module graph created by `bit-loader`. The `context` also has a `cache`, which is a flattened map of the module graph with the module `ids` as the keys.  This `context` is passed to the [bundler](https://github.com/MiguelCastillo/bit-bundler-browserpack), which is a wrapper for browserpack. What you get at the end is the `context` with the `bundle` as well other information that's generally of interest if you are looking to do any further processing on the generated `bundle`.
 
-What you write to disk is generally `context.bundle.result`. You also write to disk `context.parts`, if you are using bundler plugins such as [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) that can split up `context.bundle`.
+What you write to disk is generally `context.bundle.result`. You also write to disk `context.shards`, if you are using bundler plugins such as [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) that can split up `context.bundle`.
 
 
 ## License

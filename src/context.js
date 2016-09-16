@@ -9,7 +9,7 @@ var defaults = {
   cache: {},
   exclude: [],
   modules: null,
-  parts: {},
+  shards: {},
   loader: null,
   bundler: null,
   lastUpdatedModules: null
@@ -52,7 +52,7 @@ Context.prototype.execute = function(files) {
         modules: context.modules ? context.modules : modules,
         lastUpdatedModules: updates,
         bundle: null,
-        parts: {},
+        shards: {},
         exclude: []
       });
     })
@@ -81,21 +81,21 @@ Context.prototype.setBundle = function(bundle) {
   });
 };
 
-Context.prototype.addPart = function(name, part) {
-  var parts = utils.extend({}, this.parts);
-  parts[name] = part;
+Context.prototype.setShard = function(name, shard) {
+  var shards = utils.extend({}, this.shards);
+  shards[name] = shard;
 
   return this.configure({
-    parts: parts
+    shards: shards
   });
 };
 
-Context.prototype.removePart = function(name) {
-  var parts = utils.extend({}, this.parts);
-  delete parts[name];
+Context.prototype.deleteShard = function(name) {
+  var shards = utils.extend({}, this.shards);
+  delete shards[name];
 
   return this.configure({
-    parts: parts
+    shards: shards
   });
 };
 
