@@ -50,7 +50,7 @@ Context.prototype.execute = function(files) {
       //updates = context.lastUpdatedModules ? onlyChanged(files, updates) : updates;
 
       return context.configure({
-        cache: utils.merge(context.cache, updates),
+        cache: context.loader.cache,
         modules: context.modules ? context.modules : modules,
         lastUpdatedModules: updates,
         bundle: null,
