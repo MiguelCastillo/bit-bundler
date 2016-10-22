@@ -1,4 +1,5 @@
 import Other from './other';
+import log2console from 'log2console';
 
 class Main {
   constructor() {
@@ -6,7 +7,7 @@ class Main {
   }
 
   render() {
-    console.log(`render:main`);
+    log2console(`render:main`);
     this._other.render();
   }
 }

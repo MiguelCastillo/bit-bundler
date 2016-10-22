@@ -56,7 +56,7 @@ var bitbundler = new Bitbundler({
   },
   bundler: {
     plugins: [
-      splitBundle("dest/vendor.js"),
+      splitBundle("dest/vendor.js", { match: { path: /\/node_modules\// } }),
       splitBundle("dest/renderer.js", { match: { path: /src\/renderer/ } })
     ]
   }
