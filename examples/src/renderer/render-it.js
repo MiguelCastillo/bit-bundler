@@ -1,9 +1,11 @@
+import log2console from 'log2console';
+
 class RenderIt {
   constructor() {
   }
 
   render() {
-    console.log('base render-it!');
+    log2console('base render-it!');
   }
 }
 
