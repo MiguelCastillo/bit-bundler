@@ -5,7 +5,7 @@
     "belty": "^4.0.3",
     "bit-bundler-browserpack": "^3.2.0",
     "bit-bundler-utils": "^5.0.0",
-    "bit-loader": "^4.0.5",
+    "bit-loader": "^4.1.1",
     "chalk": "^1.1.3",
     "chokidar": "^1.6.1",
     "dis-isa": "^1.2.3",
@@ -16,7 +16,7 @@
     "mkdirp": "^0.5.1",
     "ora": "^0.3.0",
     "p-stream": "^1.0.3",
-    "pretty-hrtime": "^1.0.2",
+    "pretty-hrtime": "^1.0.3",
     "setopt": "^1.0.0",
     "src-dest": "^1.0.2"
   },
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "babel-bits": "^1.0.1",
-    "babel-core": "^6.18.0",
+    "babel-core": "^6.18.2",
     "babel-preset-es2015": "^6.18.0",
     "babel-register": "^6.18.0",
     "bit-bundler-splitter": "^3.0.0",
@@ -35,7 +35,7 @@
     "bit-loader-js": "^1.2.1",
     "chai": "~3.5.0",
     "config-grunt-tasks": "^1.0.3",
-    "eslint-tap": "^1.1.0",
+    "eslint-tap": "^2.0.0",
     "grunt": "~1.0.1",
     "grunt-contrib-watch": "~1.0.0",
     "grunt-eslint": "^19.0.0",
@@ -45,7 +45,9 @@
     "sinon": "~1.17.6",
     "spromise": "^1.0.0"
   },
-  "browser": {},
+  "browser": {
+    
+  },
   "directories": {
     "test": "test"
   },
