@@ -38,7 +38,7 @@ $ npm install --save-dev bit-bundler
 
 The following example does a few things. It bundles JavaScript with node dependencies, transforms your assets with babel, creates multiple bundles, and watches for files changes.
 
-> By default, `bit-bundler` does not understand how to process [node dependencies](https://nodejs.org/api/modules.html#modules_all_together).  So we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to help us out here.
+> By default `bit-bundler` can load [node dependencies](https://nodejs.org/api/modules.html#modules_all_together), but it does not know how to *load* dependencies in order to build a dependency graph. To properly build a dependency from require and import statements we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js).
 
 ``` javascript
 var babelPlugin = require("bit-loader-babel");
