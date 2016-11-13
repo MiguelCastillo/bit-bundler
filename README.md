@@ -1,8 +1,8 @@
 <img src="https://raw.githubusercontent.com/MiguelCastillo/bit-bundler/master/img/bit-bundler_white.png" width="100%"></img>
 
-> Generate application bundles with ease.
+> Bundle your Web Application with ease.
 
-`bit-bundler` aims to simplify the process of generating application bundles with a focused, fluid, and intuitive API. The problem we are trying to solve is around setup complexity while providing a flexible environment that scales to meet more intricate requirements.
+`bit-bundler` aims to simplify bundling your web applications with a focused, fluid, and intuitive API. The problem we are trying to solve is around setup complexity while providing a flexible environment that scales to meet more intricate requirements.
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
