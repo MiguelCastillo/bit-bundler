@@ -42,7 +42,8 @@ function buildstatsStreamFactory(options) {
 
       process.stdout.write("build time: " + prettyHrtime(process.hrtime(startTime)) + "\n");
     }
-    else if (warnings.hasWarningsOrErrors(chunk)) {
+
+    if (warnings.hasWarningsOrErrors(chunk)) {
       if (spinner) {
         spinner.clear();
       }
