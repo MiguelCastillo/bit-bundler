@@ -7,7 +7,8 @@
 ### Key features:
 
 - Designed with configuration simplicity as a primary goal.
-- Friendly and flexible plugin system with pattern matching for fine grained control of your assets.
+- Friendly and flexible plugin system API for authoring plugins.
+- Pattern matching for fine grained control of your assets; match module path, filename, source content and so on...
 - Mulitple file type support via plugins; JavaScript, CSS, JSON, Text...
 
 
