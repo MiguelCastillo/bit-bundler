@@ -7,9 +7,9 @@
 ### Key features:
 
 - Designed with configuration simplicity as a primary goal.
-- Friendly and flexible plugin system API for authoring plugins.
+- Friendly and flexible plugin API for authoring plugins.
 - Pattern matching for fine grained control of your assets; match module path, filename, source content and so on...
-- Bundle mulitple file types via plugins; JavaScript, CSS, JSON, Text...
+- Bundle different file types via plugins; JavaScript, CSS, JSON, Text...
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
