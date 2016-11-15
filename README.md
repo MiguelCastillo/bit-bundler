@@ -93,6 +93,9 @@ Now just include the bundles in your HTML
 
 Head over to [examples](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples) for more setups.
 
+You can also checkout [bundler-war-room](https://github.com/MiguelCastillo/bundler-war-room) to try out `bit-bundler`.
+
+
 ## API
 
 ### Bitbundler(options) : Bitbundler
