@@ -4,6 +4,13 @@
 
 `bit-bundler` aims to simplify bundling your web applications with a focused, fluid, and intuitive API. The problem we are trying to solve is around setup complexity while providing a flexible environment that scales to meet more intricate requirements.
 
+### Key features:
+
+- Designed with configuration simplicity as a primary goal.
+- Friendly and flexible plugin system API for authoring plugins.
+- Pattern matching for fine grained control of your assets; match module path, filename, source content and so on...
+- Bundle mulitple file types via plugins; JavaScript, CSS, JSON, Text...
+
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -17,10 +24,10 @@
   - [Bitbundler.bundle(files, options) : Promise](#bitbundlerbundlefiles-options--promise)
   - [Bitbundler.dest(destination) : Function](#bitbundlerdestdestination--function)
   - [Bitbundler.watch(context, options) : Context](#bitbundlerwatchcontext-options--context)
-- [Context](#context)
 - [Loader Plugins](#loader-plugins)
 - [Bundler Plugins](#bundler-plugins)
 - [Integrations](#integrations)
+- [Context](#context)
 - [Tech summary](#tech-summary)
 - [Processing flow](#processing-flow)
 - [License](#license)
@@ -42,6 +49,7 @@ The following example does a few things. It bundles JavaScript with node depende
 
 ``` javascript
 var babelPlugin = require("bit-loader-babel");
+var eslintPlugin = require("bit-eslint");
 var jsPlugin = require("bit-loader-js");
 var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
@@ -50,6 +58,7 @@ var bitbundler = new Bitbundler({
   watch: true,
   loader: {
     plugins: [
+      eslintPlugin(),
       jsPlugin(),
       babelPlugin()
     ]
@@ -83,6 +92,9 @@ Now just include the bundles in your HTML
 ```
 
 Head over to [examples](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples) for more setups.
+
+You can also checkout [bundler-war-room](https://github.com/MiguelCastillo/bundler-war-room) to try out `bit-bundler`.
+
 
 ## API
 
@@ -208,6 +220,40 @@ Bitbundler
   });
 ```
 
+
+## Loader Plugins
+
+Loader plugins enable loading and processing of your assets via transforms and other loader hooks. Generally speaking, you will be using at least [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to load your JavaScript assets.
+
+This is the list of npm [bit-loader-plugin](https://www.npmjs.com/browse/keyword/bit-loader-plugin). Be sure to add the `bit-loader-plugin` keyword to the package.json when authoring your plugins.
+
+List of core loader plugins:
+
+- [bit-eslint](https://github.com/MiguelCastillo/bit-eslint) for integrating with eslint
+- [bit-loader-babel](https://github.com/MiguelCastillo/bit-loader-babel) for transpiling your code with babeljs
+- [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) for loading and processing JavaScript dependencies
+- [bit-loader-json](https://github.com/MiguelCastillo/bit-loader-json) for loading and processing JSON assets
+- [bit-loader-css](https://github.com/MiguelCastillo/bit-loader-css) for loading and processing CSS assets
+- [bit-loader-text](https://github.com/MiguelCastillo/bit-loader-text) for loading and processing text assets such as HTML
+- [bit-loader-builtins](https://github.com/MiguelCastillo/bit-loader-builtins) for handling built in node.js modules (process, path, crypto...)
+- [bit-loader-shimmer](https://github.com/MiguelCastillo/bit-loader-shimmer) for handling module shimming; modules that are not built as modules.
+- [bit-loader-cache](https://github.com/MiguelCastillo/bit-loader-cache) for module caching
+- [bit-loader-extensions](https://github.com/MiguelCastillo/bit-loader-extensions) for supporting loading modules without file extensions
+
+
+## Bundler Plugins
+
+Bundler plugins for processing of bundles and module graphs.
+
+- [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) for splitting bundles based on matching rules. This will handle splitting out your vendor modules.
+
+
+## Integrations
+
+- [grunt](https://github.com/MiguelCastillo/grunt-bit-bundler)
+- gulp: TODO
+
+
 ## Context
 
 When calling [bundle](#bundlefiles--promise) to generate bundles, a promise is returned that gives back a context when it is resolved. This context has the resulting bundles and the information used for generating the bundles. The context also has enough information to update bundles and a method to do so; `execute(files)`. The context is generated with the following information:
@@ -224,39 +270,6 @@ When calling [bundle](#bundlefiles--promise) to generate bundles, a promise is r
 > The context is generally used by plugins and post processors such as [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter), [Bitbundler.dest](#bitbundlerdestdestination--function), and [Bitbundler.watch](#bitbundlerwatchcontext-options--context).
 
 Once you have a context, you can call the `execute` method with a list of files that need to be reprocessed in order to regenerate new bundles. This exactly what [Bitbundler.watch](#bitbundlerwatchcontext-options--context) does internally.
-
-
-## Loader Plugins
-
-Loader plugins enable loading and processing of your assets via transforms and other loader hooks. Generally speaking, you will be using at least [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to load your JavaScript assets.
-
-This is the list of npm [bit-loader-plugin](https://www.npmjs.com/browse/keyword/bit-loader-plugin). Be sure to add the `bit-loader-plugin` keyword to the package.json when authoring your plugins.
-
-List of core loader plugins:
-
-- [bit-eslint](https://github.com/MiguelCastillo/bit-eslint) for integrating with eslint
-- [bit-loader-babel](https://github.com/MiguelCastillo/bit-loader-babel) for transpiling your code with babeljs
-- [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) for loading and processing JavaScript assets
-- [bit-loader-json](https://github.com/MiguelCastillo/bit-loader-json) for loading and processing JSON assets
-- [bit-loader-css](https://github.com/MiguelCastillo/bit-loader-css) for loading and processing css assets
-- [bit-loader-text](https://github.com/MiguelCastillo/bit-loader-text) for loading and processing text assets such as HTML
-- [bit-loader-builtins](https://github.com/MiguelCastillo/bit-loader-builtins) for handling built in node.js modules
-- [bit-loader-shimmer](https://github.com/MiguelCastillo/bit-loader-shimmer) for handling module shimming
-- [bit-loader-cache](https://github.com/MiguelCastillo/bit-loader-cache) for loading modules from cache
-- [bit-loader-extensions](https://github.com/MiguelCastillo/bit-loader-extensions) for supporting loading modules without file extensions
-
-
-## Bundler Plugins
-
-Bundler plugins for processing of bundles and module graphs.
-
-- [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) for splitting bundles based on matching rules. This will handle splitting out your vendor modules.
-
-
-## Integrations
-
-- [grunt](https://github.com/MiguelCastillo/grunt-bit-bundler)
-- gulp: TODO
 
 
 ## Tech summary
