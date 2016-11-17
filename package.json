@@ -5,7 +5,7 @@
     "belty": "^4.0.3",
     "bit-bundler-browserpack": "^3.2.0",
     "bit-bundler-utils": "^5.0.0",
-    "bit-loader": "^4.2.0",
+    "bit-loader": "^5.0.0",
     "chalk": "^1.1.3",
     "chokidar": "^1.6.1",
     "dis-isa": "^1.2.3",
@@ -45,7 +45,9 @@
     "sinon": "~1.17.6",
     "spromise": "^1.0.0"
   },
-  "browser": {},
+  "browser": {
+
+  },
   "directories": {
     "test": "test"
   },
