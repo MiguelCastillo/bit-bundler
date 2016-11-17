@@ -8,7 +8,7 @@
 
 - Reduce setup complexity
 - Friendly and flexible plugin API for authoring plugins
-- Pattern matching for fine grained control of your assets; match module `path`, `fileName`, `source` content.
+- Pattern matching for fine grained control of your assets; match module `name`, `filepath`, `filename`, `source` content.
 - Bundle different file types via plugins; JavaScript, CSS, JSON, Text...
 
 
@@ -70,8 +70,8 @@ var bitbundler = new Bitbundler({
   },
   bundler: {
     plugins: [
-      splitBundle("dest/vendor.js", { match: { path: /\/node_modules\// } }),
-      splitBundle("dest/renderer.js", { match: { path: /src\/renderer/ } })
+      splitBundle("dest/vendor.js", { match: { filepath: /\/node_modules\// } }),
+      splitBundle("dest/renderer.js", { match: { filepath: /src\/renderer/ } })
     ]
   }
 });
