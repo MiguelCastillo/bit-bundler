@@ -1,10 +1,12 @@
 var utils = require("belty");
+var types = require("dis-isa");
 var jsBundler = require("bit-bundler-browserpack");
 var configurator = require("setopt")();
 
 
 function Bundler(options) {
-  this._plugins = [];
+  this._prebundle = [];
+  this._postbundle = [];
 
   if (!options.provider) {
     options.provider = jsBundler(options);
@@ -27,11 +29,38 @@ Bundler.prototype.provider = function(provider) {
 
 
 Bundler.prototype.plugins = function(plugins) {
+  var bundler = this;
+
+  utils.toArray(plugins).forEach(function(plugin) {
+    if (types.isFunction(plugin)) {
+      plugin = {
+        prebundle: plugin
+      };
+    }
+
+    configurator.configure(bundler, plugin);
+  });
+
+  return this;
+};
+
+
+Bundler.prototype.prebundle = function(plugins) {
   if (!plugins) {
-    throw new TypeError("Must provide plugins to register");
+    throw new TypeError("Must provide plugins to register for prebundle");
   }
 
-  this._plugins = this._plugins.concat(utils.toArray(plugins));
+  this._prebundle = this._prebundle.concat(utils.toArray(plugins));
+  return this;
+};
+
+
+Bundler.prototype.postbundle = function(plugins) {
+  if (!plugins) {
+    throw new TypeError("Must provide plugins to register for postbundle");
+  }
+
+  this._postbundle = this._postbundle.concat(utils.toArray(plugins));
   return this;
 };
 
@@ -45,46 +74,35 @@ Bundler.prototype.bundle = function(context) {
     throw new TypeError("Bundler does not have a provider configured");
   }
 
-  //
-  // Run bundler first.  Not quite sure this is the best way to handle
-  // the flow of building bundles.
-  // return Promise
-  //   .resolve(this._provider.bundle(context))
-  //   .then(setBundle(context))
-  //   .then(runPlugins(this));
-  //
-
-  //
-  // Evaluate whether executing the plugins first is more efficient
-  // or desirable than building the main bundle and then forcing
-  // each and every plugin that splits the main bundle to rebundle
-  // the main bundle...  I currently can't see why we wouldn't want
-  // to run the plugins first, we are going this route for now.
-  //
-  var bundler = this;
-  return runPlugins(this)(context)
-    .then(function(context) {
-      return Promise
-        .resolve(bundler._provider.bundle(context))
-        .then(function(result) {
-          return context.setBundle(result);
-        });
-    });
+  return [runPlugins(this, this._prebundle), runBundler(this), runPlugins(this, this._postbundle)]
+    .reduce(function(promise, next) {
+      return promise.then(next);
+    }, Promise.resolve(context));
 };
 
 
-function runPlugins(bundler) {
+function runBundler(bundler) {
+  return function(context) {
+    return Promise
+      .resolve(bundler._provider.bundle(context))
+      .then(function(result) {
+        return context.setBundle(result);
+      });
+  };
+}
+
+
+function runPlugins(bundler, plugins) {
   return function pluginRunner(context) {
-    return bundler._plugins
-      .reduce(function(next, plugin) {
-        return next
-          .then(function(context) {
-            return plugin(bundler._provider, context);
-          })
-          .then(function(result) {
-            return context.configure(result);
-          });
-      }, Promise.resolve(context));
+    return plugins.reduce(function(next, plugin) {
+      return next
+        .then(function(context) {
+          return plugin(bundler._provider, context);
+        })
+        .then(function(result) {
+          return context.configure(result);
+        });
+    }, Promise.resolve(context));
   };
 }
 
