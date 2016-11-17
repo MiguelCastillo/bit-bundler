@@ -6,9 +6,9 @@
 
 ### Key features:
 
-- Designed with configuration simplicity as a primary goal.
-- Friendly and flexible plugin API for authoring plugins.
-- Pattern matching for fine grained control of your assets; match module path, filename, source content and so on...
+- Reduce setup complexity
+- Friendly and flexible plugin API for authoring plugins
+- Pattern matching for fine grained control of your assets; match module `path`, `fileName`, `source` content.
 - Bundle different file types via plugins; JavaScript, CSS, JSON, Text...
 
 
@@ -16,8 +16,11 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
 
-- [Install](#install)
 - [Example](#example)
+  - [install bit-bundler and plugins](#install-bit-bundler-and-plugins)
+  - [setup bit-bundler config](#setup-bit-bundler-config)
+  - [run bit-bundler config via node](#run-bit-bundler-config-via-node)
+  - [now just include the bundles in your HTML](#now-just-include-the-bundles-in-your-html)
 - [API](#api)
   - [Bitbundler(options) : Bitbundler](#bitbundleroptions--bitbundler)
   - [bundle(files) : Promise](#bundlefiles--promise)
@@ -35,24 +38,25 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
-## Install
-
-```
-$ npm install --save-dev bit-bundler
-```
-
 ## Example
 
-The following example does a few things. It bundles JavaScript with node dependencies, transforms your assets with babel, creates multiple bundles, and watches for files changes.
+The following example does a few things. It bundles JavaScript with node dependencies, transforms your assets with babel, creates multiple bundles, runs eslint, and watches for files changes; generally this setup is a great starting point.
 
 > By default `bit-bundler` *can resolve* [node dependencies](https://nodejs.org/api/modules.html#modules_all_together), but it does not know how to *load* dependencies in order to build a dependency graph. To properly build a dependency from require and import statements we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js).
 
+### install bit-bundler and plugins
+```
+$ npm install --save-dev bit-bundler bit-eslint bit-loader-js bit-loader-babel bit-loader-builtins bit-bundler-splitter
+```
+
+### setup bitbundler-config.js
 ``` javascript
+var Bitbundler = require("bit-bundler");
 var babelPlugin = require("bit-loader-babel");
 var eslintPlugin = require("bit-eslint");
 var jsPlugin = require("bit-loader-js");
+var nodeBuiltins = require("bit-loader-builtins");
 var splitBundle = require("bit-bundler-splitter");
-var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
   watch: true,
@@ -60,7 +64,8 @@ var bitbundler = new Bitbundler({
     plugins: [
       eslintPlugin(),
       jsPlugin(),
-      babelPlugin()
+      babelPlugin(),
+      nodeBuiltins()
     ]
   },
   bundler: {
@@ -77,7 +82,12 @@ bitbundler.bundle({
 });
 ```
 
-Now just include the bundles in your HTML
+### run bitbundler-config via node
+```
+$ node bitbundler-config.js
+```
+
+### now just include the bundles in your HTML
 
 ``` html
 <html>
@@ -93,7 +103,7 @@ Now just include the bundles in your HTML
 
 Head over to [examples](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples) for more setups.
 
-You can also checkout [bundler-war-room](https://github.com/MiguelCastillo/bundler-war-room) to try out `bit-bundler`.
+You can also checkout [bundler-war-room](https://github.com/MiguelCastillo/bundler-war-room) if you want to see a sample project with `bit-bundler`.
 
 
 ## API
