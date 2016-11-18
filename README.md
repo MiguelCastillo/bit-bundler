@@ -256,6 +256,7 @@ List of core loader plugins:
 Bundler plugins for processing of bundles and module graphs.
 
 - [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) for splitting bundles based on matching rules. This will handle splitting out your vendor modules.
+- [bit-bundler-banner](https://github.com/MiguelCastillo/bit-bundler-banner) for adding a string header to the resulting bundles.
 
 
 ## Integrations
