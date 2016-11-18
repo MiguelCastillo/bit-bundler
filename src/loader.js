@@ -34,7 +34,7 @@ function configureResolve(options) {
 
       return {
         id: "@notfound",
-        filepath: ""
+        path: ""
       };
     }
 
@@ -62,7 +62,7 @@ var moduleNotLoadedError = buildError.bind(null, "Unable to load module");
 var moduleNotResolvedError = buildError.bind(null, "Unable to resolve module");
 
 function buildError(title, meta) {
-  return title + " '" + meta.name + "'." + (meta.referrer ? " Referrer " + JSON.stringify(meta.referrer.filepath) : "");
+  return title + " '" + meta.name + "'." + (meta.referrer ? " Referrer " + JSON.stringify(meta.referrer.path) : "");
 }
 
 module.exports = Loader;
