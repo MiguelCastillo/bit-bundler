@@ -8,7 +8,7 @@
 
 - Reduce setup complexity
 - Friendly and flexible plugin API for authoring plugins
-- Pattern matching for fine grained control of your assets; match module `name`, `filename`, `source` content.
+- Pattern matching for fine grained control of your assets; match module `name`, `path`, `filename`, `source` content.
 - Bundle different file types via plugins; JavaScript, CSS, JSON, Text...
 
 
