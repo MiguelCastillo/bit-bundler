@@ -278,6 +278,7 @@ When calling [bundle](#bundlefiles--promise) to generate bundles, a promise is r
 - **`getLogger`** { function } - Method to create loggers. The method takes an optional string name which is used when logging messages.
 - **`setBundle`** { function } - Method to set the main bundle.
 - **`setShard`** { function } - Method to set a bundle shard.
+- **`visitBundles`** { function } - Visitor method that get called with each bundle; main and shards.
 
 > The context is generally used by plugins and post processors such as [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter), [Bitbundler.dest](#bitbundlerdestdestination--function), and [Bitbundler.watch](#bitbundlerwatchcontext-options--context).
 
