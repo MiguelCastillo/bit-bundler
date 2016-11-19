@@ -18,8 +18,8 @@
 
 - [Example](#example)
   - [install bit-bundler and plugins](#install-bit-bundler-and-plugins)
-  - [setup bit-bundler config](#setup-bit-bundler-config)
-  - [run bit-bundler config via node](#run-bit-bundler-config-via-node)
+  - [setup bitbundler-config.js](#setup-bitbundler-configjs)
+  - [run bitbundler-config via node](#run-bitbundler-config-via-node)
   - [now just include the bundles in your HTML](#now-just-include-the-bundles-in-your-html)
 - [API](#api)
   - [Bitbundler(options) : Bitbundler](#bitbundleroptions--bitbundler)
@@ -31,6 +31,7 @@
 - [Bundler Plugins](#bundler-plugins)
 - [Integrations](#integrations)
 - [Context](#context)
+- [Bundle](#bundle)
 - [Tech summary](#tech-summary)
 - [Processing flow](#processing-flow)
 - [License](#license)
