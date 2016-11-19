@@ -32,7 +32,6 @@ function buildstatsStreamFactory(options) {
       }
 
       process.stdout.write("build time: " + prettyHrtime(process.hrtime(startTime)) + "\n");
-      logBundleDetails(getData(chunk));
     }
     else if (isBuildFailure(chunk)) {
       if (spinner) {
@@ -41,6 +40,14 @@ function buildstatsStreamFactory(options) {
       }
 
       process.stdout.write("build time: " + prettyHrtime(process.hrtime(startTime)) + "\n");
+    }
+    else if (isBundleWriteSuccess(chunk)) {
+      if (spinner) {
+        spinner.clear();
+      }
+
+      var bundle = chunk.data[1];
+      process.stdout.write("bundle: [" + bundle.name + "] " + filesize(bundle.content.length) + "\n");
     }
 
     if (warnings.hasWarningsOrErrors(chunk)) {
@@ -56,7 +63,15 @@ function buildstatsStreamFactory(options) {
 }
 
 function getData(chunk) {
-  return chunk.data[1];
+  var data = chunk.data.slice(2).map(function(data) {
+    return "  " + data;
+  });
+
+  return [chunk.data[0]].concat(data).join("");
+}
+
+function isBundleWriteSuccess(chunk) {
+  return chunk.name === "bundler/writer" && chunk.data[0] === "write-success";
 }
 
 function isBuildStart(chunk) {
@@ -69,21 +84,6 @@ function isBuildSuccess(chunk) {
 
 function isBuildFailure(chunk) {
   return chunk.name === "bundler/context" && chunk.data[0] === "build-failed";
-}
-
-function logBundleDetails(context) {
-  if (context.bundle && context.bundle.result && context.bundle.modules.length) {
-    process.stdout.write("bundle: " + filesize(context.bundle.result.length) + "\n");
-  }
-
-  Object
-    .keys(context.shards)
-    .filter(function(dest) {
-      return context.shards[dest];
-    })
-    .forEach(function(dest) {
-      process.stdout.write("bundle shard " + "[" + dest + "]: " + filesize(context.shards[dest].result.length) + "\n");
-    });
 }
 
 module.exports = buildstatsStreamFactory;

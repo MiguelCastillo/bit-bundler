@@ -2,35 +2,49 @@ var fs = require("fs");
 var path = require("path");
 var mkdirp = require("mkdirp");
 var types = require("dis-isa");
-var logger = require("./logger").create("bundler/writer");
 
 function bundleWriter(defaultDest) {
   return function writerDelegate(context) {
     var file = context.file;
+    var logger = context.getLogger("bundler/writer");
 
-    Object
+    var pending = Object
       .keys(context.shards)
-      .forEach(function(dest) {
-        if (!context.shards[dest]) {
-          logger.log(dest, "is an empty bundle shard");
-        }
-
+      .map(function(dest) {
         if (context.shards[dest]) {
-          writeBundle(context.shards[dest], streamFactory(dest));
+          return Promise.resolve(writeBundle(logger, context.shards[dest], streamFactory(dest)));
+        }
+        else {
+          logger.log("bundle-empty", dest, "is an empty bundle");
         }
       });
 
     if (context.bundle) {
-      writeBundle(context.bundle, streamFactory(file.dest || defaultDest));
+      pending.push(
+        Promise.resolve(writeBundle(logger, context.bundle, streamFactory(file.dest || defaultDest)))
+      );
     }
 
-    return context;
+    return Promise.all(pending).then(function() {
+      return context;
+    });
   };
 }
 
-function writeBundle(bundle, stream) {
+function writeBundle(logger, bundle, stream) {
   if (stream) {
-    stream.write(bundle.result);
+    return new Promise(function(resolve, reject) {
+      stream.write(bundle.content, function(err) {
+        if (err) {
+          logger.error("write-failure", bundle, err);
+          reject(err);
+        }
+        else {
+          logger.log("write-success", bundle);
+          resolve();
+        }
+      });
+    });
   }
 }
 

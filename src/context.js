@@ -1,5 +1,6 @@
 var utils = require("belty");
 var File = require("src-dest");
+var Bundle = require("./bundle");
 var bundleWriter = require("./bundleWriter");
 var loggerFactory = require("./logger");
 
@@ -62,7 +63,9 @@ Context.prototype.execute = function(files) {
       return context.bundler.bundle(context);
     })
     .then(function(context) {
-      bundleWriter(context.file.dest)(context);
+      return bundleWriter(context.file.dest)(context);
+    })
+    .then(function(context) {
       logger.log("build-success", utils.omit(context, ["loader", "bundler"]));
       return context;
     }, function(err) {
@@ -77,7 +80,19 @@ Context.prototype.setFile = function(file) {
   });
 };
 
+Context.prototype.visitBundles = function(visitor) {
+  var context = this;
+
+  return Object.keys(context.shards).reduce(function(context, shardFile) {
+    return context.setShard(shardFile, visitor(context.shards[shardFile], shardFile, true));
+  }, context.setBundle(visitor(context.bundle, context.file.dest, false)));
+};
+
 Context.prototype.setBundle = function(bundle) {
+  if (bundle) {
+    bundle = new Bundle(bundle.name || "main", bundle, true);
+  }
+
   return this.configure({
     bundle: bundle
   });
@@ -85,7 +100,7 @@ Context.prototype.setBundle = function(bundle) {
 
 Context.prototype.setShard = function(name, shard) {
   var shards = utils.extend({}, this.shards);
-  shards[name] = shard;
+  shards[name] = new Bundle(name, shard);
 
   return this.configure({
     shards: shards
