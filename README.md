@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/MiguelCastillo/bit-bundler/master/img/bit-bundler_white.png" width="100%"></img>
 
-> Bundle your Web Application with ease.
+> JavaScript bundler for your Web Application.
 
 `bit-bundler` aims to simplify bundling your web applications with a focused, fluid, and intuitive API. The problem we are trying to solve is around setup complexity while providing a flexible environment that scales to meet more intricate requirements.
 
