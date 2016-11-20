@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/MiguelCastillo/bit-bundler/master/img/bit-bundler_white.png" width="100%"></img>
 
-> Bundle your Web Application with ease.
+> JavaScript bundler for your Web Application.
 
 `bit-bundler` aims to simplify bundling your web applications with a focused, fluid, and intuitive API. The problem we are trying to solve is around setup complexity while providing a flexible environment that scales to meet more intricate requirements.
 
@@ -258,6 +258,7 @@ Bundler plugins for processing of bundles and module graphs.
 
 - [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) for splitting bundles based on matching rules. This will handle splitting out your vendor modules.
 - [bit-bundler-banner](https://github.com/MiguelCastillo/bit-bundler-banner) for adding a string header to the resulting bundles.
+- [bit-bundler-minifyjs](https://github.com/MiguelCastillo/bit-bundler-minifyjs) for minifying your JavaScript assets.
 
 
 ## Integrations

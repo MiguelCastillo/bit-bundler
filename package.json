@@ -49,7 +49,7 @@
   "directories": {
     "test": "test"
   },
-  "description": "Bundle your Web Application with ease.",
+  "description": "JavaScript bundler for your Web Application",
   "repository": {
     "type": "git",
     "url": "https://github.com/MiguelCastillo/bit-bundler.git"
