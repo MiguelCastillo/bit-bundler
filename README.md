@@ -134,7 +134,7 @@ You can also checkout [bundler-war-room](https://github.com/MiguelCastillo/bundl
 
 Method to bundle a list of files. `bundle` returns a promise that returns a context when it is resolved.
 
-- **`files`** { string[] | string | { string : src, string: dest } | { string[]: src, string: dest } } - Files to be bundled. `but-bundler` uses [src-dest](https://github.com/MiguelCastillo/src-dest) to handle file configurations. Please do check it out if you need more details about configuring files.
+- **`files`** { string[] | string | { string : src, string: dest } | { string[]: src, string: dest } } - Files to be bundled. `bit-bundler` uses [src-dest](https://github.com/MiguelCastillo/src-dest) to handle file configurations. Please do check it out if you need more details about configuring files.
 
 
 Basic setup for bundling a file.
