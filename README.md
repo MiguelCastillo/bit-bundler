@@ -247,9 +247,10 @@ List of core loader plugins:
 - [bit-loader-css](https://github.com/MiguelCastillo/bit-loader-css) for loading and processing CSS assets
 - [bit-loader-text](https://github.com/MiguelCastillo/bit-loader-text) for loading and processing text assets such as HTML
 - [bit-loader-builtins](https://github.com/MiguelCastillo/bit-loader-builtins) for handling built in node.js modules (process, path, crypto...)
-- [bit-loader-shimmer](https://github.com/MiguelCastillo/bit-loader-shimmer) for handling module shimming; modules that are not built as modules.
+- [bit-loader-shimmer](https://github.com/MiguelCastillo/bit-loader-shimmer) for handling module shimming; modules that are not built as modules
 - [bit-loader-cache](https://github.com/MiguelCastillo/bit-loader-cache) for module caching
 - [bit-loader-extensions](https://github.com/MiguelCastillo/bit-loader-extensions) for supporting loading modules without file extensions
+- [bit-loader-excludes](https://github.com/MiguelCastillo/bit-loader-excludes) for specifying *module names* to be replaced with empty stub modules
 
 
 ## Bundler Plugins
