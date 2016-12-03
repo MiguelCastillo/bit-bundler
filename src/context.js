@@ -91,6 +91,10 @@ Context.prototype.visitBundles = function(visitor) {
 Context.prototype.setBundle = function(bundle) {
   if (bundle) {
     bundle = new Bundle(bundle.name || "main", bundle, true);
+
+    if (this.file.dest) {
+      bundle.dest = this.file.dest.replace(this.file.cwd, "");
+    }
   }
 
   return this.configure({
@@ -101,6 +105,7 @@ Context.prototype.setBundle = function(bundle) {
 Context.prototype.setShard = function(name, shard) {
   var shards = utils.extend({}, this.shards);
   shards[name] = new Bundle(name, shard);
+  shards[name].dest = name;
 
   return this.configure({
     shards: shards
