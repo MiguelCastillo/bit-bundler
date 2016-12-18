@@ -104,8 +104,14 @@ Context.prototype.setBundle = function(bundle) {
 
 Context.prototype.setShard = function(name, shard) {
   var shards = utils.extend({}, this.shards);
-  shards[name] = new Bundle(name, shard);
-  shards[name].dest = name;
+
+  if (shard) {
+    shards[name] = new Bundle(name, shard);
+    shards[name].dest = name;
+  }
+  else {
+    delete shards[name];
+  }
 
   return this.configure({
     shards: shards
