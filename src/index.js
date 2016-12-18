@@ -45,7 +45,9 @@ function createContext(file, options) {
   return new Context({
     file: file,
     loader: createLoader(options.loader),
-    bundler: createBundler(options.bundler)
+    bundler: createBundler(Object.assign({
+      umd: options.umd
+    }, options.bundler))
   });
 }
 
