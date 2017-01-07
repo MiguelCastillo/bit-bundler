@@ -47,14 +47,14 @@ The following example does a few things. It bundles JavaScript with node depende
 
 ### install bit-bundler and plugins
 ```
-$ npm install --save-dev bit-bundler bit-eslint bit-loader-js bit-loader-babel bit-loader-builtins bit-bundler-splitter
+$ npm install --save-dev bit-bundler bit-loader-eslint bit-loader-js bit-loader-babel bit-loader-builtins bit-bundler-splitter
 ```
 
 ### setup bitbundler-config.js
 ``` javascript
 var Bitbundler = require("bit-bundler");
 var babelPlugin = require("bit-loader-babel");
-var eslintPlugin = require("bit-eslint");
+var eslintPlugin = require("bit-loader-eslint");
 var jsPlugin = require("bit-loader-js");
 var nodeBuiltins = require("bit-loader-builtins");
 var splitBundle = require("bit-bundler-splitter");
@@ -240,7 +240,7 @@ This is the list of npm [bit-loader-plugin](https://www.npmjs.com/browse/keyword
 
 List of core loader plugins:
 
-- [bit-eslint](https://github.com/MiguelCastillo/bit-eslint) for integrating with eslint
+- [bit-loader-eslint](https://github.com/MiguelCastillo/bit-loader-eslint) for integrating with eslint
 - [bit-loader-babel](https://github.com/MiguelCastillo/bit-loader-babel) for transpiling your code with babeljs
 - [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) for loading and processing JavaScript dependencies
 - [bit-loader-json](https://github.com/MiguelCastillo/bit-loader-json) for loading and processing JSON assets
