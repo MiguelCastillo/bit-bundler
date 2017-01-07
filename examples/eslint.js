@@ -1,6 +1,6 @@
 var Bitbundler = require("bit-bundler");
 var jsPlugin = require("bit-loader-js");
-var eslintPlugin = require("bit-eslint");
+var eslintPlugin = require("bit-loader-eslint");
 
 var bitloader = new Bitbundler({
   watch: true,
