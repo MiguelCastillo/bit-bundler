@@ -6,6 +6,8 @@
 
 ### Key features:
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/MiguelCastillo/bit-bundler.svg)](https://greenkeeper.io/)
+
 - Reduce setup complexity
 - Friendly and flexible plugin API for authoring plugins
 - Pattern matching for fine grained control of your assets; match module `name`, `path`, `filename`, `source` content.
