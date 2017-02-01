@@ -2,7 +2,7 @@
   "name": "bit-bundler",
   "version": "5.3.5",
   "dependencies": {
-    "belty": "^4.0.3",
+    "belty": "^5.0.1",
     "bit-bundler-browserpack": "^3.2.0",
     "bit-bundler-utils": "^5.0.1",
     "bit-loader": "^5.0.3",
@@ -14,7 +14,7 @@
     "glob": "^7.1.1",
     "loggero": "^2.0.1",
     "mkdirp": "^0.5.1",
-    "ora": "^0.4.0",
+    "ora": "^1.1.0",
     "p-stream": "^1.0.3",
     "pretty-hrtime": "^1.0.3",
     "setopt": "^1.0.0",
