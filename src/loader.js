@@ -46,6 +46,11 @@ function configureResolve(options) {
 function configureFetch(options) {
   return function fetchModule(meta) {
     function handleError(err) {
+      if (err && err.code === "ENOENT" && options.ignoreNotFound) {
+        logger.warn("Module not found. Skipping it.", moduleNotFoundError(meta));
+        return Promise.resolve({ source: "module.exports = require('" + meta.name + "')" });
+      }
+
       logger.error(moduleNotLoadedError(meta), err);
       throw err;
     }
