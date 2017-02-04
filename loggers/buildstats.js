@@ -26,20 +26,26 @@ function buildstatsStreamFactory(options) {
       startTime = process.hrtime();
     }
     else if (isBuildSuccess(chunk)) {
+      var msg = "build success: " + prettyHrtime(process.hrtime(startTime));
+
       if (spinner) {
-        spinner.text = "build success";
+        spinner.text = msg;
         spinner.succeed();
       }
-
-      process.stdout.write("build time: " + prettyHrtime(process.hrtime(startTime)) + "\n");
+      else {
+        process.stdout.write(msg + "\n");
+      }
     }
     else if (isBuildFailure(chunk)) {
+      var msg = "build error: " + prettyHrtime(process.hrtime(startTime));
+
       if (spinner) {
-        spinner.text = "build failed";
+        spinner.text = msg;
         spinner.fail();
       }
-
-      process.stdout.write("build time: " + prettyHrtime(process.hrtime(startTime)) + "\n");
+      else {
+        process.stdout.write(msg + "\n");
+      }
     }
     else if (isBundleWriteSuccess(chunk)) {
       if (spinner) {
