@@ -60,9 +60,11 @@ Context.prototype.execute = function(files) {
       });
     })
     .then(function(context) {
+      logger.log("build-bundling");
       return context.bundler.bundle(context);
     })
     .then(function(context) {
+      logger.log("build-writing");
       return bundleWriter(context.file.dest)(context);
     })
     .then(function(context) {
