@@ -20,7 +20,7 @@ function buildstatsStreamFactory(options) {
         spinner.start();
       }
       else {
-        process.stdout.write("build in progress...\n");
+        process.stderr.write("build in progress...\n");
       }
 
       startTime = process.hrtime();
@@ -29,7 +29,13 @@ function buildstatsStreamFactory(options) {
       var msg = "build success: " + prettyHrtime(process.hrtime(startTime));
 
       if (spinner) {
-        spinner.text = msg;
+        spinner.succeed();
+
+        spinner = ora({
+          text: msg,
+          spinner: "dots"
+        });
+
         spinner.succeed();
       }
       else {
@@ -40,11 +46,43 @@ function buildstatsStreamFactory(options) {
       var msg = "build error: " + prettyHrtime(process.hrtime(startTime));
 
       if (spinner) {
-        spinner.text = msg;
+        spinner.succeed();
+
+        spinner = ora({
+          text: msg,
+          spinner: "dots"
+        });
+
         spinner.fail();
       }
       else {
-        process.stdout.write(msg + "\n");
+        process.stderr.write(msg + "\n");
+      }
+    }
+    else if (isBuildBundling(chunk)) {
+      if (spinner) {
+        spinner.text = spinner.text + ": " + prettyHrtime(process.hrtime(startTime));
+        spinner.succeed();
+
+        spinner = ora({
+          text: "creating bundles",
+          spinner: "dots"
+        });
+
+        spinner.start();
+      }
+    }
+    else if (isBuildWriting(chunk)) {
+      if (spinner) {
+        spinner.text = spinner.text + ": " + prettyHrtime(process.hrtime(startTime));
+        spinner.succeed();
+
+        spinner = ora({
+          text: "writing bundles",
+          spinner: "dots"
+        });
+
+        spinner.start();
       }
     }
     else if (isBundleWriteSuccess(chunk)) {
@@ -53,7 +91,11 @@ function buildstatsStreamFactory(options) {
       }
 
       var bundle = chunk.data[1];
-      process.stdout.write("bundle: [" + bundle.name + "] " + filesize(bundle.content.length) + "\n");
+      process.stderr.write("    bundle: [" + bundle.name + "] " + filesize(bundle.content.length) + "\n");
+
+      if (spinner) {
+        spinner.render();
+      }
     }
 
     if (warnings.hasWarningsOrErrors(chunk)) {
@@ -62,6 +104,10 @@ function buildstatsStreamFactory(options) {
       }
 
       warnings.logWarningsAndErrors(chunk, { showName: false });
+
+      if (spinner) {
+        spinner.render();
+      }
     }
 
     callback(null, chunk);
@@ -86,6 +132,14 @@ function isBuildStart(chunk) {
 
 function isBuildSuccess(chunk) {
   return chunk.name === "bundler/context" && chunk.data[0] === "build-success";
+}
+
+function isBuildBundling(chunk) {
+  return chunk.name === "bundler/context" && chunk.data[0] === "build-bundling";
+}
+
+function isBuildWriting(chunk) {
+  return chunk.name === "bundler/context" && chunk.data[0] === "build-writing";
 }
 
 function isBuildFailure(chunk) {
