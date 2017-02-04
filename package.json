@@ -1,6 +1,6 @@
 {
   "name": "bit-bundler",
-  "version": "5.3.5",
+  "version": "5.3.6",
   "dependencies": {
     "belty": "^5.0.1",
     "bit-bundler-browserpack": "^3.2.0",
@@ -45,9 +45,7 @@
     "sinon": "~1.17.7",
     "spromise": "^1.0.0"
   },
-  "browser": {
-    
-  },
+  "browser": {},
   "directories": {
     "test": "test"
   },
