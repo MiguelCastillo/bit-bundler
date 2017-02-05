@@ -4,6 +4,10 @@ var prettyHrtime = require("pretty-hrtime");
 var ora = require("ora");
 var warnings = require("./warnings");
 
+var FAILED = 0;
+var SUCCESS = 1;
+var NOMSG = null;
+
 function buildstatsStreamFactory(options) {
   options = options || {};
   var startTime, spinner;
@@ -11,78 +15,52 @@ function buildstatsStreamFactory(options) {
 
   return es.map(function(chunk, callback) {
     if (isBuildStart(chunk)) {
-      if (animation) {
-        spinner = ora({
-          text: "build in progress",
-          spinner: "dots"
-        });
+      var msg = "build in progress";
 
-        spinner.start();
+      if (animation) {
+        spinner = nextSpinner(msg).start();
       }
       else {
-        process.stderr.write("build in progress...\n");
+        process.stderr.write(msg + "...\n");
       }
 
       startTime = process.hrtime();
     }
     else if (isBuildSuccess(chunk)) {
-      var msg = "build success: " + prettyHrtime(process.hrtime(startTime));
+      var msg = "build success";
 
       if (spinner) {
-        spinner.succeed();
-
-        spinner = ora({
-          text: msg,
-          spinner: "dots"
-        });
-
-        spinner.succeed();
+        spinner = nextSpinner(msg, spinner, startTime, SUCCESS);
+        nextSpinner(NOMSG, spinner, startTime, SUCCESS);
       }
       else {
-        process.stdout.write(msg + "\n");
+        process.stdout.write(msg + ": "  + prettyHrtime(process.hrtime(startTime)) + "\n");
       }
     }
     else if (isBuildFailure(chunk)) {
-      var msg = "build error: " + prettyHrtime(process.hrtime(startTime));
+      var msg = "build error";
 
       if (spinner) {
-        spinner.succeed();
-
-        spinner = ora({
-          text: msg,
-          spinner: "dots"
-        });
-
-        spinner.fail();
+        spinner = nextSpinner(msg, spinner, startTime, SUCCESS);
+        nextSpinner(NOMSG, spinner, startTime, FAILED);
       }
       else {
-        process.stderr.write(msg + "\n");
+        process.stderr.write(msg + ": "  + prettyHrtime(process.hrtime(startTime)) + "\n");
       }
     }
     else if (isBuildBundling(chunk)) {
       if (spinner) {
-        spinner.text = spinner.text + ": " + prettyHrtime(process.hrtime(startTime));
-        spinner.succeed();
-
-        spinner = ora({
-          text: "creating bundles",
-          spinner: "dots"
-        });
-
-        spinner.start();
+        spinner = nextSpinner("creating bundles", spinner, startTime, SUCCESS).start();
       }
     }
     else if (isBuildWriting(chunk)) {
       if (spinner) {
-        spinner.text = spinner.text + ": " + prettyHrtime(process.hrtime(startTime));
-        spinner.succeed();
-
-        spinner = ora({
-          text: "writing bundles",
-          spinner: "dots"
-        });
-
-        spinner.start();
+        spinner = nextSpinner("writing bundles", spinner, startTime, SUCCESS).start();
+      }
+    }
+    else if (isBuildInfo(chunk)) {
+      if (spinner) {
+        nextSpinner(NOMSG, nextSpinner(chunk.data[1]).start(), startTime, SUCCESS);
       }
     }
     else if (isBundleWriteSuccess(chunk)) {
@@ -91,7 +69,7 @@ function buildstatsStreamFactory(options) {
       }
 
       var bundle = chunk.data[1];
-      process.stderr.write("    bundle: [" + bundle.name + "] " + filesize(bundle.content.length) + "\n");
+      process.stderr.write("  |- bundle: [" + bundle.name + "] " + filesize(bundle.content.length) + "\n");
 
       if (spinner) {
         spinner.render();
@@ -146,4 +124,22 @@ function isBuildFailure(chunk) {
   return chunk.name === "bundler/context" && chunk.data[0] === "build-failed";
 }
 
+function isBuildInfo(chunk) {
+  return chunk.data[0] === "build-info";
+}
+
 module.exports = buildstatsStreamFactory;
+
+
+function nextSpinner(text, prevSpinner, htime, success) {
+  if (prevSpinner) {
+    prevSpinner.text = prevSpinner.text + ": " + prettyHrtime(process.hrtime(htime));
+    success = success === undefined ? SUCCESS : success;
+    success === FAILED ? prevSpinner.fail() : prevSpinner.succeed();
+  }
+
+  return text && ora({
+    text: text,
+    spinner: "dots"
+  });
+}
