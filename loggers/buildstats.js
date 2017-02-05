@@ -2,6 +2,7 @@ var es = require("event-stream");
 var filesize = require("filesize");
 var prettyHrtime = require("pretty-hrtime");
 var ora = require("ora");
+var chalk = require('chalk');
 var warnings = require("./warnings");
 
 var FAILED = 0;
@@ -30,22 +31,14 @@ function buildstatsStreamFactory(options) {
       var msg = "build success";
 
       if (spinner) {
-        spinner = nextSpinner(msg, spinner, startTime, SUCCESS);
-        nextSpinner(NOMSG, spinner, startTime, SUCCESS);
-      }
-      else {
-        process.stdout.write(msg + ": "  + prettyHrtime(process.hrtime(startTime)) + "\n");
+        finishSpinner(nextSpinner(msg, spinner, startTime, SUCCESS), startTime, SUCCESS);
       }
     }
     else if (isBuildFailure(chunk)) {
-      var msg = "build error";
+      var msg = chalk.red("build error");
 
       if (spinner) {
-        spinner = nextSpinner(msg, spinner, startTime, SUCCESS);
-        nextSpinner(NOMSG, spinner, startTime, FAILED);
-      }
-      else {
-        process.stderr.write(msg + ": "  + prettyHrtime(process.hrtime(startTime)) + "\n");
+        finishSpinner(nextSpinner(msg, spinner, startTime, SUCCESS), startTime, FAILED);
       }
     }
     else if (isBuildBundling(chunk)) {
@@ -60,7 +53,7 @@ function buildstatsStreamFactory(options) {
     }
     else if (isBuildInfo(chunk)) {
       if (spinner) {
-        nextSpinner(NOMSG, nextSpinner(chunk.data[1]).start(), startTime, SUCCESS);
+        infoSpinner(chalk.cyan(">> ") + chunk.data[1], startTime);
       }
     }
     else if (isBundleWriteSuccess(chunk)) {
@@ -69,7 +62,7 @@ function buildstatsStreamFactory(options) {
       }
 
       var bundle = chunk.data[1];
-      process.stderr.write("  |- bundle: [" + bundle.name + "] " + filesize(bundle.content.length) + "\n");
+      infoSpinner(chalk.cyan("|- ") + "bundle: [" + bundle.name + "] " + filesize(bundle.content.length));
 
       if (spinner) {
         spinner.render();
@@ -132,14 +125,28 @@ module.exports = buildstatsStreamFactory;
 
 
 function nextSpinner(text, prevSpinner, htime, success) {
-  if (prevSpinner) {
-    prevSpinner.text = prevSpinner.text + ": " + prettyHrtime(process.hrtime(htime));
-    success = success === undefined ? SUCCESS : success;
-    success === FAILED ? prevSpinner.fail() : prevSpinner.succeed();
-  }
+  finishSpinner(prevSpinner, htime, success);
 
   return text && ora({
     text: text,
     spinner: "dots"
   });
+}
+
+function infoSpinner(text, htime) {
+  text = htime ? text + " " + prettyHrtime(process.hrtime(htime)) : text;
+
+  ora({
+    text: text,
+    spinner: "dots"
+  })
+  .stopAndPersist();
+}
+
+function finishSpinner(spinner, htime, success) {
+  if (spinner) {
+    spinner.text = spinner.text + ": " + prettyHrtime(process.hrtime(htime));
+    success = success === undefined ? SUCCESS : success;
+    success === FAILED ? spinner.fail() : spinner.succeed();
+  }
 }
