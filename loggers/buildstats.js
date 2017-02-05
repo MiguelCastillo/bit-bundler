@@ -16,13 +16,8 @@ function buildstatsStreamFactory(options) {
 
   return es.map(function(chunk, callback) {
     if (isBuildStart(chunk)) {
-      var msg = "build in progress";
-
       if (animation) {
-        spinner = nextSpinner(msg).start();
-      }
-      else {
-        process.stderr.write(msg + "...\n");
+        spinner = nextSpinner("build in progress").start();
       }
 
       startTime = process.hrtime();
