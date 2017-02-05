@@ -48,7 +48,13 @@ function buildstatsStreamFactory(options) {
     }
     else if (isBuildInfo(chunk)) {
       if (spinner) {
-        infoSpinner(chalk.cyan(">> ") + chunk.data[1], startTime);
+        var msg = (
+          chunk.level === 1 ? chalk.cyan("ⓘ  " + chunk.data[1])  :
+          chunk.level === 2 ? chalk.green("ⓦ  " + chunk.data[1]) :
+          chunk.level === 3 ? chalk.red("ⓔ  " + chunk.data[1]) : chunk.data[1]
+        );
+
+        infoSpinner(msg, startTime);
       }
     }
     else if (isBundleWriteSuccess(chunk)) {
@@ -57,7 +63,7 @@ function buildstatsStreamFactory(options) {
       }
 
       var bundle = chunk.data[1];
-      infoSpinner(chalk.cyan("|- ") + "bundle: [" + bundle.name + "] " + filesize(bundle.content.length));
+      infoSpinner(chalk.cyan("📦  ") + "[" + bundle.name + "] " + filesize(bundle.content.length));
 
       if (spinner) {
         spinner.render();
