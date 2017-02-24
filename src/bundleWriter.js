@@ -10,28 +10,29 @@ function bundleWriter(defaultDest) {
 
     var pending = Object
       .keys(context.shards)
-      .map(function(dest) {
-        if (context.shards[dest]) {
-          return Promise.resolve(writeBundle(logger, context.shards[dest], streamFactory(dest)));
-        }
-        else {
-          logger.log("bundle-empty", dest, "is an empty bundle");
-        }
-      });
+      .map(processShard)
+      .concat(Promise.resolve(writeBundle(logger, context.bundle, streamFactory(file.dest || defaultDest))));
 
-    if (context.bundle) {
-      pending.push(
-        Promise.resolve(writeBundle(logger, context.bundle, streamFactory(file.dest || defaultDest)))
-      );
+    return Promise.all(pending).then(function() { return context;});
+
+    function processShard(dest) {
+      var shard = context.shards[dest];
+
+      if (!shard || !shard.content) {
+        logger.log("bundle-empty", dest, "is an empty bundle");
+        return;
+      }
+
+      return Promise.resolve(writeBundle(logger, shard, streamFactory(dest)));
     }
-
-    return Promise.all(pending).then(function() {
-      return context;
-    });
   };
 }
 
 function writeBundle(logger, bundle, stream) {
+  if (!bundle || !bundle.content) {
+    return;
+  }
+
   if (stream) {
     return new Promise(function(resolve, reject) {
       stream.write(bundle.content, function(err) {

@@ -27,11 +27,7 @@ function Context(options) {
 }
 
 Context.prototype.configure = function(options) {
-  if (!options || this === options) {
-    return this;
-  }
-
-  return new Context(utils.extend({}, this, options));
+  return !options || this === options ? this : new Context(utils.extend({}, this, options));
 };
 
 Context.prototype.execute = function(files) {
@@ -43,6 +39,8 @@ Context.prototype.execute = function(files) {
     .fetch(files)
     .then(function(modules) {
       var updates = flattenModules(context.loader, modules);
+      var dest = context.file.dest ? context.dest.replace(context.file.cwd, "") : "";
+      var bundle = context.bundle || new Bundle("main", { dest: dest }, true);
 
       // TODO:
       // https://github.com/MiguelCastillo/bit-bundler/issues/81
@@ -54,7 +52,7 @@ Context.prototype.execute = function(files) {
         cache: context.loader.cache,
         modules: context.modules ? context.modules : modules,
         lastUpdatedModules: updates,
-        bundle: null,
+        bundle: bundle,
         shards: {},
         exclude: []
       });
@@ -91,16 +89,8 @@ Context.prototype.visitBundles = function(visitor) {
 };
 
 Context.prototype.setBundle = function(bundle) {
-  if (bundle) {
-    bundle = new Bundle(bundle.name || "main", bundle, true);
-
-    if (this.file.dest) {
-      bundle.dest = this.file.dest.replace(this.file.cwd, "");
-    }
-  }
-
   return this.configure({
-    bundle: bundle
+    bundle: bundle ? this.bundle.configure(bundle) : this.bundle.clear()
   });
 };
 
