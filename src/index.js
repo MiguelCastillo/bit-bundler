@@ -19,21 +19,14 @@ function Runner(options) {
   }
 
   this.options = options || {};
-  this.context = null;
-
   configureLogger(this.options.log, loggerFactory);
 }
 
 Runner.prototype.bundle = function(files) {
   var file = new File(files);
 
-  if (!this.context) {
-    this.context = createContext(file, this.options);
-  }
-
-  return this.context
+  return createContext(file, this.options)
     .execute(file.src)
-    .then(setContext.bind(this))
     .then(initWatch.bind(this));
 };
 
@@ -59,18 +52,8 @@ function createBundler(options) {
   return new Bundler(utils.merge({}, defaultOptions.bundler, options));
 }
 
-function setContext(ctx) {
-  if (!(ctx instanceof Context)) {
-    logger.error("Context was not returned after bundling");
-  }
-
-  this.context = ctx;
-  return ctx;
-}
-
 function initWatch(ctx) {
-  if (this.options.watch && !this.watching) {
-    this.watching = true;
+  if (this.options.watch) {
     watch(ctx, this.options.watch);
   }
 
