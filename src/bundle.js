@@ -1,9 +1,23 @@
 var configurator = require("setopt")();
+var utils = require("belty");
 
 function Bundle(name, options, main) {
   this.name = name;
   this.main = !!main;
   configurator.configure(this, options);
+}
+
+Bundle.prototype.configure = function(options) {
+  return !options || options === this ? this : new Bundle(this.name, utils.merge({}, this, options), this.main);
+};
+
+Bundle.prototype.clear = function() {
+  return this.configure({ content: null, sourcemap: null });
+};
+
+Bundle.prototype.setDest = function(dest) {
+  this.dest = dest;
+  return this;
 }
 
 Bundle.prototype.setName = function(name) {
