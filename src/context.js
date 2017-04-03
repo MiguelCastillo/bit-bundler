@@ -39,7 +39,7 @@ Context.prototype.execute = function(files) {
     .fetch(files)
     .then(function(modules) {
       var updates = flattenModules(context.loader, modules);
-      var dest = context.file.dest ? context.dest.replace(context.file.cwd, "") : "";
+      var dest = context.file.dest ? context.file.dest.replace(context.file.cwd, "") : "";
       var bundle = context.bundle || new Bundle("main", { dest: dest }, true);
 
       // TODO:
