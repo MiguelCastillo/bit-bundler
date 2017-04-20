@@ -145,8 +145,16 @@ describe("BitBundler test suite", function() {
     });
 
     describe("And updating a bundle with one files", function() {
+      var file;
+
       beforeEach(function() {
-        bitbundler.update(["test/sample/X.js"]);
+        file = new BitBundler.File("test/sample/X.js");
+
+        file.src.forEach(function(filePath) {
+          context.cache[filePath] = true;
+        });
+
+        bitbundler.update(file.src);
       });
 
       it("then context loader delete module is called", function() {
