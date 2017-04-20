@@ -3,7 +3,7 @@ var chokidar = require("chokidar");
 var File = require("src-dest");
 var logger = require("./logger").create("bundler/watch");
 
-function watch(context, options) {
+function watch(bitbundler, options) {
   if (options === true || !options) {
     options = {};
   }
@@ -16,7 +16,7 @@ function watch(context, options) {
   }
 
   var nextPaths = {}, inProgress;
-  var filesToWatch = Object.keys(context.cache).concat(include.src);
+  var filesToWatch = Object.keys(bitbundler.getModules()).concat(include.src);
   var watcher = chokidar.watch(filesToWatch, settings);
   var watching = utils.arrayToObject(filesToWatch);
 
@@ -31,7 +31,7 @@ function watch(context, options) {
     var paths = utils
       .toArray(path)
       .filter(function(path) {
-        return context.cache.hasOwnProperty(path);
+        return bitbundler.hasModule(path);
       });
 
     if (inProgress) {
@@ -42,18 +42,13 @@ function watch(context, options) {
     else if (paths.length) {
       inProgress = true;
 
-      paths.forEach(function(path) {
-        context.loader.deleteModule(context.cache[path]);
-      });
-
-      context.execute(paths).then(function(ctx) {
-        context = ctx;
+      bitbundler.update(paths).then(function(result) {
         paths.forEach(function(path) {
           logger.log("updated", path);
         });
 
         var newFiles = Object
-          .keys(ctx.lastUpdatedModules)
+          .keys(result.lastUpdatedModules)
           .filter(function(moduleId) {
             return !watching[moduleId];
           });
@@ -73,13 +68,13 @@ function watch(context, options) {
   }
 
   function onAdd(path) {
-    if (context.cache.hasOwnProperty(path) || include.src.indexOf(path) !== -1) {
+    if (bitbundler.hasModule(path) || include.src.indexOf(path) !== -1) {
       logger.log("watching", path);
     }
   }
 
   function onDelete(path) {
-    if (context.cache.hasOwnProperty(path) || include.src.indexOf(path) !== -1) {
+    if (bitbundler.hasModule(path) || include.src.indexOf(path) !== -1) {
       logger.log("removed", path);
     }
   }
@@ -94,8 +89,6 @@ function watch(context, options) {
       onChange(pendingPaths);
     }
   }
-
-  return context;
 }
 
 module.exports = watch;

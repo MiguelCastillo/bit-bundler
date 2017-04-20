@@ -1,32 +1,32 @@
 /*eslint quotes: ["off"]*/
 
 import { expect } from "chai";
-import Bundler from "../../src/index";
+import sinon from "sinon";
+import BitBundler from "../../src/index";
 import jsPlugin from "bit-loader-js";
 import splitBundle from "bit-bundler-splitter";
 
-describe("Bundler test suite", function() {
-  var act, bundler, config;
+describe("BitBundler test suite", function() {
+  var createBundler, bitbundler;
 
   beforeEach(function() {
-    act = () => bundler = new Bundler(config);
+    createBundler = (config) => bitbundler = new BitBundler(Object.assign({ log: false }, config));
   });
 
   describe("When creating a bundler with no configuration", function() {
     beforeEach(function() {
-      config = null;
-      act();
+      createBundler();
     });
 
     it("then the bundler is an instance of Bundler", function() {
-      expect(bundler).to.be.an.instanceof(Bundler);
+      expect(bitbundler).to.be.an.instanceof(BitBundler);
     });
 
     describe("and bundling a modules with a couple dependencies", function() {
       var result;
 
       beforeEach(function() {
-        return bundler.bundle("test/sample/X.js").then(function(ctx) {
+        return bitbundler.bundle("test/sample/X.js").then(function(ctx) {
           result = ctx;
         });
       });
@@ -39,24 +39,23 @@ describe("Bundler test suite", function() {
 
   describe("When creating a bundler with the JS plugin", function() {
     beforeEach(function() {
-      config = {
+      createBundler({
         log: false,
         loader: {
           plugins: jsPlugin()
         }
-      };
-      act();
+      });
     });
 
     it("then the bundler is an instance of Bundler", function() {
-      expect(bundler).to.be.an.instanceof(Bundler);
+      expect(bitbundler).to.be.an.instanceof(BitBundler);
     });
 
     describe("and bundling a module with a couple of dependencies", function() {
       var result;
 
       beforeEach(function() {
-        return bundler.bundle("test/sample/X.js").then(function(ctx) {
+        return bitbundler.bundle("test/sample/X.js").then(function(ctx) {
           result = ctx;
         });
       });
@@ -69,7 +68,7 @@ describe("Bundler test suite", function() {
 
   describe("When creating a bundler with the JS plugin and spitting bundles", function() {
     beforeEach(function() {
-      config = {
+      createBundler({
         log: false,
         loader: {
           plugins: jsPlugin()
@@ -80,19 +79,18 @@ describe("Bundler test suite", function() {
             splitBundle("test/dest/Z.js", { match: { fileName: "z.js" } })
           ]
         }
-      };
-      act();
+      });
     });
 
     it("then the bundler is an instance of Bundler", function() {
-      expect(bundler).to.be.an.instanceof(Bundler);
+      expect(bitbundler).to.be.an.instanceof(BitBundler);
     });
 
     describe("and bundling a module with a couple of dependencies", function() {
       var result;
 
       beforeEach(function() {
-        return bundler.bundle("test/sample/X.js").then(function(ctx) {
+        return bitbundler.bundle("test/sample/X.js").then(function(ctx) {
           result = ctx;
         });
       });
@@ -126,11 +124,66 @@ describe("Bundler test suite", function() {
       });
     });
   });
+
+  describe("Given a bundler", function() {
+    var context;
+
+    beforeEach(function() {
+      createBundler();
+      context = createMockContext();
+      bitbundler.context = context;
+    });
+
+    describe("And creating a bundle with one files", function() {
+      beforeEach(function() {
+        bitbundler.bundle(["test/sample/X.js"]);
+      });
+
+      it("then context is executed with the given file names", function() {
+        sinon.assert.calledWith(context.execute, sinon.match(arrayItemContains("test/sample/X.js")));
+      });
+    });
+
+    describe("And updating a bundle with one files", function() {
+      beforeEach(function() {
+        bitbundler.update(["test/sample/X.js"]);
+      });
+
+      it("then context loader delete module is called", function() {
+        sinon.assert.called(context.loader.deleteModule);
+      });
+
+      it("then context is executed with the given file names", function() {
+        sinon.assert.calledWith(context.execute, sinon.match(arrayItemContains("test/sample/X.js")));
+      });
+    });
+  });
 });
+
+function createMockContext() {
+  var context = {
+    execute: sinon.stub().returns(Promise.resolve(context)),
+    cache: {},
+    loader: {
+      deleteModule: sinon.stub(),
+    }
+  };
+
+  return context;
+}
 
 function trimResult(data) {
   return data
     .toString()
     .replace(/\n/g, "")
     .replace(/\/\/# sourceMappingURL=.*/, "");
+}
+
+
+function arrayItemContains(value) {
+  return function(array) {
+    return array.find(function(str) {
+      return str.indexOf(value) !== -1;
+    });
+  };
 }

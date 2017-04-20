@@ -42,12 +42,10 @@
     "grunt-release": "^0.14.0",
     "load-grunt-tasks": "^3.5.2",
     "mocha": "~3.2.0",
-    "sinon": "~2.1.0",
+    "sinon": "^2.1.0",
     "spromise": "^1.0.0"
   },
-  "browser": {
-    
-  },
+  "browser": {},
   "directories": {
     "test": "test"
   },

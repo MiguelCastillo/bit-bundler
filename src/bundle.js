@@ -18,7 +18,7 @@ Bundle.prototype.clear = function() {
 Bundle.prototype.setDest = function(dest) {
   this.dest = dest;
   return this;
-}
+};
 
 Bundle.prototype.setName = function(name) {
   this.name = name;
