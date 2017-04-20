@@ -126,17 +126,46 @@ describe("BitBundler test suite", function() {
   });
 
   describe("Given a bundler", function() {
-    var context;
+    var context, initBuild, preBuild, postBuild;
 
     beforeEach(function() {
       createBundler();
-      context = createMockContext();
-      bitbundler.context = context;
+      sinon.spy(bitbundler, "emit");
+      bitbundler.context = context = createMockContext();
+
+      initBuild = sinon.stub();
+      preBuild = sinon.stub();
+      postBuild = sinon.stub();
+
+      bitbundler
+        .on("init-build", initBuild)
+        .on("pre-build", preBuild)
+        .on("post-build", postBuild);
     });
 
     describe("And creating a bundle with one files", function() {
       beforeEach(function() {
-        bitbundler.bundle(["test/sample/X.js"]);
+        return bitbundler.bundle(["test/sample/X.js"]);
+      });
+
+      it("then emit is called with `init-build`", function() {
+        sinon.assert.calledWith(bitbundler.emit, "init-build");
+      });
+
+      it("then emit is called with `pre-build`", function() {
+        sinon.assert.calledWith(bitbundler.emit, "pre-build");
+      });
+
+      it("then initBuild event handler is called", function() {
+        sinon.assert.called(initBuild);
+      });
+
+      it("then preBuild event handler is called", function() {
+        sinon.assert.called(preBuild);
+      });
+
+      it("then postBuild event handler is called", function() {
+        sinon.assert.called(postBuild);
       });
 
       it("then context is executed with the given file names", function() {
@@ -154,11 +183,31 @@ describe("BitBundler test suite", function() {
           context.cache[filePath] = true;
         });
 
-        bitbundler.update(file.src);
+        return bitbundler.update(file.src);
+      });
+
+      it("then emit is called with `init-build`", function() {
+        sinon.assert.neverCalledWith(bitbundler.emit, "init-build");
+      });
+
+      it("then emit is called with `pre-build`", function() {
+        sinon.assert.calledWith(bitbundler.emit, "pre-build");
       });
 
       it("then context loader delete module is called", function() {
         sinon.assert.called(context.loader.deleteModule);
+      });
+
+      it("then initBuild event handler is NOT called", function() {
+        sinon.assert.notCalled(initBuild);
+      });
+
+      it("then preBuild event handler is called", function() {
+        sinon.assert.called(preBuild);
+      });
+
+      it("then postBuild event handler is called", function() {
+        sinon.assert.called(postBuild);
       });
 
       it("then context is executed with the given file names", function() {

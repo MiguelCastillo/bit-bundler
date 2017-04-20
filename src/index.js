@@ -2,7 +2,8 @@ var defaultOptions = require("./defaultOptions");
 var utils = require("belty");
 var File = require("src-dest");
 var types = require("dis-isa");
-var stream = require("stream");
+var EventEmitter = require("events");
+var Stream = require("stream");
 var Loader = require("./loader");
 var Bundler = require("./bundler");
 var Context = require("./context");
@@ -23,11 +24,17 @@ function BitBundler(options) {
   configureLogger(this.options.log, loggerFactory);
 }
 
+BitBundler.prototype = Object.create(EventEmitter.prototype);
+BitBundler.prototype.constructor = BitBundler;
+
+
 BitBundler.prototype.bundle = function(files) {
   var file = new File(files);
   var bitbundler = this;
-  var context = this.context || createContext(file, this.options);
+  var context = bitbundler.context || createContext(file, bitbundler.options);
   bitbundler.context = context;
+  bitbundler.emit("init-build", context);
+  bitbundler.emit("pre-build", context);
 
   return context.execute(file.src).then(function(ctx) {
     bitbundler.context = ctx;
@@ -36,6 +43,7 @@ BitBundler.prototype.bundle = function(files) {
       watch(bitbundler, bitbundler.options.watch);
     }
 
+    bitbundler.emit("post-build", ctx);
     return ctx;
   });
 };
@@ -43,7 +51,8 @@ BitBundler.prototype.bundle = function(files) {
 BitBundler.prototype.update = function(files) {
   var file = new File(files);
   var bitbundler = this;
-  var context = this.context;
+  var context = bitbundler.context;
+  bitbundler.emit("pre-build", context);
 
   file.src
     .filter(function(modulePath) {
@@ -55,6 +64,7 @@ BitBundler.prototype.update = function(files) {
 
   return context.execute(file.src).then(function(ctx) {
     bitbundler.context = ctx;
+    bitbundler.emit("post-build", ctx);
     return ctx;
   });
 };
@@ -103,7 +113,7 @@ function configureLogger(options, logger) {
         level: options
       };
     }
-    else if (options instanceof stream) {
+    else if (options instanceof Stream) {
       options = {
         stream: options
       };
