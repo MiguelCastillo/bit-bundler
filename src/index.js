@@ -41,8 +41,6 @@ BitBundler.prototype.bundle = function(files) {
 };
 
 BitBundler.prototype.update = function(files) {
-
-  console.log('===> run update');
   var file = new File(files);
   var bitbundler = this;
   var context = this.context;
