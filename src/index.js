@@ -31,19 +31,15 @@ BitBundler.prototype.constructor = BitBundler;
 BitBundler.prototype.bundle = function(files) {
   var file = new File(files);
   var bitbundler = this;
-  var context = bitbundler.context || createContext(file, bitbundler.options);
+  var context = bitbundler._createContext(file, bitbundler.options);
   bitbundler.context = context;
-  bitbundler.emit("init-build", context);
-  bitbundler.emit("pre-build", context);
+  bitbundler.emit("init-build");
 
-  return context.execute(file.src).then(function(ctx) {
-    bitbundler.context = ctx;
-
+  return bitbundler.update(files).then(function(ctx) {
     if (bitbundler.options.watch) {
       watch(bitbundler, bitbundler.options.watch);
     }
 
-    bitbundler.emit("post-build", ctx);
     return ctx;
   });
 };
@@ -52,21 +48,25 @@ BitBundler.prototype.update = function(files) {
   var file = new File(files);
   var bitbundler = this;
   var context = bitbundler.context;
-  bitbundler.emit("pre-build", context);
+  bitbundler.emit("pre-build");
 
   file.src
-    .filter(function(modulePath) {
-      return context.cache[modulePath];
+    .filter(function(filePath) {
+      return context.cache[filePath];
     })
-    .forEach(function(modulePath) {
-      context.loader.deleteModule(context.cache[modulePath]);
+    .forEach(function(filePath) {
+      context.loader.deleteModule(context.cache[filePath]);
     });
 
-  return context.execute(file.src).then(function(ctx) {
-    bitbundler.context = ctx;
-    bitbundler.emit("post-build", ctx);
-    return ctx;
-  });
+  return context.execute(file.src)
+    .then(function(ctx) {
+      bitbundler.context = ctx;
+      bitbundler.emit("build-success", ctx);
+      return ctx;
+    }, function(err) {
+      bitbundler.emit("build-failed", err);
+      throw err;
+    });
 };
 
 BitBundler.prototype.hasModule = function(modulePath) {
@@ -81,7 +81,7 @@ BitBundler.bundle = function(files, settings) {
   return new BitBundler(settings).bundle(files);
 };
 
-function createContext(file, options) {
+BitBundler.prototype._createContext = function(file, options) {
   return new Context({
     file: file,
     loader: createLoader(options.loader),
@@ -89,7 +89,7 @@ function createContext(file, options) {
       umd: options.umd
     }, options.bundler))
   });
-}
+};
 
 function createLoader(options) {
   return new Loader(utils.merge({}, defaultOptions.loader, options));

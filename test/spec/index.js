@@ -126,21 +126,24 @@ describe("BitBundler test suite", function() {
   });
 
   describe("Given a bundler", function() {
-    var context, initBuild, preBuild, postBuild;
+    var context, initBuild, preBuild, buildSuccess, buildFailed;
 
     beforeEach(function() {
       createBundler();
       sinon.spy(bitbundler, "emit");
-      bitbundler.context = context = createMockContext();
+      context = createMockContext();
+      bitbundler._createContext = sinon.stub().returns(context);
 
       initBuild = sinon.stub();
       preBuild = sinon.stub();
-      postBuild = sinon.stub();
+      buildSuccess = sinon.stub();
+      buildFailed = sinon.stub();
 
       bitbundler
         .on("init-build", initBuild)
         .on("pre-build", preBuild)
-        .on("post-build", postBuild);
+        .on("build-success", buildSuccess)
+        .on("build-failed", buildFailed);
     });
 
     describe("And creating a bundle with one files", function() {
@@ -164,8 +167,12 @@ describe("BitBundler test suite", function() {
         sinon.assert.called(preBuild);
       });
 
-      it("then postBuild event handler is called", function() {
-        sinon.assert.called(postBuild);
+      it("then buildSuccess event handler is called", function() {
+        sinon.assert.called(buildSuccess);
+      });
+
+      it("then buildFailed event handler is NOT called", function() {
+        sinon.assert.notCalled(buildFailed);
       });
 
       it("then context is executed with the given file names", function() {
@@ -183,6 +190,7 @@ describe("BitBundler test suite", function() {
           context.cache[filePath] = true;
         });
 
+        bitbundler.context = context;
         return bitbundler.update(file.src);
       });
 
@@ -206,12 +214,47 @@ describe("BitBundler test suite", function() {
         sinon.assert.called(preBuild);
       });
 
-      it("then postBuild event handler is called", function() {
-        sinon.assert.called(postBuild);
+      it("then buildSuccess event handler is called", function() {
+        sinon.assert.called(buildSuccess);
+      });
+
+      it("then buildFailed event handler is NOT called", function() {
+        sinon.assert.notCalled(buildFailed);
       });
 
       it("then context is executed with the given file names", function() {
         sinon.assert.calledWith(context.execute, sinon.match(arrayItemContains("test/sample/X.js")));
+      });
+    });
+
+    describe("And bundling fails", function() {
+      beforeEach(function() {
+        context.execute = sinon.stub().rejects("bad");
+        return bitbundler.bundle(["test/sample/X.js"]).catch(function() {});
+      });
+
+      it("then emit is called with `init-build`", function() {
+        sinon.assert.calledWith(bitbundler.emit, "init-build");
+      });
+
+      it("then emit is called with `pre-build`", function() {
+        sinon.assert.calledWith(bitbundler.emit, "pre-build");
+      });
+
+      it("then initBuild event handler is called", function() {
+        sinon.assert.called(initBuild);
+      });
+
+      it("then preBuild event handler is called", function() {
+        sinon.assert.called(preBuild);
+      });
+
+      it("then buildSuccess event handler is NOT called", function() {
+        sinon.assert.notCalled(buildSuccess);
+      });
+
+      it("then buildFailed event handler is called", function() {
+        sinon.assert.calledWith(buildFailed);
       });
     });
   });
@@ -219,7 +262,7 @@ describe("BitBundler test suite", function() {
 
 function createMockContext() {
   var context = {
-    execute: sinon.stub().returns(Promise.resolve(context)),
+    execute: sinon.stub().resolves(context),
     cache: {},
     loader: {
       deleteModule: sinon.stub(),
