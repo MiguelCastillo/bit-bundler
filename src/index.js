@@ -13,25 +13,62 @@ var buildstats = require("../loggers/buildstats");
 
 var logger = loggerFactory.create("bundler/runner");
 
-function Runner(options) {
-  if (!(this instanceof Runner)) {
-    return new Runner(options);
+function BitBundler(options) {
+  if (!(this instanceof BitBundler)) {
+    return new BitBundler(options);
   }
 
+  this.context = null;
   this.options = options || {};
   configureLogger(this.options.log, loggerFactory);
 }
 
-Runner.prototype.bundle = function(files) {
+BitBundler.prototype.bundle = function(files) {
   var file = new File(files);
+  var bitbundler = this;
+  var context = this.context || createContext(file, this.options);
+  bitbundler.context = context;
 
-  return createContext(file, this.options)
-    .execute(file.src)
-    .then(initWatch.bind(this));
+  return context.execute(file.src).then(function(ctx) {
+    bitbundler.context = ctx;
+
+    if (bitbundler.options.watch) {
+      watch(bitbundler, bitbundler.options.watch);
+    }
+
+    return ctx;
+  });
 };
 
-Runner.bundle = function(files, settings) {
-  return new Runner(settings).bundle(files);
+BitBundler.prototype.update = function(files) {
+  var file = new File(files);
+  var bitbundler = this;
+  var context = this.context;
+
+  file.src
+    .filter(function(modulePath) {
+      return context.cache[modulePath];
+    })
+    .forEach(function(modulePath) {
+      context.loader.deleteModule(context.cache[modulePath]);
+    });
+
+  return context.execute(file.src).then(function(ctx) {
+    bitbundler.context = ctx;
+    return ctx;
+  });
+};
+
+BitBundler.prototype.hasModule = function(modulePath) {
+  return this.context.cache.hasOwnProperty(modulePath);
+};
+
+BitBundler.prototype.getModules = function() {
+  return this.context.cache;
+};
+
+BitBundler.bundle = function(files, settings) {
+  return new BitBundler(settings).bundle(files);
 };
 
 function createContext(file, options) {
@@ -50,14 +87,6 @@ function createLoader(options) {
 
 function createBundler(options) {
   return new Bundler(utils.merge({}, defaultOptions.bundler, options));
-}
-
-function initWatch(ctx) {
-  if (this.options.watch) {
-    watch(ctx, this.options.watch);
-  }
-
-  return ctx;
 }
 
 function configureLogger(options, logger) {
@@ -89,9 +118,9 @@ function configureLogger(options, logger) {
   }
 };
 
-Runner.logger = logger;
-Runner.dest = bundleWriter;
-Runner.watch = watch;
-Runner.Context = Context;
-Runner.File = File;
-module.exports = Runner;
+BitBundler.logger = logger;
+BitBundler.dest = bundleWriter;
+BitBundler.watch = watch;
+BitBundler.Context = Context;
+BitBundler.File = File;
+module.exports = BitBundler;

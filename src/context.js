@@ -37,7 +37,7 @@ Context.prototype.execute = function(files) {
 
   return context.loader
     .fetch(files)
-    .then(function(modules) {
+    .then(function mergeModules(modules) {
       var updates = flattenModules(context.loader, modules);
       var dest = context.file.dest ? context.file.dest.replace(context.file.cwd, "") : "";
       var bundle = context.bundle || new Bundle("main", { dest: dest }, true);
@@ -57,11 +57,11 @@ Context.prototype.execute = function(files) {
         exclude: []
       });
     })
-    .then(function(context) {
+    .then(function createBundle(context) {
       logger.log("build-bundling");
       return context.bundler.bundle(context);
     })
-    .then(function(context) {
+    .then(function writeBundle(context) {
       logger.log("build-writing");
       return bundleWriter(context.file.dest)(context);
     })
