@@ -140,7 +140,7 @@ describe("BitBundler test suite", function() {
       bitbundler
         .on("init-build", initBuild)
         .on("pre-build", preBuild)
-        .on("post-build", postBuild)
+        .on("post-build", postBuild);
     });
 
     describe("And creating a bundle with one files", function() {
