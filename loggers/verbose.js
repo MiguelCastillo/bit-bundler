@@ -2,7 +2,7 @@ var chalk = require("chalk");
 var es = require("event-stream");
 var messageBuilder = require("./messageBuilder");
 
-function verboseStreamFactory() {
+function verboseStreamFactory(level) {
   return es.map(function(chunk, callback) {
     var msgs = messageBuilder(chunk);
 
@@ -13,10 +13,10 @@ function verboseStreamFactory() {
       chalk.blue
     );
 
-    if (msgs.length) {
-      console.log(color(">> [" + chunk.name + "]"));
-      msgs.forEach(function(d) { console.log("  " + d); });
-      console.log("");
+    if (msgs.length && chunk.level >= level) {
+      process.stderr(color(">> [" + chunk.name + "]"));
+      msgs.forEach(function(d) { process.stderr("  " + d + "\n"); });
+      process.stderr("\n");
     }
 
     callback(null, chunk);
