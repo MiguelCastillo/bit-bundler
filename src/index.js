@@ -61,7 +61,11 @@ BitBundler.prototype.update = function(files) {
   return context.execute(file.src)
     .then(function(ctx) {
       bitbundler.context = ctx;
+      bitbundler.emit("post-build");
       return ctx;
+    }, function(err) {
+      bitbundler.emit("post-build");
+      throw err;
     });
 };
 
@@ -114,11 +118,8 @@ function configureLogger(bitbundler, options, logger) {
 
   logger
     .enableAll()
-    .pipe(options ? option.stream : buildstats(options))
-    .pipe(es.map(function(chunk, callback) {
-      bitbundler.emit(chunk.name, chunk);
-      callback(null, chunk);
-    }));
+    .pipe(options && options.stream ? options.stream : buildstats(options))
+    .pipe(es.through(function(chunk) { bitbundler.emit(chunk.name, chunk); }));
 };
 
 BitBundler.dest = bundleWriter;

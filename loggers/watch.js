@@ -3,7 +3,7 @@ var es = require("event-stream");
 var messageBuilder = require("./messageBuilder");
 
 function watchStreamFactory() {
-  return es.map(function(chunk, callback) {
+  return es.through(function(chunk) {
     if (chunk.name === "bundler/watch") {
       var color = (
         chunk.level === 1 ? chalk.green :
@@ -18,8 +18,6 @@ function watchStreamFactory() {
         console.log(color(">> [" + chunk.name + "]"), msgs.join(" - "));
       }
     }
-
-    callback(null, chunk);
   });
 }
 

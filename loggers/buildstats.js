@@ -18,7 +18,7 @@ function buildstatsStreamFactory(options) {
   var level = logger.levels[settings.level || "warn"];
   var startTime, spinner;
 
-  return es.map(function(chunk, callback) {
+  return es.through(function(chunk) {
     if (isBuildStart(chunk)) {
       spinner = createSpinner("build in progress").start();
       startTime = process.hrtime();
@@ -45,8 +45,6 @@ function buildstatsStreamFactory(options) {
     else if (logEnabled && chunk.level >= level) {
       logChunk(spinner, chunk);
     }
-
-    callback(null, chunk);
   });
 }
 

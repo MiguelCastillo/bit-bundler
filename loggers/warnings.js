@@ -3,10 +3,7 @@ var es = require("event-stream");
 var messageBuilder = require("./messageBuilder");
 
 function warningsStreamFactory(options) {
-  return es.map(function(chunk, callback) {
-    logWarningsAndErrors(chunk, options);
-    callback(null, chunk);
-  });
+  return es.through(function(chunk) { logWarningsAndErrors(chunk, options); });
 }
 
 function logWarningsAndErrors(chunk, options) {
