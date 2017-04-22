@@ -2,15 +2,17 @@
 
 import { expect } from "chai";
 import sinon from "sinon";
+import es from "event-stream";
 import BitBundler from "../../src/index";
 import jsPlugin from "bit-loader-js";
 import splitBundle from "bit-bundler-splitter";
+import noopLogger from "../../loggers/noop";
 
 describe("BitBundler test suite", function() {
   var createBundler, bitbundler;
 
   beforeEach(function() {
-    createBundler = (config) => bitbundler = new BitBundler(Object.assign({ log: false }, config));
+    createBundler = (config) => bitbundler = new BitBundler(Object.assign({ log: { stream: noopLogger() } }, config || {}));
   });
 
   describe("When creating a bundler with no configuration", function() {
@@ -40,7 +42,6 @@ describe("BitBundler test suite", function() {
   describe("When creating a bundler with the JS plugin", function() {
     beforeEach(function() {
       createBundler({
-        log: false,
         loader: {
           plugins: jsPlugin()
         }
@@ -69,7 +70,6 @@ describe("BitBundler test suite", function() {
   describe("When creating a bundler with the JS plugin and spitting bundles", function() {
     beforeEach(function() {
       createBundler({
-        log: false,
         loader: {
           plugins: jsPlugin()
         },
@@ -126,7 +126,7 @@ describe("BitBundler test suite", function() {
   });
 
   describe("Given a bundler", function() {
-    var context, initBuild, preBuild, buildSuccess, buildFailed;
+    var context, initBuild, preBuild, postBuild;
 
     beforeEach(function() {
       createBundler();
@@ -136,14 +136,12 @@ describe("BitBundler test suite", function() {
 
       initBuild = sinon.stub();
       preBuild = sinon.stub();
-      buildSuccess = sinon.stub();
-      buildFailed = sinon.stub();
+      postBuild = sinon.stub();
 
       bitbundler
         .on("init-build", initBuild)
         .on("pre-build", preBuild)
-        .on("build-success", buildSuccess)
-        .on("build-failed", buildFailed);
+        .on("post-build", postBuild)
     });
 
     describe("And creating a bundle with one files", function() {
@@ -167,12 +165,8 @@ describe("BitBundler test suite", function() {
         sinon.assert.called(preBuild);
       });
 
-      it("then buildSuccess event handler is called", function() {
-        sinon.assert.called(buildSuccess);
-      });
-
-      it("then buildFailed event handler is NOT called", function() {
-        sinon.assert.notCalled(buildFailed);
+      it("then postBuild event handler is called", function() {
+        sinon.assert.called(postBuild);
       });
 
       it("then context is executed with the given file names", function() {
@@ -214,12 +208,8 @@ describe("BitBundler test suite", function() {
         sinon.assert.called(preBuild);
       });
 
-      it("then buildSuccess event handler is called", function() {
-        sinon.assert.called(buildSuccess);
-      });
-
-      it("then buildFailed event handler is NOT called", function() {
-        sinon.assert.notCalled(buildFailed);
+      it("then postBuild event handler is called", function() {
+        sinon.assert.called(postBuild);
       });
 
       it("then context is executed with the given file names", function() {
@@ -249,12 +239,8 @@ describe("BitBundler test suite", function() {
         sinon.assert.called(preBuild);
       });
 
-      it("then buildSuccess event handler is NOT called", function() {
-        sinon.assert.notCalled(buildSuccess);
-      });
-
-      it("then buildFailed event handler is called", function() {
-        sinon.assert.calledWith(buildFailed);
+      it("then postBuild event handler is called", function() {
+        sinon.assert.called(postBuild);
       });
     });
   });

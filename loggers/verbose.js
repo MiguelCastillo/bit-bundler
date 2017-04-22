@@ -3,7 +3,7 @@ var es = require("event-stream");
 var messageBuilder = require("./messageBuilder");
 
 function verboseStreamFactory(level) {
-  return es.map(function(chunk, callback) {
+  return es.through(function(chunk) {
     var msgs = messageBuilder(chunk);
 
     var color = (
@@ -18,8 +18,6 @@ function verboseStreamFactory(level) {
       msgs.forEach(function(d) { process.stderr("  " + d + "\n"); });
       process.stderr("\n");
     }
-
-    callback(null, chunk);
   });
 }
 

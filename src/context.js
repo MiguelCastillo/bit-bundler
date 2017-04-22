@@ -69,7 +69,7 @@ Context.prototype.execute = function(files) {
       logger.log("build-success", utils.omit(context, ["loader", "bundler"]));
       return context;
     }, function(err) {
-      logger.error("build-failed", err);
+      logger.error("build-failure", err);
       throw err;
     });
 };
