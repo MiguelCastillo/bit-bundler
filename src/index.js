@@ -4,6 +4,7 @@ var File = require("src-dest");
 var types = require("dis-isa");
 var EventEmitter = require("events");
 var Stream = require("stream");
+var es = require("event-stream");
 var Loader = require("./loader");
 var Bundler = require("./bundler");
 var Context = require("./context");
@@ -20,7 +21,7 @@ function BitBundler(options) {
 
   this.context = null;
   this.options = options || {};
-  configureLogger(this.options.log, logger);
+  configureLogger(this, this.options.log, logger);
 }
 
 BitBundler.prototype = Object.create(EventEmitter.prototype);
@@ -60,11 +61,7 @@ BitBundler.prototype.update = function(files) {
   return context.execute(file.src)
     .then(function(ctx) {
       bitbundler.context = ctx;
-      bitbundler.emit("build-success", ctx);
       return ctx;
-    }, function(err) {
-      bitbundler.emit("build-failed", err);
-      throw err;
     });
 };
 
@@ -98,7 +95,7 @@ function createBundler(options) {
   return new Bundler(utils.merge({}, defaultOptions.bundler, options));
 }
 
-function configureLogger(options, logger) {
+function configureLogger(bitbundler, options, logger) {
   if (options === true) {
     options = {
       level: "info"
@@ -115,8 +112,13 @@ function configureLogger(options, logger) {
     };
   }
 
-  logger.enableAll();
-  logger.pipe(options ? option.stream : buildstats(options));
+  logger
+    .enableAll()
+    .pipe(options ? option.stream : buildstats(options))
+    .pipe(es.map(function(chunk, callback) {
+      bitbundler.emit(chunk.name, chunk);
+      callback(null, chunk);
+    }));
 };
 
 BitBundler.dest = bundleWriter;
