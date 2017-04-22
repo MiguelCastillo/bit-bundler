@@ -9,10 +9,9 @@ var Bundler = require("./bundler");
 var Context = require("./context");
 var bundleWriter = require("./bundleWriter");
 var watch = require("./watch");
-var loggerFactory = require("./logger");
+var logger = require("./logger");
 var buildstats = require("../loggers/buildstats");
 
-var logger = loggerFactory.create("bundler/runner");
 
 function BitBundler(options) {
   if (!(this instanceof BitBundler)) {
@@ -21,7 +20,7 @@ function BitBundler(options) {
 
   this.context = null;
   this.options = options || {};
-  configureLogger(this.options.log, loggerFactory);
+  configureLogger(this.options.log, logger);
 }
 
 BitBundler.prototype = Object.create(EventEmitter.prototype);
@@ -100,35 +99,26 @@ function createBundler(options) {
 }
 
 function configureLogger(options, logger) {
-  if (options !== false) {
-    options = options || {};
-
-    if (options === true) {
-      options = {
-        level: "info"
-      };
-    }
-    else if (types.isString(options)) {
-      options = {
-        level: options
-      };
-    }
-    else if (options instanceof Stream) {
-      options = {
-        stream: options
-      };
-    }
-
-    logger.enableAll();
-    logger.level(logger.levels[options.level || "info"]);
-    logger.pipe(options.stream || buildstats());
+  if (options === true) {
+    options = {
+      level: "info"
+    };
   }
-  else {
-    logger.disable();
+  else if (types.isString(options)) {
+    options = {
+      level: options
+    };
   }
+  else if (options instanceof Stream) {
+    options = {
+      stream: options
+    };
+  }
+
+  logger.enableAll();
+  logger.pipe(options ? option.stream : buildstats(options));
 };
 
-BitBundler.logger = logger;
 BitBundler.dest = bundleWriter;
 BitBundler.watch = watch;
 BitBundler.Context = Context;

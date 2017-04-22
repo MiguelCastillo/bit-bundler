@@ -17,14 +17,14 @@ function logWarningsAndErrors(chunk, options) {
   );
 
   if (color) {
-    var msgs = messageBuilder(chunk);
+    var messages = messageBuilder(chunk);
 
-    if (msgs.length) {
+    if (messages.length) {
       if (chunk.name && options.showName !== false) {
         process.stderr.write(color(">> [" + chunk.name + "]") + "\n");
       }
 
-      msgs.forEach(function(d) { process.stderr.write("  " + d + "\n"); });
+      messages.forEach(function(message) { process.stderr.write("  " + message + "\n"); });
       process.stderr.write("\n");
     }
   }

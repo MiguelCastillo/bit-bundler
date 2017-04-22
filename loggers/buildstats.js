@@ -2,96 +2,52 @@ var es = require("event-stream");
 var filesize = require("filesize");
 var prettyHrtime = require("pretty-hrtime");
 var ora = require("ora");
-var chalk = require('chalk');
+var chalk = require("chalk");
+var logSymbols = require("./logSymbols");
+var messageBuilder = require("./messageBuilder");
 var warnings = require("./warnings");
+var logger = require("../src/logger");
 
 var FAILED = 0;
 var SUCCESS = 1;
 var NOMSG = null;
 
 function buildstatsStreamFactory(options) {
-  options = options || {};
+  var logEnabled = !(options === false);
+  var settings = options || {};
+  var level = logger.levels[settings.level || "warn"];
   var startTime, spinner;
-  var animation = options.animation !== false;
 
   return es.map(function(chunk, callback) {
     if (isBuildStart(chunk)) {
-      if (animation) {
-        spinner = nextSpinner("build in progress").start();
-      }
-
+      spinner = createSpinner("build in progress").start();
       startTime = process.hrtime();
     }
     else if (isBuildSuccess(chunk)) {
-      var msg = "build success";
-
-      if (spinner) {
-        finishSpinner(nextSpinner(msg, spinner, startTime, SUCCESS), startTime, SUCCESS);
-      }
+      finishSpinner(nextSpinner(spinner, "build success", startTime, SUCCESS).start(), startTime, SUCCESS);
     }
     else if (isBuildFailure(chunk)) {
-      var msg = chalk.red("build error");
-
-      if (spinner) {
-        finishSpinner(nextSpinner(msg, spinner, startTime, SUCCESS), startTime, FAILED);
-      }
+      finishSpinner(nextSpinner(spinner, "build error", startTime, SUCCESS).start(), startTime, FAILED);
     }
     else if (isBuildBundling(chunk)) {
-      if (spinner) {
-        spinner = nextSpinner("creating bundles", spinner, startTime, SUCCESS).start();
-      }
+      spinner = nextSpinner(spinner, "creating bundles", startTime, SUCCESS).start();
     }
     else if (isBuildWriting(chunk)) {
-      if (spinner) {
-        spinner = nextSpinner("writing bundles", spinner, startTime, SUCCESS).start();
-      }
+      spinner = nextSpinner(spinner, "writing bundles", startTime, SUCCESS).start();
     }
     else if (isBuildInfo(chunk)) {
-      if (spinner) {
-        var msg = (
-          chunk.level === 1 ? chalk.cyan("ⓘ  " + chunk.data[1])  :
-          chunk.level === 2 ? chalk.green("ⓦ  " + chunk.data[1]) :
-          chunk.level === 3 ? chalk.red("ⓔ  " + chunk.data[1]) : chunk.data[1]
-        );
-
-        infoSpinner(msg, startTime);
-      }
+      infoSpinner(spinner, chunk.data[1], startTime, chunk.level);
     }
     else if (isBundleWriteSuccess(chunk)) {
-      if (spinner) {
-        spinner.clear();
-      }
-
       var bundle = chunk.data[1];
-      infoSpinner(chalk.cyan("📦  ") + "[" + bundle.name + "] " + filesize(bundle.content.length));
-
-      if (spinner) {
-        spinner.render();
-      }
+      infoSpinner(spinner, chalk.cyan(logSymbols.package) + "  [" + bundle.name + "] " + filesize(bundle.content.length));
     }
-
-    if (warnings.hasWarningsOrErrors(chunk)) {
-      if (spinner) {
-        spinner.clear();
-      }
-
-      warnings.logWarningsAndErrors(chunk, { showName: false });
-
-      if (spinner) {
-        spinner.render();
-      }
+    else if (logEnabled && chunk.level >= level) {
+      logChunk(spinner, chunk);
     }
 
     callback(null, chunk);
   });
-}
-
-function getData(chunk) {
-  var data = chunk.data.slice(2).map(function(data) {
-    return "  " + data;
-  });
-
-  return [chunk.data[0]].concat(data).join("");
 }
 
 function isBundleWriteSuccess(chunk) {
@@ -122,32 +78,61 @@ function isBuildInfo(chunk) {
   return chunk.data[0] === "build-info";
 }
 
-module.exports = buildstatsStreamFactory;
+function logChunk(spinner, chunk) {
+  messageBuilder(chunk)
+    .filter(function(message) {
+      return message;
+    })
+    .forEach(function(message) {
+      infoSpinner(spinner, message);
+    });
+}
 
+function infoSpinner(spinner, text, htime, level) {
+  text = htime ? text + " " + prettyHrtime(process.hrtime(htime)) : text;
+  spinner.clear();
+  writeSpinner(spinner, text, level);
+  spinner.render();
+}
 
-function nextSpinner(text, prevSpinner, htime, success) {
-  finishSpinner(prevSpinner, htime, success);
+function writeSpinner(spinner, text, level) {
+  var spacer = "  ";
 
+  switch(level) {
+    case 1:
+      spinner.stream.write(logSymbols.info + spacer + text + "\n");
+      break;
+    case 2:
+      spinner.stream.write(logSymbols.warning + spacer + text + "\n");
+      break;
+    case 3:
+      spinner.stream.write(logSymbols.error + spacer + text + "\n");
+      break;
+    default:
+      spinner.stream.write(spacer + text + "\n");
+      break;
+  }
+
+  return spinner;
+}
+
+function createSpinner(text) {
   return text && ora({
     text: text,
     spinner: "dots"
   });
 }
 
-function infoSpinner(text, htime) {
-  text = htime ? text + " " + prettyHrtime(process.hrtime(htime)) : text;
-
-  ora({
-    text: text,
-    spinner: "dots"
-  })
-  .stopAndPersist();
+function nextSpinner(prevSpinner, text, htime, success) {
+  finishSpinner(prevSpinner, htime, success);
+  return createSpinner(text);
 }
 
 function finishSpinner(spinner, htime, success) {
-  if (spinner) {
-    spinner.text = spinner.text + ": " + prettyHrtime(process.hrtime(htime));
-    success = success === undefined ? SUCCESS : success;
-    success === FAILED ? spinner.fail() : spinner.succeed();
-  }
+  var text = spinner.text + ": " + prettyHrtime(process.hrtime(htime));
+  success = success === undefined ? SUCCESS : success;
+  success === FAILED ? spinner.fail(text) : spinner.succeed(text);
 }
+
+
+module.exports = buildstatsStreamFactory;
