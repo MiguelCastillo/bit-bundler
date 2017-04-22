@@ -71,7 +71,7 @@ function isBuildWriting(chunk) {
 }
 
 function isBuildFailure(chunk) {
-  return chunk.name === "bundler/context" && chunk.data[0] === "build-failed";
+  return chunk.name === "bundler/context" && chunk.data[0] === "build-failure";
 }
 
 function isBuildInfo(chunk) {
