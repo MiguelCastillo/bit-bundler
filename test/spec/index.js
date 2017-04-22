@@ -2,10 +2,9 @@
 
 import { expect } from "chai";
 import sinon from "sinon";
-import es from "event-stream";
-import BitBundler from "../../src/index";
 import jsPlugin from "bit-loader-js";
 import splitBundle from "bit-bundler-splitter";
+import BitBundler from "../../src/index";
 import noopLogger from "../../loggers/noop";
 
 describe("BitBundler test suite", function() {
