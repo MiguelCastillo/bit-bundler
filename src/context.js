@@ -4,7 +4,7 @@ var Bundle = require("./bundle");
 var bundleWriter = require("./bundleWriter");
 var loggerFactory = require("./logger");
 
-var logger = loggerFactory.create("bundler/context");
+var logger = loggerFactory.create("bundler/build");
 
 var defaults = {
   file: null,
