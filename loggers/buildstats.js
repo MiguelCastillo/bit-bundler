@@ -6,7 +6,6 @@ var chalk = require("chalk");
 var logSymbols = require("./logSymbols");
 var messageBuilder = require("./messageBuilder");
 var warnings = require("./warnings");
-var logger = require("../src/logger");
 
 var FAILED = 0;
 var SUCCESS = 1;
@@ -54,23 +53,23 @@ function isBundleWriteSuccess(chunk) {
 }
 
 function isBuildStart(chunk) {
-  return chunk.name === "bundler/context" && chunk.data[0] === "build-start";
+  return chunk.name === "bundler/build" && chunk.data[0] === "build-start";
 }
 
 function isBuildSuccess(chunk) {
-  return chunk.name === "bundler/context" && chunk.data[0] === "build-success";
+  return chunk.name === "bundler/build" && chunk.data[0] === "build-success";
 }
 
 function isBuildBundling(chunk) {
-  return chunk.name === "bundler/context" && chunk.data[0] === "build-bundling";
+  return chunk.name === "bundler/build" && chunk.data[0] === "build-bundling";
 }
 
 function isBuildWriting(chunk) {
-  return chunk.name === "bundler/context" && chunk.data[0] === "build-writing";
+  return chunk.name === "bundler/build" && chunk.data[0] === "build-writing";
 }
 
 function isBuildFailure(chunk) {
-  return chunk.name === "bundler/context" && chunk.data[0] === "build-failure";
+  return chunk.name === "bundler/build" && chunk.data[0] === "build-failure";
 }
 
 function isBuildInfo(chunk) {

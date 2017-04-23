@@ -2,11 +2,12 @@ var fs = require("fs");
 var path = require("path");
 var mkdirp = require("mkdirp");
 var types = require("dis-isa");
+var loggerFactory = require("./logger");
+var logger = loggerFactory.create("bundler/build");
 
 function bundleWriter(defaultDest) {
   return function writerDelegate(context) {
     var file = context.file;
-    var logger = context.getLogger("bundler/writer");
 
     var pending = Object
       .keys(context.shards)
@@ -19,7 +20,7 @@ function bundleWriter(defaultDest) {
       var shard = context.shards[dest];
 
       if (!shard || !shard.content) {
-        logger.log("bundle-empty", dest, "is an empty bundle");
+        logger.log("empty-bundle", dest);
         return;
       }
 
