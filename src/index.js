@@ -10,8 +10,10 @@ var Bundler = require("./bundler");
 var Context = require("./context");
 var bundleWriter = require("./bundleWriter");
 var watch = require("./watch");
-var logger = require("./logger");
+var loggerFactory = require("./logger");
 var buildstats = require("../loggers/buildstats");
+
+var logger = loggerFactory.create("bundler/build");
 
 
 function BitBundler(options) {
@@ -21,7 +23,8 @@ function BitBundler(options) {
 
   this.context = null;
   this.options = options || {};
-  configureLogger(this, this.options.log, logger);
+  configureNotifications(this, this.options.notifications);
+  configureLogger(this, this.options.log, loggerFactory);
 }
 
 BitBundler.prototype = Object.create(EventEmitter.prototype);
@@ -33,7 +36,7 @@ BitBundler.prototype.bundle = function(files) {
   var bitbundler = this;
   var context = bitbundler._createContext(file, bitbundler.options);
   bitbundler.context = context;
-  bitbundler.emit("init-build");
+  logger.log("init-build");
 
   return bitbundler.update(files).then(function(ctx) {
     if (bitbundler.options.watch) {
@@ -48,7 +51,7 @@ BitBundler.prototype.update = function(files) {
   var file = new File(files);
   var bitbundler = this;
   var context = bitbundler.context;
-  bitbundler.emit("pre-build");
+  logger.log("pre-build");
 
   file.src
     .filter(function(filePath) {
@@ -61,10 +64,10 @@ BitBundler.prototype.update = function(files) {
   return context.execute(file.src)
     .then(function(ctx) {
       bitbundler.context = ctx;
-      bitbundler.emit("post-build");
+      logger.log("post-build");
       return ctx;
     }, function(err) {
-      bitbundler.emit("post-build");
+      logger.log("post-build");
       throw err;
     });
 };
@@ -99,7 +102,17 @@ function createBundler(options) {
   return new Bundler(utils.merge({}, defaultOptions.bundler, options));
 }
 
-function configureLogger(bitbundler, options, logger) {
+function configureNotifications(bitbundler, options) {
+  var settings = options || {};
+
+  Object.keys(settings).forEach(function(option) {
+    [].concat(settings[option]).forEach(function(cb) {
+      bitbundler.on(option, cb);
+    });
+  });
+}
+
+function configureLogger(bitbundler, options, loggerFactory) {
   if (options === true) {
     options = {
       level: "info"
@@ -116,7 +129,7 @@ function configureLogger(bitbundler, options, logger) {
     };
   }
 
-  logger
+  loggerFactory
     .enableAll()
     .pipe(options && options.stream ? options.stream : buildstats(options))
     .pipe(es.through(function(chunk) { bitbundler.emit(chunk.name, chunk); }));
