@@ -6,7 +6,6 @@ var chalk = require("chalk");
 var logSymbols = require("./logSymbols");
 var messageBuilder = require("./messageBuilder");
 var warnings = require("./warnings");
-var logger = require("../src/logger");
 
 var FAILED = 0;
 var SUCCESS = 1;
@@ -15,10 +14,9 @@ var NOMSG = null;
 function buildstatsStreamFactory(options) {
   var logEnabled = !(options === false);
   var settings = options || {};
-  var level = logger.levels[settings.level || "warn"];
   var startTime, spinner;
 
-  return es.through(function(chunk) {
+  return es.map(function(chunk, callback) {
     if (isBuildStart(chunk)) {
       spinner = createSpinner("build in progress").start();
       startTime = process.hrtime();
@@ -42,9 +40,11 @@ function buildstatsStreamFactory(options) {
       var bundle = chunk.data[1];
       infoSpinner(spinner, chalk.cyan(logSymbols.package) + "  [" + bundle.name + "] " + filesize(bundle.content.length));
     }
-    else if (logEnabled && chunk.level >= level) {
+    else if (logEnabled && chunk.level >= 2) {
       logChunk(spinner, chunk);
     }
+
+    callback(null, chunk);
   });
 }
 
@@ -53,23 +53,23 @@ function isBundleWriteSuccess(chunk) {
 }
 
 function isBuildStart(chunk) {
-  return chunk.name === "bundler/context" && chunk.data[0] === "build-start";
+  return chunk.name === "bundler/build" && chunk.data[0] === "build-start";
 }
 
 function isBuildSuccess(chunk) {
-  return chunk.name === "bundler/context" && chunk.data[0] === "build-success";
+  return chunk.name === "bundler/build" && chunk.data[0] === "build-success";
 }
 
 function isBuildBundling(chunk) {
-  return chunk.name === "bundler/context" && chunk.data[0] === "build-bundling";
+  return chunk.name === "bundler/build" && chunk.data[0] === "build-bundling";
 }
 
 function isBuildWriting(chunk) {
-  return chunk.name === "bundler/context" && chunk.data[0] === "build-writing";
+  return chunk.name === "bundler/build" && chunk.data[0] === "build-writing";
 }
 
 function isBuildFailure(chunk) {
-  return chunk.name === "bundler/context" && chunk.data[0] === "build-failure";
+  return chunk.name === "bundler/build" && chunk.data[0] === "build-failure";
 }
 
 function isBuildInfo(chunk) {
