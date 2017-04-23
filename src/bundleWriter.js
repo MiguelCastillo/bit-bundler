@@ -12,7 +12,7 @@ function bundleWriter(defaultDest) {
     var pending = Object
       .keys(context.shards)
       .map(processShard)
-      .concat(Promise.resolve(writeBundle(logger, context.bundle, streamFactory(file.dest || defaultDest))));
+      .concat(writeBundle(logger, context.bundle, streamFactory(file.dest || defaultDest)));
 
     return Promise.all(pending).then(function() { return context;});
 
@@ -24,30 +24,28 @@ function bundleWriter(defaultDest) {
         return;
       }
 
-      return Promise.resolve(writeBundle(logger, shard, streamFactory(dest)));
+      return writeBundle(logger, shard, streamFactory(dest));
     }
   };
 }
 
 function writeBundle(logger, bundle, stream) {
-  if (!bundle || !bundle.content) {
-    return;
+  if (!bundle || !bundle.content || !stream) {
+    return Promise.resolve();
   }
 
-  if (stream) {
-    return new Promise(function(resolve, reject) {
-      stream.write(bundle.content, function(err) {
-        if (err) {
-          logger.error("write-failure", bundle, err);
-          reject(err);
-        }
-        else {
-          logger.log("write-success", bundle);
-          resolve();
-        }
-      });
+  return new Promise(function(resolve, reject) {
+    stream.write(bundle.content, function(err) {
+      if (err) {
+        logger.error("write-failure", bundle, err);
+        reject(err);
+      }
+      else {
+        logger.log("write-success", bundle);
+        resolve();
+      }
     });
-  }
+  });
 }
 
 function fileStream(dest) {
