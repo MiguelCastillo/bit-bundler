@@ -15,10 +15,9 @@ var NOMSG = null;
 function buildstatsStreamFactory(options) {
   var logEnabled = !(options === false);
   var settings = options || {};
-  var level = logger.levels[settings.level || "warn"];
   var startTime, spinner;
 
-  return es.through(function(chunk) {
+  return es.map(function(chunk, callback) {
     if (isBuildStart(chunk)) {
       spinner = createSpinner("build in progress").start();
       startTime = process.hrtime();
@@ -42,9 +41,11 @@ function buildstatsStreamFactory(options) {
       var bundle = chunk.data[1];
       infoSpinner(spinner, chalk.cyan(logSymbols.package) + "  [" + bundle.name + "] " + filesize(bundle.content.length));
     }
-    else if (logEnabled && chunk.level >= level) {
+    else if (logEnabled && chunk.level >= 2) {
       logChunk(spinner, chunk);
     }
+
+    callback(null, chunk);
   });
 }
 
