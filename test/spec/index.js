@@ -243,6 +243,64 @@ describe("BitBundler test suite", function() {
       });
     });
   });
+
+  describe("Given a bundler with a single function notifications configured", function() {
+    var notificationStub, initBuildStub, context;
+
+    beforeEach(function() {
+      initBuildStub = sinon.stub();
+      notificationStub = sinon.stub().returns({ "init-build": initBuildStub });
+      createBundler({ notifications: notificationStub });
+
+      sinon.spy(bitbundler, "emit");
+      context = createMockContext();
+      bitbundler._createContext = sinon.stub().returns(context);
+
+      return bitbundler.bundle(["test/sample/X.js"]);
+    });
+
+    it("then the notification function is called", function() {
+      sinon.assert.called(notificationStub);
+    });
+
+    it("then the registered init-build callback is called", function() {
+      sinon.assert.called(initBuildStub);
+    });
+  });
+
+  describe("Given a bundler with multiple function notifications configured", function() {
+    var notificationStub1, notificationStub2, initBuildStub1, initBuildStub2, context;
+
+    beforeEach(function() {
+      initBuildStub1 = sinon.stub();
+      initBuildStub2 = sinon.stub();
+      notificationStub1 = sinon.stub().returns({ "init-build": initBuildStub1 });
+      notificationStub2 = sinon.stub().returns({ "init-build": initBuildStub2 });
+      createBundler({ notifications: [notificationStub1, notificationStub2] });
+
+      sinon.spy(bitbundler, "emit");
+      context = createMockContext();
+      bitbundler._createContext = sinon.stub().returns(context);
+
+      return bitbundler.bundle(["test/sample/X.js"]);
+    });
+
+    it("then the first notification function is called", function() {
+      sinon.assert.called(notificationStub1);
+    });
+
+    it("then the second notification function is called", function() {
+      sinon.assert.called(notificationStub2);
+    });
+
+    it("then the first registered init-build callback is called", function() {
+      sinon.assert.called(initBuildStub1);
+    });
+
+    it("then the second registered init-build callback is called", function() {
+      sinon.assert.called(initBuildStub2);
+    });
+  });
 });
 
 function createMockContext() {
