@@ -301,6 +301,30 @@ describe("BitBundler test suite", function() {
       sinon.assert.called(initBuildStub2);
     });
   });
+
+  describe("Given a bundler with a single notification configured", function() {
+    var context, initBuildStub;
+
+    beforeEach(function() {
+      initBuildStub = sinon.stub();
+
+      createBundler({
+        notifications: {
+          "init-build": initBuildStub
+        }
+      });
+
+      sinon.spy(bitbundler, "emit");
+      context = createMockContext();
+      bitbundler._createContext = sinon.stub().returns(context);
+
+      return bitbundler.bundle(["test/sample/X.js"]);
+    });
+
+    it("then init-build callback is called", function() {
+      sinon.assert.called(initBuildStub);
+    });
+  });
 });
 
 function createMockContext() {
