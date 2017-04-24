@@ -102,12 +102,20 @@ function createBundler(options) {
   return new Bundler(utils.merge({}, defaultOptions.bundler, options));
 }
 
-function configureNotifications(bitbundler, options) {
-  var settings = options || {};
+function configureNotifications(bitbundler, notifications) {
+  if (!notifications) {
+    return;
+  }
 
-  Object.keys(settings).forEach(function(option) {
-    [].concat(settings[option]).forEach(function(cb) {
-      bitbundler.on(option, cb);
+  [].concat(notifications).forEach(function(notification) {
+    if (types.isFunction(notification)) {
+      notification = notification(bitbundler) || {};
+    }
+
+    Object.keys(notification).forEach(function(notificationName) {
+      [].concat(notification[notificationName]).forEach(function(cb) {
+        bitbundler.on(notificationName, cb);
+      });
     });
   });
 }
