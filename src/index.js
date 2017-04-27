@@ -71,7 +71,7 @@ Bitbundler.prototype.update = function(files) {
       logger.error("build-failure", err);
       logger.log("post-build");
       throw err;
-    })
+    });
 };
 
 Bitbundler.prototype.hasModule = function(modulePath) {

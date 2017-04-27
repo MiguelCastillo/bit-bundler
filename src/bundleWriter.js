@@ -7,7 +7,6 @@ var logger = loggerFactory.create("bundler/build");
 
 function bundleWriter() {
   return function writerDelegate(context) {
-    var file = context.file;
     var pending = [];
 
     context.visitBundles(function(bundle, dest, isMain) {
