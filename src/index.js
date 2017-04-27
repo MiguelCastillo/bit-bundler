@@ -65,17 +65,15 @@ Bitbundler.prototype.update = function(files) {
     .execute(file.src)
     .then(function writeBundle(context) {
       logger.log("build-writing");
-      return bundleWriter()(context);
+      return bitbundler._writeContext(context);
     })
     .then(function(context) {
+      bitbundler.context = context;
+
       context.visitBundles(function(bundle, dest, isMain) {
         logger.log(bundle.content ? "bundle" : "empty-bundle", bundle, isMain);
       });
 
-      return context;
-    })
-    .then(function(context) {
-      bitbundler.context = context;
       logger.log("build-success", context);
       logger.log("build-end");
       return context;
@@ -110,6 +108,10 @@ Bitbundler.prototype._createContext = function(file, options) {
       umd: options.umd
     }, options.bundler))
   });
+};
+
+Bitbundler.prototype._writeContext = function(context) {
+  return bundleWriter()(context);
 };
 
 function createLoader(options) {
