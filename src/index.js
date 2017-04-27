@@ -62,14 +62,16 @@ BitBundler.prototype.update = function(files) {
     });
 
   return context.execute(file.src)
-    .then(function(ctx) {
-      bitbundler.context = ctx;
+    .then(function(context) {
+      bitbundler.context = context;
+      logger.log("build-success", context);
       logger.log("post-build");
-      return ctx;
+      return context;
     }, function(err) {
+      logger.error("build-failure", err);
       logger.log("post-build");
       throw err;
-    });
+    })
 };
 
 BitBundler.prototype.hasModule = function(modulePath) {
@@ -78,6 +80,10 @@ BitBundler.prototype.hasModule = function(modulePath) {
 
 BitBundler.prototype.getModules = function() {
   return this.context.cache;
+};
+
+BitBundler.prototype.getLogger = function(name) {
+  return loggerFactory.create(name);
 };
 
 BitBundler.bundle = function(files, settings) {

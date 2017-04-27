@@ -64,13 +64,6 @@ Context.prototype.execute = function(files) {
     .then(function writeBundle(context) {
       logger.log("build-writing");
       return bundleWriter(context.file.dest)(context);
-    })
-    .then(function(context) {
-      logger.log("build-success", utils.omit(context, ["loader", "bundler"]));
-      return context;
-    }, function(err) {
-      logger.error("build-failure", err);
-      throw err;
     });
 };
 
@@ -84,8 +77,8 @@ Context.prototype.visitBundles = function(visitor) {
   var context = this;
 
   return Object.keys(context.shards).reduce(function(context, shardFile) {
-    return context.setShard(shardFile, visitor(context.shards[shardFile], shardFile, true));
-  }, context.setBundle(visitor(context.bundle, context.file.dest, false)));
+    return context.setShard(shardFile, visitor(context.shards[shardFile], shardFile, false));
+  }, context.setBundle(visitor(context.bundle, context.file.dest, true)));
 };
 
 Context.prototype.setBundle = function(bundle) {
