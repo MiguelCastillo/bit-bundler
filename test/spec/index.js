@@ -125,22 +125,23 @@ describe("BitBundler test suite", function() {
   });
 
   describe("Given a bundler", function() {
-    var context, initBuild, preBuild, postBuild;
+    var context, buildInit, buildStart, buildEnd;
 
     beforeEach(function() {
       createBundler();
       sinon.spy(bitbundler, "emit");
       context = createMockContext();
       bitbundler._createContext = sinon.stub().returns(context);
+      bitbundler._writeContext = sinon.stub().returns(context);
 
-      initBuild = sinon.stub();
-      preBuild = sinon.stub();
-      postBuild = sinon.stub();
+      buildInit = sinon.stub();
+      buildStart = sinon.stub();
+      buildEnd = sinon.stub();
 
       bitbundler
-        .on("init-build", initBuild)
-        .on("pre-build", preBuild)
-        .on("post-build", postBuild);
+        .on("build-init", buildInit)
+        .on("build-start", buildStart)
+        .on("build-end", buildEnd);
     });
 
     describe("And creating a bundle with one files", function() {
@@ -148,28 +149,32 @@ describe("BitBundler test suite", function() {
         return bitbundler.bundle(["test/sample/X.js"]);
       });
 
-      it("then emit is called with `init-build`", function() {
-        sinon.assert.calledWith(bitbundler.emit, "init-build");
+      it("then emit is called with `build-init`", function() {
+        sinon.assert.calledWith(bitbundler.emit, "build-init");
       });
 
-      it("then emit is called with `pre-build`", function() {
-        sinon.assert.calledWith(bitbundler.emit, "pre-build");
+      it("then emit is called with `build-start`", function() {
+        sinon.assert.calledWith(bitbundler.emit, "build-start");
       });
 
       it("then initBuild event handler is called", function() {
-        sinon.assert.called(initBuild);
+        sinon.assert.called(buildInit);
       });
 
       it("then preBuild event handler is called", function() {
-        sinon.assert.called(preBuild);
+        sinon.assert.called(buildStart);
       });
 
       it("then postBuild event handler is called", function() {
-        sinon.assert.called(postBuild);
+        sinon.assert.called(buildEnd);
       });
 
       it("then context is executed with the given file names", function() {
         sinon.assert.calledWith(context.execute, sinon.match(arrayItemContains("test/sample/X.js")));
+      });
+
+      it("then visitBundles is called", function() {
+        sinon.assert.called(context.visitBundles);
       });
     });
 
@@ -187,12 +192,12 @@ describe("BitBundler test suite", function() {
         return bitbundler.update(file.src);
       });
 
-      it("then emit is called with `init-build`", function() {
-        sinon.assert.neverCalledWith(bitbundler.emit, "init-build");
+      it("then emit is called with `build-init`", function() {
+        sinon.assert.neverCalledWith(bitbundler.emit, "build-init");
       });
 
-      it("then emit is called with `pre-build`", function() {
-        sinon.assert.calledWith(bitbundler.emit, "pre-build");
+      it("then emit is called with `build-start`", function() {
+        sinon.assert.calledWith(bitbundler.emit, "build-start");
       });
 
       it("then context loader delete module is called", function() {
@@ -200,15 +205,15 @@ describe("BitBundler test suite", function() {
       });
 
       it("then initBuild event handler is NOT called", function() {
-        sinon.assert.notCalled(initBuild);
+        sinon.assert.notCalled(buildInit);
       });
 
       it("then preBuild event handler is called", function() {
-        sinon.assert.called(preBuild);
+        sinon.assert.called(buildStart);
       });
 
       it("then postBuild event handler is called", function() {
-        sinon.assert.called(postBuild);
+        sinon.assert.called(buildEnd);
       });
 
       it("then context is executed with the given file names", function() {
@@ -222,24 +227,24 @@ describe("BitBundler test suite", function() {
         return bitbundler.bundle(["test/sample/X.js"]).catch(function() {});
       });
 
-      it("then emit is called with `init-build`", function() {
-        sinon.assert.calledWith(bitbundler.emit, "init-build");
+      it("then emit is called with `build-init`", function() {
+        sinon.assert.calledWith(bitbundler.emit, "build-init");
       });
 
-      it("then emit is called with `pre-build`", function() {
-        sinon.assert.calledWith(bitbundler.emit, "pre-build");
+      it("then emit is called with `build-start`", function() {
+        sinon.assert.calledWith(bitbundler.emit, "build-start");
       });
 
       it("then initBuild event handler is called", function() {
-        sinon.assert.called(initBuild);
+        sinon.assert.called(buildInit);
       });
 
       it("then preBuild event handler is called", function() {
-        sinon.assert.called(preBuild);
+        sinon.assert.called(buildStart);
       });
 
       it("then postBuild event handler is called", function() {
-        sinon.assert.called(postBuild);
+        sinon.assert.called(buildEnd);
       });
     });
   });
@@ -249,12 +254,13 @@ describe("BitBundler test suite", function() {
 
     beforeEach(function() {
       initBuildStub = sinon.stub();
-      notificationStub = sinon.stub().returns({ "init-build": initBuildStub });
+      notificationStub = sinon.stub().returns({ "build-init": initBuildStub });
       createBundler({ notifications: notificationStub });
 
       sinon.spy(bitbundler, "emit");
       context = createMockContext();
       bitbundler._createContext = sinon.stub().returns(context);
+      bitbundler._writeContext = sinon.stub().returns(context);
 
       return bitbundler.bundle(["test/sample/X.js"]);
     });
@@ -263,24 +269,25 @@ describe("BitBundler test suite", function() {
       sinon.assert.called(notificationStub);
     });
 
-    it("then the registered init-build callback is called", function() {
+    it("then the registered build-init callback is called", function() {
       sinon.assert.called(initBuildStub);
     });
   });
 
   describe("Given a bundler with multiple function notifications configured", function() {
-    var notificationStub1, notificationStub2, initBuildStub1, initBuildStub2, context;
+    var notificationStub1, notificationStub2, buildInitStub1, buildInitStub2, context;
 
     beforeEach(function() {
-      initBuildStub1 = sinon.stub();
-      initBuildStub2 = sinon.stub();
-      notificationStub1 = sinon.stub().returns({ "init-build": initBuildStub1 });
-      notificationStub2 = sinon.stub().returns({ "init-build": initBuildStub2 });
+      buildInitStub1 = sinon.stub();
+      buildInitStub2 = sinon.stub();
+      notificationStub1 = sinon.stub().returns({ "build-init": buildInitStub1 });
+      notificationStub2 = sinon.stub().returns({ "build-init": buildInitStub2 });
       createBundler({ notifications: [notificationStub1, notificationStub2] });
 
       sinon.spy(bitbundler, "emit");
       context = createMockContext();
       bitbundler._createContext = sinon.stub().returns(context);
+      bitbundler._writeContext = sinon.stub().returns(context);
 
       return bitbundler.bundle(["test/sample/X.js"]);
     });
@@ -293,12 +300,12 @@ describe("BitBundler test suite", function() {
       sinon.assert.called(notificationStub2);
     });
 
-    it("then the first registered init-build callback is called", function() {
-      sinon.assert.called(initBuildStub1);
+    it("then the first registered build-init callback is called", function() {
+      sinon.assert.called(buildInitStub1);
     });
 
-    it("then the second registered init-build callback is called", function() {
-      sinon.assert.called(initBuildStub2);
+    it("then the second registered build-init callback is called", function() {
+      sinon.assert.called(buildInitStub2);
     });
   });
 
@@ -310,18 +317,19 @@ describe("BitBundler test suite", function() {
 
       createBundler({
         notifications: {
-          "init-build": initBuildStub
+          "build-init": initBuildStub
         }
       });
 
       sinon.spy(bitbundler, "emit");
       context = createMockContext();
       bitbundler._createContext = sinon.stub().returns(context);
+      bitbundler._writeContext = sinon.stub().returns(context);
 
       return bitbundler.bundle(["test/sample/X.js"]);
     });
 
-    it("then init-build callback is called", function() {
+    it("then build-init callback is called", function() {
       sinon.assert.called(initBuildStub);
     });
   });
@@ -333,7 +341,8 @@ function createMockContext() {
     cache: {},
     loader: {
       deleteModule: sinon.stub(),
-    }
+    },
+    visitBundles: sinon.stub().returns(context)
   };
 
   return context;
