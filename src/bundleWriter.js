@@ -5,27 +5,21 @@ var types = require("dis-isa");
 var loggerFactory = require("./logger");
 var logger = loggerFactory.create("bundler/build");
 
-function bundleWriter(defaultDest) {
+function bundleWriter() {
   return function writerDelegate(context) {
     var file = context.file;
+    var pending = [];
 
-    var pending = Object
-      .keys(context.shards)
-      .map(processShard)
-      .concat(writeBundle(logger, context.bundle, streamFactory(file.dest || defaultDest)));
-
-    return Promise.all(pending).then(function() { return context;});
-
-    function processShard(dest) {
-      var shard = context.shards[dest];
-
-      if (!shard || !shard.content) {
-        logger.log("empty-bundle", dest);
-        return;
+    context.visitBundles(function(bundle, dest, isMain) {
+      if (bundle.content && dest) {
+        pending.push(writeBundle(logger, bundle, streamFactory(dest)));
       }
 
-      return writeBundle(logger, shard, streamFactory(dest));
-    }
+      logger.log(bundle.content ? "bundle" : "empty-bundle", bundle, isMain);
+      return bundle;
+    });
+
+    return Promise.all(pending).then(function() { return context;});
   };
 }
 
