@@ -36,7 +36,7 @@ Bitbundler.prototype.bundle = function(files) {
   var bitbundler = this;
   var context = bitbundler._createContext(file, bitbundler.options);
   bitbundler.context = context;
-  logger.log("init-build");
+  logger.log("build-init");
 
   return bitbundler.update(files).then(function(ctx) {
     if (bitbundler.options.watch) {
@@ -51,7 +51,7 @@ Bitbundler.prototype.update = function(files) {
   var file = new File(files);
   var bitbundler = this;
   var context = bitbundler.context;
-  logger.log("pre-build");
+  logger.log("build-start");
 
   file.src
     .filter(function(filePath) {
@@ -61,15 +61,27 @@ Bitbundler.prototype.update = function(files) {
       context.loader.deleteModule(context.cache[filePath]);
     });
 
-  return context.execute(file.src)
+  return context
+    .execute(file.src)
+    .then(function writeBundle(context) {
+      logger.log("build-writing");
+      return bundleWriter()(context);
+    })
+    .then(function(context) {
+      context.visitBundles(function(bundle, dest, isMain) {
+        logger.log(bundle.content ? "bundle" : "empty-bundle", bundle, isMain);
+      });
+
+      return context;
+    })
     .then(function(context) {
       bitbundler.context = context;
       logger.log("build-success", context);
-      logger.log("post-build");
+      logger.log("build-end");
       return context;
     }, function(err) {
       logger.error("build-failure", err);
-      logger.log("post-build");
+      logger.log("build-end");
       throw err;
     });
 };

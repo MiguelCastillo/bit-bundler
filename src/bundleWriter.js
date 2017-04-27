@@ -9,13 +9,10 @@ function bundleWriter() {
   return function writerDelegate(context) {
     var pending = [];
 
-    context.visitBundles(function(bundle, dest, isMain) {
+    context.visitBundles(function(bundle, dest) {
       if (bundle.content && dest) {
         pending.push(writeBundle(logger, bundle, streamFactory(dest)));
       }
-
-      logger.log(bundle.content ? "bundle" : "empty-bundle", bundle, isMain);
-      return bundle;
     });
 
     return Promise.all(pending).then(function() { return context;});
