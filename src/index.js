@@ -145,15 +145,14 @@ function configureLogger(bitbundler, options, loggerFactory) {
 
   loggerFactory
     .enableAll()
-    .pipe(options && options.stream ? options.stream : buildstats(options))
     .pipe(es.through(function(chunk) {
-      if (chunk.name === "bundler/build") {
-        bitbundler.emit.apply(bitbundler, chunk.data);
-      }
-      else {
+      chunk.name === "bundler/build" ?
+        bitbundler.emit.apply(bitbundler, chunk.data) :
         bitbundler.emit(chunk.name, chunk);
-      }
-    }));
+
+      this.emit("data", chunk);
+    }))
+    .pipe(options && options.stream ? options.stream : buildstats(options));
 };
 
 Bitbundler.dest = bundleWriter;

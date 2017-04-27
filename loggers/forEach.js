@@ -1,7 +1,10 @@
 var es = require("event-stream");
 
-function getchunkStreamFactory(cb) {
-  return es.through(function(chunk) { cb(chunk); });
+function forEachStreamFactory(cb) {
+  return es.through(function(chunk) {
+    cb(chunk);
+    this.emit("data", chunk);
+  });
 }
 
-module.exports = getchunkStreamFactory;
+module.exports = forEachStreamFactory;
