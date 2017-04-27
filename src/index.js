@@ -16,9 +16,9 @@ var buildstats = require("../loggers/buildstats");
 var logger = loggerFactory.create("bundler/build");
 
 
-function BitBundler(options) {
-  if (!(this instanceof BitBundler)) {
-    return new BitBundler(options);
+function Bitbundler(options) {
+  if (!(this instanceof Bitbundler)) {
+    return new Bitbundler(options);
   }
 
   this.context = null;
@@ -27,11 +27,11 @@ function BitBundler(options) {
   configureLogger(this, this.options.log, loggerFactory);
 }
 
-BitBundler.prototype = Object.create(EventEmitter.prototype);
-BitBundler.prototype.constructor = BitBundler;
+Bitbundler.prototype = Object.create(EventEmitter.prototype);
+Bitbundler.prototype.constructor = Bitbundler;
 
 
-BitBundler.prototype.bundle = function(files) {
+Bitbundler.prototype.bundle = function(files) {
   var file = new File(files);
   var bitbundler = this;
   var context = bitbundler._createContext(file, bitbundler.options);
@@ -47,7 +47,7 @@ BitBundler.prototype.bundle = function(files) {
   });
 };
 
-BitBundler.prototype.update = function(files) {
+Bitbundler.prototype.update = function(files) {
   var file = new File(files);
   var bitbundler = this;
   var context = bitbundler.context;
@@ -74,23 +74,23 @@ BitBundler.prototype.update = function(files) {
     })
 };
 
-BitBundler.prototype.hasModule = function(modulePath) {
+Bitbundler.prototype.hasModule = function(modulePath) {
   return this.context.cache.hasOwnProperty(modulePath);
 };
 
-BitBundler.prototype.getModules = function() {
+Bitbundler.prototype.getModules = function() {
   return this.context.cache;
 };
 
-BitBundler.prototype.getLogger = function(name) {
+Bitbundler.prototype.getLogger = function(name) {
   return loggerFactory.create(name);
 };
 
-BitBundler.bundle = function(files, settings) {
-  return new BitBundler(settings).bundle(files);
+Bitbundler.bundle = function(files, settings) {
+  return new Bitbundler(settings).bundle(files);
 };
 
-BitBundler.prototype._createContext = function(file, options) {
+Bitbundler.prototype._createContext = function(file, options) {
   return new Context({
     file: file,
     loader: createLoader(options.loader),
@@ -156,8 +156,8 @@ function configureLogger(bitbundler, options, loggerFactory) {
     }));
 };
 
-BitBundler.dest = bundleWriter;
-BitBundler.watch = watch;
-BitBundler.Context = Context;
-BitBundler.File = File;
-module.exports = BitBundler;
+Bitbundler.dest = bundleWriter;
+Bitbundler.watch = watch;
+Bitbundler.Context = Context;
+Bitbundler.File = File;
+module.exports = Bitbundler;
