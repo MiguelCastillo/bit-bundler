@@ -10,7 +10,6 @@ var logger = require("../src/logger");
 
 var FAILED = 0;
 var SUCCESS = 1;
-var NOMSG = null;
 
 function buildstatsStreamFactory(options) {
   var logEnabled = !(options === false);
@@ -80,9 +79,7 @@ function isBuildInfo(chunk) {
 
 function logChunk(spinner, chunk) {
   messageBuilder(chunk)
-    .filter(function(message) {
-      return message;
-    })
+    .filter(Boolean)
     .forEach(function(message) {
       infoSpinner(spinner, message);
     });
