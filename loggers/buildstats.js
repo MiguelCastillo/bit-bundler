@@ -5,7 +5,6 @@ var ora = require("ora");
 var chalk = require("chalk");
 var logSymbols = require("./logSymbols");
 var messageBuilder = require("./messageBuilder");
-var warnings = require("./warnings");
 var logger = require("../src/logger");
 
 var FAILED = 0;
@@ -17,7 +16,7 @@ function buildstatsStreamFactory(options) {
   var level = logger.levels[settings.level || "warn"];
   var startTime, spinner;
 
-  return es.map(function(chunk, callback) {
+  return es.through(function(chunk) {
     if (isBuildStart(chunk)) {
       spinner = createSpinner("build in progress").start();
       startTime = process.hrtime();
@@ -45,7 +44,7 @@ function buildstatsStreamFactory(options) {
       logChunk(spinner, chunk);
     }
 
-    callback(null, chunk);
+    this.emit("data", chunk);
   });
 }
 

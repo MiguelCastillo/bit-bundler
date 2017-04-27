@@ -18,6 +18,8 @@ function verboseStreamFactory(level) {
       msgs.forEach(function(d) { process.stderr("  " + d + "\n"); });
       process.stderr("\n");
     }
+
+    this.emit("data", chunk);
   });
 }
 

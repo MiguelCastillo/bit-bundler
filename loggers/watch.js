@@ -15,9 +15,11 @@ function watchStreamFactory() {
       var msgs = messageBuilder(chunk);
 
       if (msgs.length) {
-        console.log(color(">> [" + chunk.name + "]"), msgs.join(" - "));
+        process.stderr.write(color(">> [" + chunk.name + "]"), msgs.join(" - ") + "\n");
       }
     }
+
+    this.emit("data", chunk);
   });
 }
 
