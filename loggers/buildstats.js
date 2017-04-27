@@ -48,12 +48,12 @@ function buildstatsStreamFactory(options) {
   });
 }
 
-function isBundleWriteSuccess(chunk) {
-  return chunk.name === "bundler/build" && chunk.data[0] === "write-success";
-}
-
 function isBuildStart(chunk) {
   return chunk.name === "bundler/build" && chunk.data[0] === "build-start";
+}
+
+function isBundleWriteSuccess(chunk) {
+  return chunk.name === "bundler/build" && chunk.data[0] === "write-success";
 }
 
 function isBuildSuccess(chunk) {

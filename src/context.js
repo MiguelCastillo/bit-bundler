@@ -1,7 +1,6 @@
 var utils = require("belty");
 var File = require("src-dest");
 var Bundle = require("./bundle");
-var bundleWriter = require("./bundleWriter");
 var loggerFactory = require("./logger");
 
 var logger = loggerFactory.create("bundler/build");
@@ -33,8 +32,6 @@ Context.prototype.configure = function(options) {
 Context.prototype.execute = function(files) {
   var context = this;
 
-  logger.log("build-start", files);
-
   return context.loader
     .fetch(files)
     .then(function mergeModules(modules) {
@@ -58,12 +55,7 @@ Context.prototype.execute = function(files) {
       });
     })
     .then(function createBundle(context) {
-      logger.log("build-bundling");
       return context.bundler.bundle(context);
-    })
-    .then(function writeBundle(context) {
-      logger.log("build-writing");
-      return bundleWriter(context.file.dest)(context);
     });
 };
 
