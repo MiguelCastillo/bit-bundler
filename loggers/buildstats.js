@@ -6,6 +6,7 @@ var chalk = require("chalk");
 var logSymbols = require("./logSymbols");
 var messageBuilder = require("./messageBuilder");
 var logger = require("../src/logger");
+var overrideStreamWrite = require("./override-stream-write");
 
 var FAILED = 0;
 var SUCCESS = 1;
@@ -14,18 +15,25 @@ function buildstatsStreamFactory(options) {
   var logEnabled = !(options === false);
   var settings = options || {};
   var level = logger.levels[settings.level || "warn"];
+  var stdoutOverride = overrideStream(process.stdout).override();
+  var stderrOverride = overrideStream(process.stderr).override();
   var startTime, spinner;
 
   return es.through(function(chunk) {
+    stdoutOverride.restore();
+    stderrOverride.restore();
+
     if (isBuildStart(chunk)) {
-      spinner = createSpinner("build in progress").start();
       startTime = process.hrtime();
+      spinner = createSpinner("build in progress").start();
     }
     else if (isBuildSuccess(chunk)) {
       finishSpinner(nextSpinner(spinner, "build success", startTime, SUCCESS).start(), startTime, SUCCESS);
+      spinner = null;
     }
     else if (isBuildFailure(chunk)) {
       finishSpinner(nextSpinner(spinner, "build error", startTime, SUCCESS).start(), startTime, FAILED);
+      spinner = null;
     }
     else if (isBuildBundling(chunk)) {
       spinner = nextSpinner(spinner, "creating bundles", startTime, SUCCESS).start();
@@ -34,18 +42,39 @@ function buildstatsStreamFactory(options) {
       spinner = nextSpinner(spinner, "writing bundles", startTime, SUCCESS).start();
     }
     else if (isBuildInfo(chunk)) {
-      infoSpinner(spinner, chunk.data[1], startTime, chunk.level);
+      writeSpinner(spinner, chunk.data[1], startTime, chunk.level);
     }
     else if (isBundleWriteSuccess(chunk)) {
       var bundle = chunk.data[1];
-      infoSpinner(spinner, chalk.cyan(logSymbols.package) + "  [" + bundle.name + "] " + filesize(bundle.content.length));
+      writeSpinner(spinner, chalk.cyan(logSymbols.package) + "  [" + bundle.name + "] " + filesize(bundle.content.length));
     }
-    else if (logEnabled && chunk.level >= level) {
-      logChunk(spinner, chunk);
+    else {
+      if (logEnabled && chunk.level >= level) {
+        logChunk(spinner, chunk);
+      }
     }
 
+    stdoutOverride.override();
+    stderrOverride.override();
     this.emit("data", chunk);
   });
+
+  function overrideStream(stream) {
+    var overrideHandle = overrideStreamWrite(stream, function(data, encoding, cb) {
+      overrideHandle.restore();
+
+      if (spinner) {
+        writeSpinner(spinner, data, null, 4);
+      }
+      else {
+        stream.write(data, encoding, cb);
+      }
+
+      overrideHandle.override();
+    });
+
+    return overrideHandle;
+  }
 }
 
 function isBuildStart(chunk) {
@@ -80,40 +109,48 @@ function logChunk(spinner, chunk) {
   messageBuilder(chunk)
     .filter(Boolean)
     .forEach(function(message) {
-      infoSpinner(spinner, message);
+      writeSpinner(spinner, message);
     });
 }
 
-function infoSpinner(spinner, text, htime, level) {
+function writeSpinner(spinner, text, htime, level) {
   text = htime ? text + " " + prettyHrtime(process.hrtime(htime)) : text;
-  spinner.clear();
-  writeSpinner(spinner, text, level);
-  spinner.render();
+
+  if (!spinner || !spinner.enabled) {
+    writeStream(process.stderr, text, level);
+  }
+  else {
+    spinner.clear();
+    writeStream(spinner.stream, text, level);
+    spinner.render();
+  }
 }
 
-function writeSpinner(spinner, text, level) {
+function writeStream(stream, text, level) {
   var spacer = "  ";
 
   switch(level) {
     case 1:
-      spinner.stream.write(logSymbols.info + spacer + text + "\n");
+      stream.write(logSymbols.info + spacer + text + "\n");
       break;
     case 2:
-      spinner.stream.write(logSymbols.warning + spacer + text + "\n");
+      stream.write(logSymbols.warning + spacer + text + "\n");
       break;
     case 3:
-      spinner.stream.write(logSymbols.error + spacer + text + "\n");
+      stream.write(logSymbols.error + spacer + text + "\n");
+      break;
+    case 4:
+      stream.write(text);
       break;
     default:
-      spinner.stream.write(spacer + text + "\n");
+      stream.write(spacer + text + "\n");
       break;
   }
-
-  return spinner;
 }
 
 function createSpinner(text) {
-  return text && ora({
+  return ora({
+    stream: process.stderr,
     text: text,
     spinner: "dots"
   });
