@@ -6,7 +6,7 @@ var chalk = require("chalk");
 var logSymbols = require("./logSymbols");
 var messageBuilder = require("./messageBuilder");
 var logger = require("../src/logger");
-var overrideStreamWrite = require("./override-stream-write");
+var overrideStreamWrite = require("./overrideStreamWrite");
 
 var FAILED = 0;
 var SUCCESS = 1;
