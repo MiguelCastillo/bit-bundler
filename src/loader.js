@@ -8,7 +8,7 @@ function Loader(options) {
   this.pending = {};
   this.id = 0;
 
-  var loaderProc = childProcess.fork(path.resolve(__dirname, "./loaderProc.js"), {
+  var loaderProc = childProcess.fork(path.resolve(__dirname, "./loaderProc.js"), [], {
     cwd: process.cwd(),
     env: process.env,
     silent: true
