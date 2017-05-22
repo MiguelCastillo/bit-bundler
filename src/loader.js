@@ -1,24 +1,17 @@
 var path = require("path");
 var utils = require("belty");
-var childProcess = require('child_process');
+var resolvePath = require("bit-bundler-utils/resolvePath");
+var readFile = require("bit-bundler-utils/readFile");
+var pluginLoader = require("./pluginLoader");
+var logger = require("./logger").create("bundler/loader");
+
 
 function Loader(options) {
-  this.options = utils.assign({}, options);
-  this.cache = {};
-  this.pending = {};
-  this.id = 0;
-
-  var loaderProc = childProcess.fork(path.resolve(__dirname, "./loaderProc.js"), [], {
-    cwd: process.cwd(),
-    env: process.env,
-    silent: true
-  });
-
-  this.loaderProc = loaderProc;
-
-  loaderProc.stdout.pipe(process.stdout);
-  loaderProc.stderr.pipe(process.stderr);
-  registerLoaderProcHandlers(this);
+  Bitloader.call(this, utils.extend({}, options, {
+    resolve: configureResolve(options),
+    fetch: configureFetch(options),
+    plugins: pluginLoader(options.plugins)
+  }));
 }
 
 Loader.prototype.init = function() {
