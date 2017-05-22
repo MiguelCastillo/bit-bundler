@@ -12,7 +12,7 @@ function pluginLoader(plugins) {
         typeof plugin === "function" ? plugin :
         typeof plugin === "string" ? requireModule(plugin)() :
         plugin.constructor === Object ? requireModule(plugin.name)(plugin) :
-        Array.isArray(plugin) ? requireModule(plugin[0])(plugin[1]) : null
+        Array.isArray(plugin) ? requireModule(plugin[0]).apply(null, plugin.slice(1)) : null
       );
     });
 }
