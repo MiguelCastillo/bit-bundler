@@ -2,14 +2,16 @@ var Bitloader = require("bit-loader");
 var utils = require("belty");
 var resolvePath = require("bit-bundler-utils/resolvePath");
 var readFile = require("bit-bundler-utils/readFile");
+var pluginLoader = require("./pluginLoader");
 var logger = require("./logger").create("bundler/loader");
 
 
 function Loader(options) {
-  Bitloader.call(this, utils.extend({
+  Bitloader.call(this, utils.extend({}, options, {
     resolve: configureResolve(options),
-    fetch: configureFetch(options)
-  }, options));
+    fetch: configureFetch(options),
+    plugins: pluginLoader(options.plugins)
+  }));
 }
 
 

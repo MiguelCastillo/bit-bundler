@@ -2,6 +2,7 @@ var utils = require("belty");
 var types = require("dis-isa");
 var jsBundler = require("bit-bundler-browserpack");
 var configurator = require("setopt")();
+var pluginLoader = require("./pluginLoader");
 
 
 function Bundler(options) {
@@ -31,7 +32,7 @@ Bundler.prototype.provider = function(provider) {
 Bundler.prototype.plugins = function(plugins) {
   var bundler = this;
 
-  utils.toArray(plugins).forEach(function(plugin) {
+  pluginLoader(utils.toArray(plugins)).forEach(function(plugin) {
     if (types.isFunction(plugin)) {
       plugin = {
         prebundle: plugin

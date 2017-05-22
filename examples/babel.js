@@ -5,13 +5,13 @@ var babelPlugin = require("bit-loader-babel");
 var bitbundler = new Bitbundler({
   loader: {
     plugins: [
-      jsPlugin(),
-      babelPlugin({
+      "bit-loader-js",
+      ["bit-loader-babel", {
         options: {
           presets: ["es2015"],
           sourceMap: "inline"
         }
-      })
+      }]
     ]
   }
 });
