@@ -5,7 +5,7 @@ var types = require("dis-isa");
 var EventEmitter = require("events");
 var Stream = require("stream");
 var es = require("event-stream");
-var Loader = require("./loader");
+var loaderFactory = require("./loaderFactory");
 var Bundler = require("./bundler");
 var Context = require("./context");
 var bundleWriter = require("./bundleWriter");
@@ -103,10 +103,8 @@ Bitbundler.bundle = function(files, settings) {
 Bitbundler.prototype._createContext = function(file, options) {
   return new Context({
     file: file,
-    loader: createLoader(options.loader),
-    bundler: createBundler(Object.assign({
-      umd: options.umd
-    }, options.bundler))
+    loader: createLoader(options),
+    bundler: createBundler(options)
   });
 };
 
@@ -115,11 +113,13 @@ Bitbundler.prototype._writeContext = function(context) {
 };
 
 function createLoader(options) {
-  return new Loader(utils.merge({}, defaultOptions.loader, options));
+  return loaderFactory(utils.merge({}, defaultOptions.loader, options.loader), options.multiprocess);
 }
 
 function createBundler(options) {
-  return new Bundler(utils.merge({}, defaultOptions.bundler, options));
+  return new Bundler(utils.merge({
+    umd: options.umd
+  }, defaultOptions.bundler, options.bundler));
 }
 
 function configureNotifications(bitbundler, notifications) {
