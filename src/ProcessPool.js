@@ -1,26 +1,29 @@
 var childProcess = require("child_process");
+var maxProcess = require("os").cpus().length;
 
 var processState = {
   "available": 0,
   "executing": 1
 }
 
-function Pool(size, file, options) {
-  size = size || 2;
+function Pool(file, options) {
+  var settings = Object.assign({
+    cwd: process.cwd(),
+    env: process.env,
+    silent: true,
+    size: 2
+  }, options);
+
+  var size = Math.min(options.size, maxProcess);
+
   this.id = 1;
   this.pending = {};
   this.messageQueue = [];
 
-  this.procs = Array
-    .apply(null, Array(size))
-    .map(() => ({
-      state: processState.available,
-      handle: childProcess.fork(file, [], Object.assign({
-        cwd: process.cwd(),
-        env: process.env,
-        silent: true
-      }, options))
-    }));
+  this.procs = Array.apply(null, Array(size)).map(() => ({
+    state: processState.available,
+    handle: childProcess.fork(file, [], settings)
+  }));
 
   this.procs.forEach(proc => registerProcHandlers(this, proc));
 }
@@ -56,7 +59,7 @@ function processNextMessage(pool, proc) {
   var availableProc = proc && proc.state === processState.available ? proc : pool.procs.find((proc) => proc.state === processState.available);
 
   if (availableProc) {
-    var envelope = pool.messageQueue.shift();
+    var envelope = pool.messageQueue.shift(); // FILO
     pool.pending[envelope.message.id] = envelope;
     availableProc.state = processState.executing;
     availableProc.handle.send(envelope.message);
