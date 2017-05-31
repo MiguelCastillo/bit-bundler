@@ -1,5 +1,7 @@
 var Bitbundler = require("bit-bundler");
-var bitbundler = new Bitbundler();
+var bitbundler = new Bitbundler({
+  multiprocess: true
+});
 
 bitbundler
   .bundle({

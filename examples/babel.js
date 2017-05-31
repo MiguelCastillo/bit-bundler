@@ -3,6 +3,7 @@ var jsPlugin = require("bit-loader-js");
 var babelPlugin = require("bit-loader-babel");
 
 var bitbundler = new Bitbundler({
+  multiprocess: true,
   loader: {
     plugins: [
       "bit-loader-js",
