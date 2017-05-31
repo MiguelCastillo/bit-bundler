@@ -113,13 +113,13 @@ Bitbundler.prototype._writeContext = function(context) {
 };
 
 function createLoader(options) {
-  return loaderFactory(utils.merge({}, defaultOptions.loader, options.loader), options.multiprocess);
+  var settings = utils.merge(utils.pick(options, ["multiprocess"]), defaultOptions.loader, options.loader);
+  return loaderFactory(settings);
 }
 
 function createBundler(options) {
-  return new Bundler(utils.merge({
-    umd: options.umd
-  }, defaultOptions.bundler, options.bundler));
+  var settings = utils.merge(utils.pick(options, ["umd"], defaultOptions.bundler, options.bundler));
+  return new Bundler(settings);
 }
 
 function configureNotifications(bitbundler, notifications) {

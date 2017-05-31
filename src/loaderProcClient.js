@@ -6,7 +6,7 @@ function LoaderProcClient(options) {
   this.options = utils.assign({}, options);
   this.cache = {};
   this.pending = {};
-  this.pool = createPool(this, 4);
+  this.pool = createPool(this, options.multiprocess);
 }
 
 LoaderProcClient.prototype.fetch = function(names, referrer) {

@@ -1,4 +1,5 @@
 {
+  "multiprocess": false,
   "loader": {
     "log": "error",
     "ignoreNotFound": false
