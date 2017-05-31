@@ -32,22 +32,16 @@ LoaderProcClient.prototype.getCache = function() {
 };
 
 LoaderProcClient.prototype._resolve = function(name, referrer) {
-  return this.pool.queueMessage({
-    type: "resolve",
-    data: {
-      name: name,
-      referrer: referrer
-    }
+  return this.pool.send("resolve", {
+    name: name,
+    referrer: referrer
   });
 };
 
 LoaderProcClient.prototype._fetch = function(name, referrer) {
-  return this.pool.queueMessage({
-    type: "fetchShallow",
-    data: {
-      name: name,
-      referrer: referrer
-    }
+  return this.pool.send("fetchShallow", {
+    name: name,
+    referrer: referrer
   });
 };
 
@@ -95,7 +89,7 @@ function createPool(loader, size) {
   pool.procs.forEach((proc) => {
     proc.handle.stdout.pipe(process.stdout);
     proc.handle.stderr.pipe(process.stderr);
-    pool.queueMessage({ type: "init", data: loader.options }, proc);
+    pool.send("init", loader.options, proc);
   });
 
   return pool;

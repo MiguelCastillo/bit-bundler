@@ -5,7 +5,7 @@ var processState = {
   "executing": 1
 }
 
-function Pool(size, file) {
+function Pool(size, file, options) {
   size = size || 2;
   this.id = 1;
   this.pending = {};
@@ -15,24 +15,25 @@ function Pool(size, file) {
     .apply(null, Array(size))
     .map(() => ({
       state: processState.available,
-      handle: childProcess.fork(file, [], {
+      handle: childProcess.fork(file, [], Object.assign({
         cwd: process.cwd(),
         env: process.env,
         silent: true
-      })
+      }, options))
     }));
 
   this.procs.forEach(proc => registerProcHandlers(this, proc));
 }
 
-Pool.prototype.queueMessage = function(message, proc) {
+Pool.prototype.send = function(type, data, proc) {
   var id = this.id++;
 
   return new Promise((resolve, reject) => {
     this.messageQueue.push({
       message: {
         id: id,
-        content: message
+        type: type,
+        data: data
       },
       resolve: resolve,
       reject: reject

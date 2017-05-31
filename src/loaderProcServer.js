@@ -2,24 +2,24 @@ var Loader = require("./loader");
 var loader;
 
 process.on("message", function(message) {
-  switch(message.content.type) {
+  switch(message.type) {
     case "init":
-      loader = new Loader(message.content.data);
+      loader = new Loader(message.data);
       process.send({ id: message.id });
       break;
     case "resolve":
       loader
-        .resolve(message.content.data.name, message.content.data.referrer)
+        .resolve(message.data.name, message.data.referrer)
         .then(handleSuccess(message), handlerError(message))
-        break;
+      break;
     case "fetch":
       loader
-        .fetch(message.content.data.name, message.content.data.referrer)
+        .fetch(message.data.name, message.data.referrer)
         .then(handleSuccess(message), handlerError(message));
       break;
     case "fetchShallow":
       loader
-        .fetchShallow(message.content.data.name, message.content.data.referrer)
+        .fetchShallow(message.data.name, message.data.referrer)
         .then(handleSuccess(message), handlerError(message));
       break;
   }
