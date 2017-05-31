@@ -1,6 +1,6 @@
 var utils = require("belty");
 var path = require("path");
-var ProcessPool = require("./ProcessPool");
+var ProcessPool = require("./proc/pool");
 
 function LoaderProcClient(options) {
   this.options = utils.assign({}, options);
@@ -84,7 +84,7 @@ LoaderProcClient.prototype._fetchOne = function(name, referrer) {
 }
 
 function createPool(loader, size) {
-  var pool = new ProcessPool(size, path.resolve(__dirname, "./loaderProcServer.js"));
+  var pool = new ProcessPool(path.resolve(__dirname, "./loaderProcServer.js"), { size: size });
 
   pool.procs.forEach((proc) => {
     proc.handle.stdout.pipe(process.stdout);
