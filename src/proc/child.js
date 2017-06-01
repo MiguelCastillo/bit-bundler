@@ -1,5 +1,15 @@
 var target;
 
+// Tag the current process as child... For convenience.
+Object.defineProperty(process, "isChild", {
+  get: function() {
+    return true;
+  },
+  set: function() {
+    throw new Error("isChild is a readonly property.")
+  }
+});
+
 process.on("message", function(message) {
   switch(message.type) {
     case "__init":
