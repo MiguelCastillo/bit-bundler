@@ -13,9 +13,12 @@ LoaderProcClient.prototype.fetch = function(names, referrer) {
   return Promise
     .all([].concat(names).map((name) => this._fetchOne(name, referrer)))
     .then((mod) => {
-      return Promise
-        .all(this.pool.procs.map(proc => this.pool.send("clear", null, proc)))
-        .then(() => Array.isArray(names) ? mod : mod[0]);
+      this.pool.procs.map(proc => this.pool.send("clear", null, proc));
+      return Array.isArray(names) ? mod : mod[0];
+    })
+    .catch(err => {
+      this.pool.procs.map(proc => this.pool.send("clear", null, proc));
+      throw err;
     });
 };
 
