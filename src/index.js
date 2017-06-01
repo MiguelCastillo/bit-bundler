@@ -41,6 +41,13 @@ Bitbundler.prototype.bundle = function(files) {
   return bitbundler.update(files).then(function(ctx) {
     if (bitbundler.options.watch) {
       watch(bitbundler, bitbundler.options.watch);
+
+      if (bitbundler.options.multiprocess) {
+        ctx.loader.pool.size(1);
+      }
+    }
+    else if (bitbundler.options.multiprocess) {
+      ctx.loader.pool.size(0);
     }
 
     return ctx;

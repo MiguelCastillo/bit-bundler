@@ -4,33 +4,26 @@ var maxProcess = require("os").cpus().length;
 
 var processState = {
   "available": 0,
-  "executing": 1
+  "executing": 1,
+  "stopped": 2
 }
 
 function Pool(file, options) {
-  var settings = Object.assign({
+  this.settings = Object.assign({
     cwd: process.cwd(),
     env: process.env,
     silent: true,
     size: 2
   }, options);
 
-  var size = Math.min(settings.size, maxProcess);
+  var size = Math.min(this.settings.size, maxProcess);
 
+  this.file = file;
   this.id = 1;
   this.pending = {};
   this.messageQueue = [];
-
-  this.procs = Array.apply(null, Array(size)).map(() => ({
-    messageQueue: [],
-    state: processState.available,
-    handle: childProcess.fork(path.join(__dirname, "./child.js"), [], settings)
-  }));
-
-  this.procs.forEach(proc => {
-    registerProcHandlers(this, proc)
-    initProc(this, proc, file);
-  });
+  this.procs = [];
+  this.size(size);
 }
 
 Pool.prototype.send = function(type, data, proc) {
@@ -57,8 +50,75 @@ Pool.prototype.send = function(type, data, proc) {
   });
 };
 
+Pool.prototype.kill = function(proc) {
+  if (proc) {
+    proc.handle.kill();
+  }
+  else {
+    this.procs.forEach((proc) => proc.handle.kill());
+  }
+};
+
+Pool.prototype.size = function(size) {
+  var currentSize = this.procs.length;
+
+  if (size > currentSize) {
+    this.add(size - currentSize);
+  }
+  else if (size < currentSize) {
+    this.remove(currentSize - size);
+  }
+};
+
+Pool.prototype.add = function(count) {
+  var procs = Array.apply(null, Array(count)).map(() => ({
+    messageQueue: [],
+    state: processState.available,
+    handle: childProcess.fork(path.join(__dirname, "./child.js"), [], this.settings)
+  }));
+
+  procs.forEach(proc => {
+    registerProcHandlers(this, proc)
+    initProc(this, proc, this.file);
+  });
+
+  this.procs = this.procs.concat(procs);
+};
+
+Pool.prototype.remove = function(count) {
+  if (count <= 0) {
+    throw new Error("Number of items to be removed must be greater than 0");
+  }
+
+  var procs = this.procs.filter(proc => {
+    if (proc.state === processState.available && count) {
+      proc.handle.kill();
+      count--;
+      return false;
+    }
+
+    return true;
+  });
+
+  procs = procs.filter((proc) => {
+    if (count) {
+      proc.state = processState.stopped;
+      count--;
+      return false;
+    }
+
+    return true;
+  });
+
+  this.procs = procs;
+};
+
 function processNextMessage(pool, proc) {
   var availableProc, messageQueue;
+
+  if (proc && proc.state === processState.stopped && !proc.messageQueue.length) {
+    proc.handle.kill();
+  }
 
   if (proc && proc.state === processState.available && proc.messageQueue.length) {
     availableProc = proc;
@@ -89,7 +149,7 @@ function registerProcHandlers(pool, proc) {
     })
     .on("message", (message) => {
       if (pool.pending.hasOwnProperty(message.id)) {
-        proc.state = processState.available;
+        proc.state = proc.state === processState.executing ? processState.available : proc.state;
         handleResult(message, pool.pending[message.id], proc);
         delete pool.pending[message.id];
       }
