@@ -41,13 +41,9 @@ function handleSuccess(message) {
 
 function handlerError(message) {
   return function(error) {
-    //
-    // TODO: Error isn't properly serializing when it is of type Error.
-    // Gotta make sure to smooth that out soon.
-    //
     process.send({
       id: message.id,
-      error: error || "Unknown error"
+      error: error ? error.stack || error : "Unknown error"
     });
   };
 }
