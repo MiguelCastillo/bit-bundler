@@ -1,48 +1,18 @@
 var Loader = require("./loader");
 var loader;
 
-process.on("message", function(message) {
-  switch(message.type) {
-    case "init":
-      loader = new Loader(message.data);
-      process.send({ id: message.id });
-      break;
-    case "resolve":
-      loader
-        .resolve(message.data.name, message.data.referrer)
-        .then(handleSuccess(message), handlerError(message))
-      break;
-    case "fetch":
-      loader
-        .fetch(message.data.name, message.data.referrer)
-        .then(handleSuccess(message), handlerError(message));
-      break;
-    case "fetchShallow":
-      loader
-        .fetchShallow(message.data.name, message.data.referrer)
-        .then(handleSuccess(message), handlerError(message));
-      break;
+module.exports = {
+  "init": function(options, next) {
+    loader = new Loader(options);
+    next();
+  },
+  "resolve": function(data) {
+    return loader.resolve(data.name, data.referrer);
+  },
+  "fetch": function(data) {
+    return loader.fetch(data.name, data.referrer);
+  },
+  "fetchShallow": function(data) {
+    return loader.fetchShallow(data.name, data.referrer);
   }
-});
-
-function handleSuccess(message) {
-  return function(data) {
-    process.send({
-      id: message.id,
-      data: data
-    });
-  };
-}
-
-function handlerError(message) {
-  return function(error) {
-    //
-    // TODO: Error isn't properly serializing when it is of type Error.
-    // Gotta make sure to smooth that out soon.
-    //
-    process.send({
-      id: message.id,
-      error: error || "Unknown error"
-    });
-  };
-}
+};

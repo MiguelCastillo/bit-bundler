@@ -84,7 +84,7 @@ LoaderProcClient.prototype._fetchOne = function(name, referrer) {
 }
 
 function createPool(loader, size) {
-  var pool = new ProcessPool(path.resolve(__dirname, "./loaderProcServer.js"), { size: size });
+  var pool = new ProcessPool(path.join(__dirname, "./loaderProcServer.js"), { size: size });
 
   pool.procs.forEach((proc) => {
     proc.handle.stdout.pipe(process.stdout);

@@ -1,3 +1,4 @@
+var path = require("path");
 var childProcess = require("child_process");
 var maxProcess = require("os").cpus().length;
 
@@ -14,25 +15,30 @@ function Pool(file, options) {
     size: 2
   }, options);
 
-  var size = Math.min(options.size, maxProcess);
+  var size = Math.min(settings.size, maxProcess);
 
   this.id = 1;
   this.pending = {};
   this.messageQueue = [];
 
   this.procs = Array.apply(null, Array(size)).map(() => ({
+    messageQueue: [],
     state: processState.available,
-    handle: childProcess.fork(file, [], settings)
+    handle: childProcess.fork(path.join(__dirname, "./child.js"), [], settings)
   }));
 
-  this.procs.forEach(proc => registerProcHandlers(this, proc));
+  this.procs.forEach(proc => {
+    registerProcHandlers(this, proc)
+    initProc(this, proc, file);
+  });
 }
 
 Pool.prototype.send = function(type, data, proc) {
-  var id = this.id++;
-
   return new Promise((resolve, reject) => {
-    this.messageQueue.push({
+    var id = this.id++;
+    var messageQueue = proc ? proc.messageQueue : this.messageQueue;
+
+    messageQueue.push({
       message: {
         id: id,
         type: type,
@@ -46,25 +52,34 @@ Pool.prototype.send = function(type, data, proc) {
     processNextMessage(this, proc);
   })
   .then((result) => {
-    processNextMessage(this);
+    processNextMessage(this, proc);
     return result;
   });
 };
 
 function processNextMessage(pool, proc) {
-  if (!pool.messageQueue.length) {
-    return;
+  var availableProc, messageQueue;
+
+  if (proc && proc.state === processState.available && proc.messageQueue.length) {
+    availableProc = proc;
+    messageQueue = proc.messageQueue;
+  }
+  else {
+    availableProc = pool.procs.find((proc) => proc.state === processState.available);
+    messageQueue = pool.messageQueue;
   }
 
-  var availableProc = proc && proc.state === processState.available ? proc : pool.procs.find((proc) => proc.state === processState.available);
-
-  if (availableProc) {
-    var envelope = pool.messageQueue.shift(); // FILO
+  if (availableProc && messageQueue.length) {
+    var envelope = messageQueue.shift(); // FILO
     pool.pending[envelope.message.id] = envelope;
     availableProc.state = processState.executing;
     availableProc.handle.send(envelope.message);
     // console.log(`process [${availableProc.handle.pid}]`, envelope.message.id, envelope.message.content.type, envelope.message.content.data.name || "");
   }
+}
+
+function initProc(pool, proc, file) {
+  pool.send("__init", file, proc);
 }
 
 function registerProcHandlers(pool, proc) {
