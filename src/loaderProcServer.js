@@ -6,6 +6,10 @@ module.exports = {
     loader = new Loader(options);
     next();
   },
+  "clear": function(options, next) {
+    loader.clear();
+    next();
+  },
   "resolve": function(data) {
     return loader.resolve(data.name, data.referrer);
   },
