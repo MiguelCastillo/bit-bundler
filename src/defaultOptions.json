@@ -1,9 +1,7 @@
 {
-  "loader": {
-    "log": "error",
-    "ignoreNotFound": false
-  },
-  "bundler": {
-    "sourceMap": true
-  }
+  "log": "error",
+  "ignoreNotFound": false,
+  "sourceMap": true,
+  "loader": { },
+  "bundler": { }
 }

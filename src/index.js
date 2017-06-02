@@ -22,7 +22,7 @@ function Bitbundler(options) {
   }
 
   this.context = null;
-  this.options = options || {};
+  this.options = Object.assign({}, defaultOptions, options);
   configureNotifications(this, this.options.notifications);
   configureLogger(this, this.options.log, loggerFactory);
 }
@@ -103,10 +103,8 @@ Bitbundler.bundle = function(files, settings) {
 Bitbundler.prototype._createContext = function(file, options) {
   return new Context({
     file: file,
-    loader: createLoader(options.loader),
-    bundler: createBundler(Object.assign({
-      umd: options.umd
-    }, options.bundler))
+    loader: createLoader(options),
+    bundler: createBundler(options)
   });
 };
 
@@ -115,11 +113,25 @@ Bitbundler.prototype._writeContext = function(context) {
 };
 
 function createLoader(options) {
-  return new Loader(utils.merge({}, defaultOptions.loader, options));
+  if (Array.isArray(options.loader)) {
+    options.loader = {
+      plugins: options.loader
+    };
+  }
+
+  var settings = Object.assign(utils.pick(options, ["ignoreNotFound", "sourceMap"]), defaultOptions.loader, options.loader);
+  return new Loader(settings);
 }
 
 function createBundler(options) {
-  return new Bundler(utils.merge({}, defaultOptions.bundler, options));
+  if (Array.isArray(options.bundler)) {
+    options.bundler = {
+      plugins: options.bundler
+    };
+  }
+
+  var settings = Object.assign(utils.pick(options, ["umd", "sourceMap"]), defaultOptions.bundler, options.bundler);
+  return new Bundler(settings);
 }
 
 function configureNotifications(bitbundler, notifications) {
