@@ -3,8 +3,8 @@ var jsPlugin = require("bit-loader-js");
 var babel = require("babel-core");
 
 var bitbundler = new Bitbundler({
-  loader: {
-    plugins: jsPlugin({
+  loader: [
+    jsPlugin({
       transform: function(meta) {
         var transpiled = babel.transform(meta.source, {
           presets: ["es2015"]
@@ -15,7 +15,7 @@ var bitbundler = new Bitbundler({
         };
       }
     })
-  }
+  ]
 });
 
 bitbundler
