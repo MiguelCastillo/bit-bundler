@@ -1,5 +1,5 @@
 {
-  "log": "error",
+  "log": "warn",
   "ignoreNotFound": false,
   "sourceMap": true,
   "loader": { },
