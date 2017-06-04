@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var argv = require("subarg")(process.argv.slice(2), {
-  boolean: ["source-map", "watch", "stub-not-found", "export-names"]
+  boolean: ["source-map", "watch", "stub-not-found", "ignore-not-found", "export-names"]
 });
 
 if (argv.print) {
