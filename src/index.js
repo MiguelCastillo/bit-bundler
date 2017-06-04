@@ -5,6 +5,7 @@ var types = require("dis-isa");
 var EventEmitter = require("events");
 var Stream = require("stream");
 var es = require("event-stream");
+var deprecate = require("deprecate");
 var Loader = require("./loader");
 var Bundler = require("./bundler");
 var Context = require("./context");
@@ -28,7 +29,7 @@ function Bitbundler(options) {
   if (this.options.hasOwnProperty("ignoreNotFound")) {
     this.options.stubNotFound = this.options.ignoreNotFound;
     delete this.options.ignoreNotFound;
-    console.warn("ignoreNotFound is deprecated. Please use stubNotFound");
+    deprecate("ignoreNotFound is deprecated", "Please use stubNotFound");
   }
 
   configureNotifications(this, this.options.notifications);
