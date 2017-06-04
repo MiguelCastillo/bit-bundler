@@ -66,7 +66,8 @@ Bitbundler allows you to create bundles via the CLI using [subarg](https://githu
 
 - **`--umd`** { string } - `UMD` name to be exported. `UMD` is a module format that allows bundles to run in node and in the browser via requirejs and traditional script tags. Consider using this setting when writing libraries and utilities that are intended to run in the browser and node. [This is some literature on it](https://github.com/umdjs/umd).
 - **`--watch`** { boolean | object } (false) - Flag to enable file watching. You can optionally pass in an object to specify settings for [chokidar](https://github.com/paulmillr/chokidar).
-- **`--ignore-not-found`** { boolean } (false) - Enable to replace modules that are not found in storage with an empty (noop) functions.
+- **`--stub-not-found`** { boolean } (false) - Enable to replace modules that are not found in storage with a stub module.
+- **`--ignore-not-found`** DEPRECATED - please use `--stub-not-found`.
 - **`--source-map`** { boolean } (true) - Flag to enable and disable the generation of source maps.
 - **`--export-names`** { boolean } (false) - Flag to export node modules by name. The only modules that are exported by name are root modules.
 - **`--log`** { string } - Log level. Options are `info`, `warn`, `error`.
@@ -111,7 +112,8 @@ $ bitbundler --print --src src/main.js --dest dest/out.js --loader [ [ --name bi
 
 - **`umd`** { string } - `UMD` name to be exported. `UMD` is a module format that allows bundles to run in node and in the browser via requirejs and traditional script tags. Consider using this setting when writing libraries and utilities that are intended to run in the browser and node. [This is some literature on it](https://github.com/umdjs/umd).
 - **`watch`** { boolean | object } (false) - Flag to enable file watching. You can optionally pass in an object to specify settings for [chokidar](https://github.com/paulmillr/chokidar).
-- **`ignoreNotFound`** { boolean } (false) - Enable to replace modules that are not found in storage with an empty (noop) functions.
+- **`stubNotFound`** { boolean } (false) - Enable to replace modules that are not found in storage with a stub module.
+- **`ignoreNotFound`** DEPRECATED - please use `stubNotFound`.
 - **`sourceMap`** { boolean } (true) - Flag to enable and disable the generation of source maps.
 - **`exportNames`** { boolean } (false) - Flag to export node modules by name. The only modules that are exported by name are root modules.
 

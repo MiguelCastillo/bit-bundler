@@ -23,6 +23,14 @@ function Bitbundler(options) {
 
   this.context = null;
   this.options = Object.assign({}, defaultOptions, options);
+
+  // ignoreNotFound is deprecated...
+  if (this.options.hasOwnProperty("ignoreNotFound")) {
+    this.options.stubNotFound = this.options.ignoreNotFound;
+    delete this.options.ignoreNotFound;
+    console.warn("ignoreNotFound is deprecated. Please use stubNotFound");
+  }
+
   configureNotifications(this, this.options.notifications);
   configureLogger(this, this.options.log, loggerFactory);
 }
@@ -119,7 +127,7 @@ function createLoader(options) {
     };
   }
 
-  var settings = Object.assign(utils.pick(options, ["ignoreNotFound", "sourceMap"]), defaultOptions.loader, options.loader);
+  var settings = Object.assign(utils.pick(options, ["stubNotFound", "sourceMap"]), defaultOptions.loader, options.loader);
   return new Loader(settings);
 }
 
