@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
-var argv = require("subarg")(process.argv.slice(2));
+var argv = require("subarg")(process.argv.slice(2), {
+  boolean: ["source-map", "watch", "stub-not-found", "export-names"]
+});
 
 if (argv.print) {
   console.log("options: ", JSON.stringify(camelKeys(parseArgs(argv))));
