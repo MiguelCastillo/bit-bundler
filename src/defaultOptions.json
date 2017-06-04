@@ -1,6 +1,6 @@
 {
   "log": "warn",
-  "ignoreNotFound": false,
+  "stubNotFound": false,
   "sourceMap": true,
   "loader": { },
   "bundler": { }
