@@ -8,6 +8,7 @@
     "bit-loader": "^6.0.0",
     "chalk": "^1.1.3",
     "chokidar": "^1.6.1",
+    "deprecate": "^1.0.0",
     "dis-isa": "^1.2.3",
     "event-stream": "^3.3.4",
     "filesize": "^3.5.6",

@@ -26,7 +26,7 @@ function configureResolve(options) {
     function handleError(err) {
       var message = err && err.message;
 
-      if (message && message.indexOf("Cannot find module") === 0 && options.ignoreNotFound) {
+      if (message && message.indexOf("Cannot find module") === 0 && options.stubNotFound) {
         logger.warn("Module not found. Skipping it.", moduleNotFoundError(meta));
       }
       else {
@@ -48,7 +48,7 @@ function configureResolve(options) {
 function configureFetch(options) {
   return function fetchModule(meta) {
     function handleError(err) {
-      if (err && err.code === "ENOENT" && options.ignoreNotFound) {
+      if (err && err.code === "ENOENT" && options.stubNotFound) {
         logger.warn("Module not found. Skipping it.", moduleNotFoundError(meta));
         return Promise.resolve({ source: "module.exports = require('" + meta.name + "')" });
       }
@@ -57,7 +57,7 @@ function configureFetch(options) {
       throw err;
     }
 
-    return meta.id === "@notfound" && options.ignoreNotFound ?
+    return meta.id === "@notfound" && options.stubNotFound ?
       Promise.resolve({ source: "" }) :
       readFile(meta).then(utils.identity, handleError);
   };
