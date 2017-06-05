@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 
 var argv = require("subarg")(process.argv.slice(2), {
-  boolean: ["source-map", "watch", "stub-not-found", "ignore-not-found", "export-names"]
+  boolean: ["stub-not-found", "source-map", "export-names", "watch"],
+  default: {
+    "stub-not-found": false,
+    "source-map": true,
+    "export-names": false,
+    "watch": false
+  }
 });
 
 if (argv.print) {
@@ -38,7 +44,7 @@ function camelKeys(args) {
     Object.keys(args).forEach(arg => result[toCamel(arg)] = camelKeys(args[arg]));
   }
   else if (Array.isArray(args)) {
-    return args.map(camelKeys);
+    result = args.map(camelKeys);
   }
 
   return result || args;
