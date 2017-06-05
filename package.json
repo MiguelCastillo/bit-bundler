@@ -42,7 +42,7 @@
     "bit-bundler-splitter": "^3.0.0",
     "bit-imports": "^3.0.2",
     "bit-loader-js": "^1.2.2",
-    "chai": "~3.5.0",
+    "chai": "~4.0.2",
     "config-grunt-tasks": "^1.0.3",
     "eslint-tap": "^2.0.0",
     "grunt": "~1.0.1",
