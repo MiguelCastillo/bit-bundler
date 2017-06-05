@@ -232,7 +232,7 @@ Bitbundler
 
 The following example does a few things. It bundles JavaScript with node dependencies, transforms your assets with babel, creates multiple bundles, runs eslint, and watches for files changes; generally this setup is a great starting point.
 
-> By default `bit-bundler` *can resolve* [node dependencies](https://nodejs.org/api/modules.html#modules_all_together), but it does not know how to *load* dependencies in order to build a dependency graph. To properly build a dependency from require and import statements we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js).
+> By default `bit-bundler` *can resolve* [node dependencies](https://nodejs.org/api/modules.html#modules_all_together), but it does not know how to *load* dependencies in order to build a dependency graph. To properly build a dependency graph from require and import statements, we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js).
 
 #### install bit-bundler and plugins
 ```
