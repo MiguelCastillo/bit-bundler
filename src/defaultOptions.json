@@ -2,6 +2,8 @@
   "log": "warn",
   "stubNotFound": false,
   "sourceMap": true,
+  "exportNames": false,
+  "watch": false,
   "loader": { },
   "bundler": { }
 }
