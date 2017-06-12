@@ -1,39 +1,36 @@
 #!/usr/bin/env node
 
-var argv = require("subarg")(process.argv.slice(2), {
-  boolean: ["stub-not-found", "source-map", "export-names", "watch"],
-  default: {
-    "stub-not-found": false,
-    "source-map": true,
-    "export-names": false,
-    "watch": false
-  }
+var Type = require("./type");
+var argv = require("subarg")(process.argv.slice(2));
+
+var files = parseFiles(argv);
+
+var options = Type.coerceValues(argv, {
+  "stub-not-found": Type.Boolean,
+  "source-map": Type.Boolean,
+  "export-names": Type.Boolean,
+  "watch": Type.Boolean,
+  "loader": Type.Array.withTransform(toArray),
+  "bundler": Type.Array.withTransform(toArray)
 });
 
 if (argv.print) {
-  console.log("options: ", JSON.stringify(camelKeys(parseArgs(argv))));
-  console.log("files: ", JSON.stringify(parseFiles(argv)));
+  console.log("files: ", JSON.stringify(files));
+  console.log("options: ", JSON.stringify(camelKeys(options)));
 }
 else {
-  require("../src/index").bundle(parseFiles(argv), camelKeys(parseArgs(argv)));
+  require("../src/index").bundle(files, camelKeys(options));
 }
 
 function parseFiles(argv) {
   return {
-    src: argv._.concat(flattenDefault(argv, "src")).filter(Boolean),
+    src: argv._.concat(toArray(argv.src)).filter(Boolean),
     dest: argv.dest
   };
 }
 
-function parseArgs(argv) {
-  return Object.assign({}, argv, {
-    loader: [].concat(flattenDefault(argv, "loader")).filter(Boolean),
-    bundler: [].concat(flattenDefault(argv, "bundler")).filter(Boolean)
-  });
-}
-
-function flattenDefault(source, target) {
-  return source[target] && source[target]._ ? source[target]._ : source[target];
+function toArray(value) {
+  return value && value._ ? value._ : [].concat(value);
 }
 
 function camelKeys(args) {
