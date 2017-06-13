@@ -67,6 +67,7 @@ Bitbundler allows you to create bundles via the CLI using [subarg](https://githu
 ### Options
 
 - **`--umd`** { string } - `UMD` name to be exported. `UMD` is a module format that allows bundles to run in nodejs and in the browser via requirejs and traditional script tags. Consider using this setting when writing libraries and utilities that are intended to run in the browser and nodejs. [This is some literature on it](https://github.com/umdjs/umd).
+- **`--base-url`** { string } - base url used for computing the file path for modules that dont have an absolute path. Defaults to `process.cwd()`.
 - **`--watch`** { boolean | object } (false) - Flag to enable file watching. You can optionally pass in an object to specify settings for [chokidar](https://github.com/paulmillr/chokidar).
 - **`--stub-not-found`** { boolean } (false) - Enable to replace modules that are not found in storage with a stub module.
 - **`--source-map`** { boolean } (true) - Disable source map generation.
@@ -112,6 +113,7 @@ $ bitbundler --print --src src/main.js --dest dest/out.js --loader [ [ --name bi
 `bit-bundler` constructor.  Valid options are:
 
 - **`umd`** { string } - `UMD` name to be exported. `UMD` is a module format that allows bundles to run in nodejs and in the browser via requirejs and traditional script tags. Consider using this setting when writing libraries and utilities that are intended to run in the browser and nodejs. [This is some literature on it](https://github.com/umdjs/umd).
+- **`baseUrl`** { string } - base url used for computing the file path for modules that dont have an absolute path. Defaults to `process.cwd()`.
 - **`watch`** { boolean | object } (false) - Flag to enable file watching. You can optionally pass in an object to specify settings for [chokidar](https://github.com/paulmillr/chokidar).
 - **`stubNotFound`** { boolean } (false) - Enable to replace modules that are not found in storage with a stub module.
 - **`sourceMap`** { boolean } (true) - Disable source map generation.
