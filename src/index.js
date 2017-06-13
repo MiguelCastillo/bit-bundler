@@ -128,7 +128,7 @@ function createLoader(options) {
     };
   }
 
-  var settings = Object.assign(utils.pick(options, ["stubNotFound", "sourceMap"]), defaultOptions.loader, options.loader);
+  var settings = Object.assign(utils.pick(options, ["stubNotFound", "sourceMap", "baseUrl"]), defaultOptions.loader, options.loader);
   return new Loader(settings);
 }
 
