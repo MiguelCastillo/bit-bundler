@@ -15,7 +15,6 @@
 
   * [Bitbundler](api/Bitbundler.md#Bitbundler)
     * [options](api/Bitbundler.md#options)
-    * [bundle](api/Bitbundler.md#bundle)
+    * [bundle](api/Bitbundler.md#bundlefiles--promise)
   * [bundle](api/bundle.md)
-  * [dest](api/dest.md)
-  * [watch](api/watch.md)
+  * [Context](api/Context.md)
