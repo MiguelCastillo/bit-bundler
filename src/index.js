@@ -5,6 +5,7 @@ var types = require("dis-isa");
 var EventEmitter = require("events");
 var Stream = require("stream");
 var es = require("event-stream");
+var deprecate = require("deprecate");
 var loaderFactory = require("./loaderFactory");
 var Bundler = require("./bundler");
 var Context = require("./context");
@@ -22,7 +23,15 @@ function Bitbundler(options) {
   }
 
   this.context = null;
-  this.options = options || {};
+  this.options = Object.assign({}, defaultOptions, options);
+
+  // ignoreNotFound is deprecated...
+  if (this.options.hasOwnProperty("ignoreNotFound")) {
+    this.options.stubNotFound = this.options.ignoreNotFound;
+    delete this.options.ignoreNotFound;
+    deprecate("ignoreNotFound is deprecated", "Please use stubNotFound");
+  }
+
   configureNotifications(this, this.options.notifications);
   configureLogger(this, this.options.log, loggerFactory);
 }
@@ -120,12 +129,24 @@ Bitbundler.prototype._writeContext = function(context) {
 };
 
 function createLoader(options) {
-  var settings = utils.merge(utils.pick(options, ["multiprocess"]), defaultOptions.loader, options.loader);
+  if (Array.isArray(options.loader)) {
+    options.loader = {
+      plugins: options.loader
+    };
+  }
+
+  var settings = Object.assign(utils.pick(options, ["stubNotFound", "sourceMap", "baseUrl", "multiprocess"]), defaultOptions.loader, options.loader);
   return loaderFactory(settings);
 }
 
 function createBundler(options) {
-  var settings = utils.merge(utils.pick(options, ["umd"], defaultOptions.bundler, options.bundler));
+  if (Array.isArray(options.bundler)) {
+    options.bundler = {
+      plugins: options.bundler
+    };
+  }
+
+  var settings = Object.assign(utils.pick(options, ["umd", "sourceMap"]), defaultOptions.bundler, options.bundler);
   return new Bundler(settings);
 }
 

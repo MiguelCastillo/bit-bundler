@@ -1,10 +1,10 @@
 {
   "multiprocess": false,
-  "loader": {
-    "log": "error",
-    "ignoreNotFound": false
-  },
-  "bundler": {
-    "sourceMap": true
-  }
+  "log": "warn",
+  "stubNotFound": false,
+  "sourceMap": true,
+  "exportNames": false,
+  "watch": false,
+  "loader": { },
+  "bundler": { }
 }

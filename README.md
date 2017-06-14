@@ -1,16 +1,17 @@
 <img src="https://raw.githubusercontent.com/MiguelCastillo/bit-bundler/master/img/bit-bundler_white.png" width="100%"></img>
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/MiguelCastillo/bit-bundler.svg)](https://greenkeeper.io/)
+
+
 > JavaScript bundler for your Web Application.
 
-`bit-bundler` aims to simplify bundling your web applications with a focused, fluid, and intuitive API. The problem we are trying to solve is around setup complexity while providing a flexible environment that scales to meet more intricate requirements.
+`bit-bundler` aims to simplify the process of bundling your web application with a focused, fluid, and intuitive API.
 
 ### Key features:
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/MiguelCastillo/bit-bundler.svg)](https://greenkeeper.io/)
-
 - Reduce setup complexity
 - Friendly and flexible plugin API for authoring plugins
-- Pattern matching for fine grained control of your assets; match module `name`, `path`, `filename`, `source` content.
+- Pattern matching for fine grained control of the pipelines that process your assets.
 - Bundle different file types via plugins; JavaScript, CSS, JSON, Text...
 
 
@@ -18,17 +19,25 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
 
-- [Example](#example)
-  - [install bit-bundler and plugins](#install-bit-bundler-and-plugins)
-  - [setup bitbundler-config.js](#setup-bitbundler-configjs)
-  - [run bitbundler-config via node](#run-bitbundler-config-via-node)
-  - [now just include the bundles in your HTML](#now-just-include-the-bundles-in-your-html)
+- [Install](#install)
+- [CLI](#cli)
+  - [Options](#options)
+  - [Examples](#examples)
+    - [Loader plugin for processing node and ES6 dependencies](#loader-plugin-for-processing-node-and-es6-dependencies)
+    - [Also include eslint loader plugin](#also-include-eslint-loader-plugin)
+    - [Passing in options to a loader plugin](#passing-in-options-to-a-loader-plugin)
+    - [Printing the generated CLI settings](#printing-the-generated-cli-settings)
 - [API](#api)
   - [Bitbundler(options) : Bitbundler](#bitbundleroptions--bitbundler)
   - [bundle(files) : Promise](#bundlefiles--promise)
   - [Bitbundler.bundle(files, options) : Promise](#bitbundlerbundlefiles-options--promise)
   - [Bitbundler.dest(destination) : Function](#bitbundlerdestdestination--function)
   - [Bitbundler.watch(context, options) : Context](#bitbundlerwatchcontext-options--context)
+  - [Examples](#examples-1)
+    - [install bit-bundler and plugins](#install-bit-bundler-and-plugins)
+    - [setup bitbundler-config.js](#setup-bitbundler-configjs)
+    - [run bitbundler-config via node](#run-bitbundler-config-via-node)
+    - [now just include the bundles in your HTML](#now-just-include-the-bundles-in-your-html)
 - [Loader Plugins](#loader-plugins)
 - [Bundler Plugins](#bundler-plugins)
 - [Integrations](#integrations)
@@ -41,72 +50,60 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
-## Example
+## Install
 
-The following example does a few things. It bundles JavaScript with node dependencies, transforms your assets with babel, creates multiple bundles, runs eslint, and watches for files changes; generally this setup is a great starting point.
 
-> By default `bit-bundler` *can resolve* [node dependencies](https://nodejs.org/api/modules.html#modules_all_together), but it does not know how to *load* dependencies in order to build a dependency graph. To properly build a dependency from require and import statements we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js).
+From npm
 
-### install bit-bundler and plugins
 ```
-$ npm install --save-dev bit-bundler bit-loader-eslint bit-loader-js bit-loader-babel bit-loader-builtins bit-bundler-splitter
+$ npm install --save bit-bundler
 ```
 
-### setup bitbundler-config.js
-``` javascript
-var Bitbundler = require("bit-bundler");
-var babelPlugin = require("bit-loader-babel");
-var eslintPlugin = require("bit-loader-eslint");
-var jsPlugin = require("bit-loader-js");
-var nodeBuiltins = require("bit-loader-builtins");
-var splitBundle = require("bit-bundler-splitter");
 
-var bitbundler = new Bitbundler({
-  watch: true,
-  loader: {
-    plugins: [
-      eslintPlugin(),
-      jsPlugin(),
-      babelPlugin(),
-      nodeBuiltins()
-    ]
-  },
-  bundler: {
-    plugins: [
-      splitBundle("dest/vendor.js", { match: { path: /\/node_modules\// } }),
-      splitBundle("dest/renderer.js", { match: { path: /src\/renderer/ } })
-    ]
-  }
-});
+## CLI
 
-bitbundler.bundle({
-  src: "src/main.js",
-  dest: "dest/app.js"
-});
+Bitbundler allows you to create bundles via the CLI using [subarg](https://github.com/substack/subarg) syntax.
+
+### Options
+
+- **`--umd`** { string } - `UMD` name to be exported. `UMD` is a module format that allows bundles to run in nodejs and in the browser via requirejs and traditional script tags. Consider using this setting when writing libraries and utilities that are intended to run in the browser and nodejs. [This is some literature on it](https://github.com/umdjs/umd).
+- **`--base-url`** { string } - base url used for computing the file path for modules that dont have an absolute path. Defaults to `process.cwd()`.
+- **`--watch`** { boolean | object } (false) - Flag to enable file watching. You can optionally pass in an object to specify settings for [chokidar](https://github.com/paulmillr/chokidar).
+- **`--stub-not-found`** { boolean } (false) - Enable to replace modules that are not found in storage with a stub module.
+- **`--source-map`** { boolean } (true) - Disable source map generation.
+- **`--export-names`** { boolean } (false) - Export node modules by name when bundling node modules. Useful when bundling modules such as jquery, reactjs, immutablejs, and you want to be able to import them by name from your application.
+- **`--log`** { string } - Log level. Options are `info`, `warn`, `error`.
+- **`--loader`** [ plugin | plugin[] ] - Plugins to be registerer with the module loader. These plugins are for loading and procesing modules before they are bundled.
+- **`--bundler`** [ plugin | plugin[] ] - Plugins to be registered with the bundler to manipulate bundles. Plugins can be used for processing the module graph generated by the module loader.
+
+
+### Examples
+
+#### Loader plugin for processing node and ES6 dependencies
+
+```
+$ bitbundler --src src/main.js --dest dest/out.js --loader [ bit-loader-js ]
 ```
 
-### run bitbundler-config via node
+#### Also include eslint loader plugin
+
 ```
-$ node bitbundler-config.js
-```
-
-### now just include the bundles in your HTML
-
-``` html
-<html>
-  <head>
-    <script type="text/javascript" src="./dest/vendor.js" defer></script>
-    <script type="text/javascript" src="./dest/renderer.js" defer></script>
-    <script type="text/javascript" src="./dest/app.js" defer></script>
-  </head>
-
-  <body></body>
-</html>
+$ bitbundler --src src/main.js --dest dest/out.js --loader [ bit-loader-js bit-loader-eslint ]
 ```
 
-Head over to [examples](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples) for more setups.
+#### Passing in options to a loader plugin.
 
-You can also checkout [bundler-war-room](https://github.com/MiguelCastillo/bundler-war-room) if you want to see a sample project with `bit-bundler`.
+```
+$ bitbundler --src src/main.js --dest dest/out.js --loader [ [ --name bit-loader-js --options [ --umd ] ] bit-loader-eslint ]
+```
+
+#### Printing the generated CLI settings
+
+> Handy for debugging
+
+```
+$ bitbundler --print --src src/main.js --dest dest/out.js --loader [ [ --name bit-loader-js --options [ --umd ] ] bit-loader-eslint ]
+```
 
 
 ## API
@@ -115,26 +112,25 @@ You can also checkout [bundler-war-room](https://github.com/MiguelCastillo/bundl
 
 `bit-bundler` constructor.  Valid options are:
 
-- **`umd`** { string } - String name for the `UMD` module to be exported. `UMD` is a configuration that allows bundles to run in node.js, requirejs, and traditional script tags. If running in the browser, consider this setting for maximum compatibility. The name you provide is exported so that other modules can consume the bundle using that name. [This is some literature on it](https://github.com/umdjs/umd).
-- **`watch`** { boolean | object } (false) - Flag to enable file watching functionality. You can optionally pass in an object to specify settings for [chokidar](https://github.com/paulmillr/chokidar).
+- **`umd`** { string } - `UMD` name to be exported. `UMD` is a module format that allows bundles to run in nodejs and in the browser via requirejs and traditional script tags. Consider using this setting when writing libraries and utilities that are intended to run in the browser and nodejs. [This is some literature on it](https://github.com/umdjs/umd).
+- **`baseUrl`** { string } - base url used for computing the file path for modules that dont have an absolute path. Defaults to `process.cwd()`.
+- **`watch`** { boolean | object } (false) - Flag to enable file watching. You can optionally pass in an object to specify settings for [chokidar](https://github.com/paulmillr/chokidar).
+- **`stubNotFound`** { boolean } (false) - Enable to replace modules that are not found in storage with a stub module.
+- **`sourceMap`** { boolean } (true) - Disable source map generation.
+- **`exportNames`** { boolean } (false) - Export node modules by name when bundling node modules. Useful when bundling node modules such as jquery, reactjs, immutablejs, and you want to be able to import them via their names from your application bundle.
 
 - **`log`** { stream | { stream: WritableStream, level: string } } (buildstats) - By default bit-bundler uses the `buildstats` stream which logs warnings, errors, and build information. You can control the log level by specifying one of the following values `'info'`, `'warn'`, `'error'`.
   - **`log.stream`** { WritableStream } - Writable stream to write log messages to. There are several sample streams in the [loggers directory](https://github.com/MiguelCastillo/bit-bundler/tree/master/loggers).
   - **`log.level`** { string } - Log level to fine tune the severity of messages to be logged. Valid values are `'info'`, `'warn'`, `'error'`.
 
-- **`loader`** { object } - Options to be passed to the module loader.
-  - **`loader.plugins`** { Plugin[] | Plugin } - Plugins to be registerer with the module loader. These plugins are for loading and procesing modules before they are bundled.
-  - **`loader.ignoreNotFound`** { boolean } (false) - Flag to ignore modules that are not found in storage. When set to true these modules will just be empty entries in the bundle.
+- **`loader`** [ plugin[] | string[] | function[] ] - Plugins to be registerer with the module loader. These plugins are for loading and procesing modules before they are bundled.
 
-- **`bundler`** { object } - Options to be passed to the module bundler.
-  - **`bundler.sourceMap`** { boolean } (true) - Flag to enable and disable the generation of source maps.
-  - **`bundler.plugins`** { Plugin[] | Plugin } - Plugins to be registered with the bundler to manipulate bundles. Plugins can be used for processing the module graph generated by the module loader.
-  - **`bundler.exportNames`** { boolean } (false) - Flag to export modules by name rather than ID if the modules are not relative names. The only modules that are exported by name are root modules.
+- **`bundler`** [ plugin[] | string[] | function[] ] - Plugins to be registered with the bundler to manipulate bundles. Plugins can be used for processing the module graph generated by the module loader.
 
 
 ### bundle(files) : Promise
 
-Method to bundle a list of files. `bundle` returns a promise that returns a context when it is resolved.
+Method to bundle a list of files. `bundle` returns a promise that when resolved, it returns the bundling [context](#context).
 
 - **`files`** { string[] | string | { string : src, string: dest } | { string[]: src, string: dest } } - Files to be bundled. `bit-bundler` uses [src-dest](https://github.com/MiguelCastillo/src-dest) to handle file configurations. Please do check it out if you need more details about configuring files.
 
@@ -162,7 +158,7 @@ bitbundler.bundle({
 
 ### Bitbundler.bundle(files, options) : Promise
 
-Static factory method that configures `bit-bundler` and bundles files. In contrast, you would need to first call the constructor, and then call the `bundle` method as two separate steps. Depending on your needs, one is more convenient than the other.
+Static factory method that configures `bit-bundler` and bundles files in a single call. In contrast, you would need to first create an instance of `bit-bundler` and then call the `bundle` method as two separate steps. Depending on your needs, one is more convenient than the other.
 
 * The files use the same format as the `bundle` method. Please see the [bundle](#bundlefiles--promise) method.
 * The options are the same as the constructor. Please see [Bitbundler's constructor](#bitbundleroptions--bitbundler).
@@ -183,9 +179,9 @@ Bitbundler
 
 Static method to define where to write bundles to. This will handle writing bundle shards as well. This is exposed for convenience purposes in case you want to hand roll your own setup. Otherwise, passing in `dest` to the [bundle](#bundlefiles--promise) method is the preferred approach because that is compatible with file watching.
 
-> This is not compatible with file watching.
+> `Bitbundle.dest` is not compatible with file watching.
 
-- **`destination`** { function | string | WritableStream } - `destination` can be a `string`, in which case the internal stream factory creates a file stream to write bundles to it. If `destination` is a `function`, it is called. If the call returns a `string`, then the internal stream factory creates a file stream with it, otherwise the bundle writer expects a writable stream to be used. Use a `function` if you need to create custom streams to write bundles to.
+- **`destination`** { function | string | WritableStream } - `destination` can be a `string`, in which case the internal stream factory creates a file stream to write bundles to it. If `destination` is a `function`, it is called. If the call returns a `string`, then the internal stream factory creates a file stream with it, otherwise the bundle writer expects a writable stream. Use a `function` if you need to create custom streams to write bundles to.
 
 ``` javascript
 var Bitbundler = require("bit-bundler");
@@ -233,6 +229,66 @@ Bitbundler
   });
 ```
 
+### Examples
+
+The following example does a few things. It bundles JavaScript with node dependencies, transforms your assets with babel, creates multiple bundles, runs eslint, and watches for files changes; generally this setup is a great starting point.
+
+> By default `bit-bundler` can *resolve* and *load* [node modules](https://nodejs.org/api/modules.html#modules_all_together). But it does not know how to *load* module dependencies. In order to build a dependency graph from require and import statements we will need to rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js).
+
+#### install bit-bundler and plugins
+```
+$ npm install --save-dev bit-bundler bit-loader-eslint bit-loader-js bit-loader-babel bit-loader-builtins bit-bundler-splitter
+```
+
+#### setup bitbundler-config.js
+``` javascript
+var Bitbundler = require("bit-bundler");
+var splitBundle = require("bit-bundler-splitter");
+
+var bitbundler = new Bitbundler({
+  watch: true,
+  loader: [
+    "bit-loader-eslint",
+    "bit-loader-js",
+    "bit-loader-babel",
+    "bit-loader-builtins"
+  ],
+  bundler: [
+    splitBundle("dest/vendor.js", { match: { path: /\/node_modules\// } }),
+    splitBundle("dest/renderer.js", { match: { path: /src\/renderer/ } })
+  ]
+});
+
+bitbundler.bundle({
+  src: "src/main.js",
+  dest: "dest/app.js"
+});
+```
+
+#### run bitbundler-config via node
+```
+$ node bitbundler-config.js
+```
+
+#### now just include the bundles in your HTML
+
+``` html
+<html>
+  <head>
+    <script type="text/javascript" src="./dest/vendor.js" defer></script>
+    <script type="text/javascript" src="./dest/renderer.js" defer></script>
+    <script type="text/javascript" src="./dest/app.js" defer></script>
+  </head>
+
+  <body></body>
+</html>
+```
+
+Head over to [examples](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples) for more setups.
+
+You can also checkout [bundler-war-room](https://github.com/MiguelCastillo/bundler-war-room) if you want to see a sample project with `bit-bundler`.
+
+
 
 ## Loader Plugins
 
@@ -244,15 +300,16 @@ List of core loader plugins:
 
 - [bit-loader-eslint](https://github.com/MiguelCastillo/bit-loader-eslint) for integrating with eslint
 - [bit-loader-babel](https://github.com/MiguelCastillo/bit-loader-babel) for transpiling your code with babeljs
-- [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) for loading and processing JavaScript dependencies
+- [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) for loading and processing JavaScript dependencies (nodejs and ES6)
 - [bit-loader-json](https://github.com/MiguelCastillo/bit-loader-json) for loading and processing JSON assets
 - [bit-loader-css](https://github.com/MiguelCastillo/bit-loader-css) for loading and processing CSS assets
 - [bit-loader-text](https://github.com/MiguelCastillo/bit-loader-text) for loading and processing text assets such as HTML
 - [bit-loader-builtins](https://github.com/MiguelCastillo/bit-loader-builtins) for handling built in node.js modules (process, path, crypto...)
 - [bit-loader-shimmer](https://github.com/MiguelCastillo/bit-loader-shimmer) for handling module shimming; modules that are not built as modules
-- [bit-loader-cache](https://github.com/MiguelCastillo/bit-loader-cache) for module caching
+- [bit-loader-cache](https://github.com/MiguelCastillo/bit-loader-cache) for caching module
 - [bit-loader-extensions](https://github.com/MiguelCastillo/bit-loader-extensions) for supporting loading modules without file extensions
-- [bit-loader-excludes](https://github.com/MiguelCastillo/bit-loader-excludes) for specifying *module names* to be replaced with empty stub modules
+- [bit-loader-excludes](https://github.com/MiguelCastillo/bit-loader-excludes) for stubbing modules. Useful when we want to include empty modules to maintain a proper dependency tree
+- [bit-loader-remove](https://github.com/MiguelCastillo/bit-loader-remove) for removing modules. Useful when we expect to import modules from another bundle that exports modules by name
 
 
 ## Bundler Plugins

@@ -1,20 +1,16 @@
 var Bitbundler = require("bit-bundler");
-var jsPlugin = require("bit-loader-js");
-var babelPlugin = require("bit-loader-babel");
 
 var bitbundler = new Bitbundler({
   multiprocess: true,
-  loader: {
-    plugins: [
-      "bit-loader-js",
-      ["bit-loader-babel", {
-        options: {
-          presets: ["es2015"],
-          sourceMap: "inline"
-        }
-      }]
-    ]
-  }
+  loader: [
+    "bit-loader-js",
+    ["bit-loader-babel", {
+      options: {
+        presets: ["es2015"],
+        sourceMap: "inline"
+      }
+    }]
+  ]
 });
 
 bitbundler

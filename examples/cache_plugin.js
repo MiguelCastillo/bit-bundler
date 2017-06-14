@@ -1,5 +1,4 @@
 var Bitbundler = require("bit-bundler");
-var jsPlugin = require("bit-loader-js");
 var cachePlugin = require("bit-loader-cache");
 
 /**
@@ -11,18 +10,16 @@ var cachePlugin = require("bit-loader-cache");
 // var elasticsearchConnector = require("bit-loader-cache/connectors/elasticsearch");
 
 var bitbundler = new Bitbundler({
-  loader: {
-    plugins: [
-      jsPlugin(),
-      cachePlugin({
-        // connector: elasticsearchConnector({
-        //   host: "localhost:9200",
-        //   index: "cache_example",
-        //   type: "modules"
-        // })
-      })
-    ]
-  }
+  loader: [
+    "bit-loader-js",
+    cachePlugin({
+      // connector: elasticsearchConnector({
+      //   host: "localhost:9200",
+      //   index: "cache_example",
+      //   type: "modules"
+      // })
+    })
+  ]
 });
 
 bitbundler

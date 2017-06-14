@@ -44,6 +44,7 @@ $ node jsplugin
 that loads `src/main.js` and bundles it.
 
 ### Setup
+
 ``` javascript
 var Bitbundler = require("bit-bundler");
 var bitbundler = new Bitbundler();
@@ -65,14 +66,14 @@ $ node basic.js
 By default, `bit-bundler` does not understand how to process module dependencies.  So we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to help us out here.
 
 ### Setup
+
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var jsPlugin = require("bit-loader-js");
 
 var bitbundler = new Bitbundler({
-  loader: {
-    plugins: jsPlugin()
-  }
+  loader: [
+    "bit-loader-js"
+  ]
 });
 
 bitbundler
@@ -92,23 +93,20 @@ $ node jsplugin.js
 Yes please! This setup relies on a helper module called [bit-loader-babel](https://github.com/MiguelCastillo/bit-loader-babel).
 
 ### Setup
+
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var jsPlugin = require("bit-loader-js");
-var babelPlugin = require("bit-loader-babel");
 
 var bitbundler = new Bitbundler({
-  loader: {
-    plugins: [
-      jsPlugin(),
-      babelPlugin({
-        options: {
-          presets: ["es2015"],
-          sourceMap: "inline"
-        }
-      })
-    ]
-  }
+  loader: [
+    "bit-loader-js",
+    ["bit-loader-babel", {
+      options: {
+        presets: ["es2015"],
+        sourceMap: "inline"
+      }
+    }]
+  ]
 });
 
 bitbundler
@@ -131,25 +129,20 @@ Yup, use the bundler plugin [bit-bundler-splitter](https://github.com/MiguelCast
 > You can configure multiple bundle splitters with matching rules to generate multiple bundles.
 
 ### Setup
+
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var jsPlugin = require("bit-loader-js");
-var babelPlugin = require("bit-loader-babel");
 var splitBundle = require("bit-bundler-splitter");
 
 var bitbundler = new Bitbundler({
-  loader: {
-    plugins: [
-      jsPlugin(),
-      babelPlugin()
-    ]
-  },
-  bundler: {
-    plugins: [
-      splitBundle("dest/splitter-vendor.js", { match: { path: /\/node_modules\// } }),
-      splitBundle("dest/splitter-renderer.js", { match: { path: /src\/renderer/ } })
-    ]
-  }
+  loader: [
+    "bit-loader-js",
+    "bit-loader-babel"
+  ],
+  bundler: [
+    splitBundle("dest/splitter-vendor.js", { match: { path: /\/node_modules\// } }),
+    splitBundle("dest/splitter-renderer.js", { match: { path: /src\/renderer/ } })
+  ]
 });
 
 bitbundler
@@ -167,14 +160,13 @@ $ node splitter
 
 ## Some file watching, please!
 
-Probably the most common setup would be to include file watching functionality. This setup is pretty much the same as the splitter example, but it just passed `watch: true` to enable file watching.
+Probably the most common setup would be to include file watching functionality. Just passed `watch: true` to enable file watching.
 
 ### Setup
+
 ``` javascript
-var jsPlugin = require("bit-loader-js");
-var babelPlugin = require("bit-loader-babel");
-var splitBundle = require("bit-bundler-splitter");
 var Bitbundler = require("bit-bundler");
+var splitBundle = require("bit-bundler-splitter");
 var buildstatsLogger = require("bit-bundler/loggers/buildstats");
 var watchLogger = require("bit-bundler/loggers/watch");
 
@@ -183,18 +175,14 @@ logger.pipe(buildstatsLogger());
 
 var bitbundler = new Bitbundler({
   log: logger,
-  loader: {
-    plugins: [
-      jsPlugin(),
-      babelPlugin()
-    ]
-  },
-  bundler: {
-    plugins: [
-      splitBundle("dest/watch-renderer.js", { match: { path: /src\/renderer/ } }),
-      splitBundle("dest/watch-other.js", { match: { fileName: "other.js" } })
-    ]
-  },
+  loader: [
+    "bit-loader-js",
+    "bit-loader-babel"
+  ],
+  bundler: [
+    splitBundle("dest/watch-renderer.js", { match: { path: /src\/renderer/ } }),
+    splitBundle("dest/watch-other.js", { match: { fileName: "other.js" } })
+  ],
   watch: true
 });
 
@@ -214,19 +202,16 @@ $ node watch
 ## ESLint plugin
 
 ### Setup
+
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var jsPlugin = require("bit-loader-js");
-var eslintPlugin = require("bit-loader-eslint");
 
 var bitloader = new Bitbundler({
   watch: true,
-  loader: {
-    plugins: [
-      jsPlugin(),
-      eslintPlugin()
-    ]
-  }
+  loader: [
+    "bit-loader-js",
+    "bit-loader-eslint"
+  ]
 });
 
 bitloader
@@ -244,12 +229,11 @@ $ node eslint
 
 ## Module caching plugin!!
 
-The following example illustrates how to setup a module caching plugin. This is primarily for improving load time after initial load. By default, the cache plugin writes to disk but you can use connectors to use other data sources. The cache plugin includes an elasticsearch connector.
+The following example illustrates how to setup a module caching plugin. This is primarily for improving load time after a successful initial load. By default, the cache plugin writes to disk but you can use connectors to use other data sources. The cache plugin includes an elasticsearch connector.
 
 ### Setup
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var jsPlugin = require("bit-loader-js");
 var cachePlugin = require("bit-loader-cache");
 
 /**
@@ -261,18 +245,16 @@ var cachePlugin = require("bit-loader-cache");
 // var elasticsearchConnector = require("bit-loader-cache/connectors/elasticsearch");
 
 var bitbundler = new Bitbundler({
-  loader: {
-    plugins: [
-      jsPlugin(),
-      cachePlugin({
-        // connector: elasticsearchConnector({
-        //   host: "localhost:9200",
-        //   index: "cache_example",
-        //   type: "modules"
-        // })
-      })
-    ]
-  }
+  loader: [
+    "bit-loader-js",
+    cachePlugin({
+      // connector: elasticsearchConnector({
+      //   host: "localhost:9200",
+      //   index: "cache_example",
+      //   type: "modules"
+      // })
+    })
+  ]
 });
 
 bitbundler
@@ -297,10 +279,10 @@ Make sure to checkout the [logstash.config](https://github.com/MiguelCastillo/bi
 > This example was setup to run against elasticsearch and logstash 2.4.0.
 
 ### Setup
+
 ``` javascript
 var Bitbundler = require("bit-bundler");
 var loaderLogger = require("bit-bundler/loggers/loader");
-var jsPlugin = require("bit-loader-js");
 var JSONStream = require("JSONStream");
 
 var logger = loaderLogger();
@@ -310,9 +292,9 @@ logger
 
 var bitbundler = new Bitbundler({
   log: logger,
-  loader: {
-    plugins: jsPlugin()
-  }
+  loader: [
+    "bit-loader-js"
+  ]
 });
 
 bitbundler
