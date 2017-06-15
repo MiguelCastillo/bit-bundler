@@ -3,7 +3,7 @@
 * [Introduction](README.md)
 * [Requirements](Requirements.md)
 * [Installation](Installation.md)
-
+* [Hello World](HelloWorld.md)
 
 ## CLI
 
@@ -17,4 +17,3 @@
     * [options](api/Bitbundler.md#options)
     * [bundle](api/Bitbundler.md#bundlefiles--promise)
   * [bundle](api/bundle.md)
-  * [Context](api/Context.md)
