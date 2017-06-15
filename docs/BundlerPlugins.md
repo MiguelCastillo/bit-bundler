@@ -1,10 +1,10 @@
 ## Bundler Plugins
 
-Ok, now that we have configured Loader Plugins to process our modules, what is the purpose of bundler plugins?
+Ok, now that we have configured loader plugins to process our modules, we want to be able to customize how bundles are created, which is where bundle plugins come into play.
 
-In essence, bundler plugins are processors that hook into the bundling pipeline. It is in the bundling pipeline that we take the output from the loader pipeline to create bundles. And it is via bundler plugins that we can customize how bundles are created.
+So what is a bundler plugin? In essence, bundler plugins are processors that hook into the bundling pipeline in order to customize how bundles are created.
 
-In this example, we are going to use bit-bundler-splitter to split the main bundle according to some pattern matching rules we define in the plugin itself.
+In this example, we are going to use [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) to split the main bundle according to some pattern matching rules we define in the plugin itself.
 
 #### install bit-bundler and plugins
 
@@ -42,6 +42,8 @@ bitbundler.bundle({
 $ node bitbundler-config.js
 ```
 
-Let's break down the splitter plugin. The splitter plugin takes as its first argument the destination where the bundle is going to be written to. And the second argument defines which modules are going into the particular bundle. In the example above all modules that match the specified file paths go into the particular bundle. There are other options and rules you can specify and for that you can take a closer look at [bit-bundler-splitter's](https://github.com/MiguelCastillo/bit-bundler-splitter) repo.
+Let's break down the splitter plugin. The splitter plugin takes as its first argument the destination where the bundle is going to be written to. And the second argument defines which modules go in a particular bundle. The mental model of the flow is like a waterfall in which the main bundle has all the modules, and the splitters are taking the output of the previous splitter pulling out the modules that need to go in a separate bundle.
+
+There are other options and rules you can specify available at [bit-bundler-splitter's](https://github.com/MiguelCastillo/bit-bundler-splitter) repo.
 
 And that's it. We have configured our first bundler plugin to split up bundles!

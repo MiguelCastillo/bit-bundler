@@ -1,8 +1,8 @@
 ## Loader Plugins
 
-Let's continue on and enhance our Hello World example by introducing a couple of loader plugins. Wait... What exactly are loader plugins?
+Let's continue on and enhance our Hello World example by introducing a couple of loader plugins. But first, what exactly are loader plugins?
 
-Loader plugins are processors that hook into the module loading pipeline. This allows us to add features not natively available in bit-bundler. For example, with loader plugins you can enable transpilation with babel and linting with eslint. Let's see how we can set that up.
+Loader plugins are processors that hook into the module loading pipeline. This allows us to customize how modules are loaded and processed. For example, with loader plugins you can enable transpilation with babel and linting with eslint. Let's see how we can set that up.
 
 > By default `bit-bundler` can *resolve* and *load* [node modules](https://nodejs.org/api/modules.html#modules_all_together). But it does not know how to *load* module dependencies. In order to load module dependencies and build a dependency graph, we will need to rely on the loader plugin [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js).
 
