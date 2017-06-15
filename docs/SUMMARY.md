@@ -5,6 +5,7 @@
 * [Installation](Installation.md)
 * [Hello World](HelloWorld.md)
 * [Loader Plugins](LoaderPlugins.md)
+* [Bundler Plugins](BundlerPlugins.md)
 
 
 ## CLI
