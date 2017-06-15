@@ -16,7 +16,7 @@
 
 ## API
 
-  * [Bitbundler](api/Bitbundler.md#Bitbundler)
+  * [Bitbundler](api/Bitbundler.md#bitbundleroptions--bitbundler)
     * [options](api/Bitbundler.md#options)
     * [bundle](api/Bitbundler.md#bundlefiles--promise)
   * [bundle](api/bundle.md)
