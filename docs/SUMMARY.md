@@ -4,6 +4,8 @@
 * [Requirements](Requirements.md)
 * [Installation](Installation.md)
 * [Hello World](HelloWorld.md)
+* [Loader Plugins](LoaderPlugins.md)
+
 
 ## CLI
 
