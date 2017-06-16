@@ -36,7 +36,7 @@ Context.prototype.execute = function(files) {
     .fetch(files)
     .then(function mergeModules(modules) {
       var updates = flattenModules(context.loader, modules);
-      var dest = context.file.dest ? context.file.dest.replace(context.file.cwd, "") : "";
+      var dest = truncateFilepath(context.file.dest, context.file.cwd);
       var bundle = context.bundle || new Bundle("main", { dest: dest }, true);
 
       // TODO:
@@ -68,8 +68,8 @@ Context.prototype.setFile = function(file) {
 Context.prototype.visitBundles = function(visitor) {
   var context = this;
 
-  return Object.keys(context.shards).reduce(function(context, shardFile) {
-    return context.setShard(shardFile, visitor(context.shards[shardFile], shardFile, false));
+  return Object.keys(context.shards).reduce(function(context, name) {
+    return context.setShard(name, visitor(context.shards[name], context.shards[name].dest, false));
   }, context.setBundle(visitor(context.bundle, context.file.dest, true)));
 };
 
@@ -79,12 +79,12 @@ Context.prototype.setBundle = function(bundle) {
   });
 };
 
-Context.prototype.setShard = function(name, shard) {
+Context.prototype.setShard = function(name, shard, dest) {
   var shards = utils.extend({}, this.shards);
 
   if (shard) {
     shards[name] = new Bundle(name, shard);
-    shards[name].dest = name;
+    shards[name].dest = dest || name;
   }
   else {
     delete shards[name];
@@ -152,5 +152,10 @@ function flattenModules(loader, modules) {
 //     return changedModules;
 //   }, {});
 // }
+
+function truncateFilepath(filepath, cwd) {
+  filepath = filepath || "";
+  return filepath && typeof filepath === "string" ? filepath.replace(cwd, "") : filepath;
+}
 
 module.exports = Context;

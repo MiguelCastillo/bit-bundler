@@ -66,6 +66,8 @@ Bitbundler allows you to create bundles via the CLI using [subarg](https://githu
 
 ### Options
 
+- **`--src`** { string | string[] } - source file names to bundle.
+- **`--dest`** { string } - file name to write the bundle to.
 - **`--umd`** { string } - `UMD` name to be exported. `UMD` is a module format that allows bundles to run in nodejs and in the browser via requirejs and traditional script tags. Consider using this setting when writing libraries and utilities that are intended to run in the browser and nodejs. [This is some literature on it](https://github.com/umdjs/umd).
 - **`--base-url`** { string } - base url used for computing the file path for modules that dont have an absolute path. Defaults to `process.cwd()`.
 - **`--watch`** { boolean | object } (false) - Flag to enable file watching. You can optionally pass in an object to specify settings for [chokidar](https://github.com/paulmillr/chokidar).

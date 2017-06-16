@@ -3,9 +3,9 @@
 var Type = require("./type");
 var argv = require("subarg")(process.argv.slice(2));
 
-var files = parseFiles(argv);
-
 var options = Type.coerceValues(argv, {
+  "src": Type.Array.withTransform(toArray),
+  "dest": Type.String,
   "base-url": Type.String,
   "stub-not-found": Type.Boolean,
   "source-map": Type.Boolean,
@@ -14,6 +14,12 @@ var options = Type.coerceValues(argv, {
   "loader": Type.Array.withTransform(toArray),
   "bundler": Type.Array.withTransform(toArray)
 });
+
+var files = {
+  src: argv.src,
+  dest: argv.dest
+};
+
 
 if (argv.print) {
   console.log("files: ", JSON.stringify(files));
