@@ -6,7 +6,7 @@ var processState = {
   "available": 0,
   "executing": 1,
   "stopped": 2
-}
+};
 
 function Pool(file, options) {
   this.settings = Object.assign({
@@ -78,7 +78,7 @@ Pool.prototype.add = function(count) {
   }));
 
   procs.forEach(proc => {
-    registerProcHandlers(this, proc)
+    registerProcHandlers(this, proc);
     initProc(this, proc, this.file);
   });
 
@@ -145,7 +145,7 @@ function initProc(pool, proc, file) {
 function registerProcHandlers(pool, proc) {
   proc.handle
     .on("error", (error) => {
-      console.error(`===> process error [${proc.handle.pid}]` + error);
+      process.stderr.write(`===> process error [${proc.handle.pid}]` + error + "\n");
     })
     .on("message", (message) => {
       if (pool.pending.hasOwnProperty(message.id)) {
@@ -161,7 +161,7 @@ function registerProcHandlers(pool, proc) {
     });
 }
 
-function handleResult(message, pending, proc) {
+function handleResult(message, pending) {
   message.error ?
     pending.reject(message.error) :
     pending.resolve(message.data);

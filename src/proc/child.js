@@ -6,7 +6,7 @@ Object.defineProperty(process, "isChild", {
     return true;
   },
   set: function() {
-    throw new Error("isChild is a readonly property.")
+    throw new Error("isChild is a readonly property.");
   }
 });
 
