@@ -10,11 +10,12 @@ function LoaderProcClient(options) {
 }
 
 LoaderProcClient.prototype.fetch = function(names, referrer) {
-  return Promise
-    .all([].concat(names).map((name) => this._fetchOne(name, referrer)))
-    .then((mod) => {
+  var deferred = Array.isArray(names) ? this._fetchMany(names, referrer) : this._fetchOne(names, referrer);
+
+  return deferred
+    .then(result => {
       this.pool.procs.map(proc => this.pool.send("clear", null, proc));
-      return Array.isArray(names) ? mod : mod[0];
+      return result;
     })
     .catch(err => {
       this.pool.procs.map(proc => this.pool.send("clear", null, proc));
@@ -38,55 +39,51 @@ LoaderProcClient.prototype.getCache = function() {
   return this.cache;
 };
 
-LoaderProcClient.prototype._resolve = function(name, referrer) {
-  return this.pool.send("resolve", {
-    name: name,
-    referrer: referrer
-  });
-};
-
-LoaderProcClient.prototype._fetch = function(name, referrer) {
-  return this.pool.send("fetchShallow", {
-    name: name,
-    referrer: referrer
-  });
+LoaderProcClient.prototype._fetchMany = function(names, referrer) {
+  return Promise.all(names.map(name => this._fetchOne(name, referrer)));
 };
 
 LoaderProcClient.prototype._fetchOne = function(name, referrer) {
-  return this
-    ._resolve(name, referrer)
-    .then((modulePath) => {
-      if (this.cache[modulePath]) {
-        return this.cache[modulePath];
+  return resolve(this, name, referrer).then((modulePath) => {
+    if (this.cache[modulePath]) {
+      return this.cache[modulePath];
+    }
+    else if (this.pending[modulePath]) {
+      return this.pending[modulePath];
+    }
+
+    var pending = fetch(this, name, referrer);
+    this.pending[modulePath] = pending;
+
+    return pending.then(mod => {
+      delete this.pending[mod.path];
+      this.setModule(mod);
+
+      if (!mod.deps.length) {
+        return mod;
       }
-      else if (this.pending[modulePath]) {
-        return this.pending[modulePath];
-      }
 
-      var pending = this._fetch(name, referrer);
-      this.pending[modulePath] = pending;
+      // console.log("deps", mod.name, mod.deps);
 
-      return pending
-        .then((mod) => {
-          delete this.pending[mod.path];
-          this.setModule(mod);
+      return this._fetchMany(mod.deps, mod).then(deps => {
+        mod.deps = deps.map(dep => Object.assign({}, dep, { deps: [] }));
+        return mod;
+      });
+    });
+  });
+};
 
-          if (!mod.deps.length) {
-            return mod;
-          }
+function resolve(loader, name, referrer) {
+  return loader.pool.send("resolve", {
+    name: name,
+    referrer: referrer
+  });
+}
 
-          // console.log("deps", mod.name, mod.deps);
-
-          return Promise.all(
-            mod.deps
-              .filter(Boolean)
-              .map((dep) => this._fetchOne(dep, mod))
-          )
-          .then((deps) => {
-            mod.deps = deps.map(dep => Object.assign({}, dep, { deps: [] }));
-            return mod;
-          });
-        });
+function fetch(loader, name, referrer) {
+  return loader.pool.send("fetchShallow", {
+    name: name,
+    referrer: referrer
   });
 }
 
