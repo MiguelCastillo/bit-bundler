@@ -1,9 +1,8 @@
-var utils = require("belty");
 var path = require("path");
 var ProcessPool = require("./proc/pool");
 
 function LoaderProcClient(options) {
-  this.options = utils.assign({}, options);
+  this.options = Object.assign({}, options);
   this.cache = {};
   this.pending = {};
   this.pool = createPool(this, options.multiprocess);
