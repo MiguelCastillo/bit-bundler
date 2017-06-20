@@ -94,7 +94,7 @@ function fetch(loader, name, referrer) {
 function createPool(loader, size) {
   var pool = new ProcessPool(path.join(__dirname, "./loaderProcServer.js"), {
     size: size,
-    chunk: (chunk) => logger._stream.write(chunk)
+    log: (chunk) => logger._stream.write(chunk)
   });
 
   pool.procs.forEach((proc) => {

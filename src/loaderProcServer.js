@@ -8,7 +8,7 @@ class ProcServer {
     this.loader = new Loader(Object.assign({}, options, {
       log: {
         stream: es.through(function(chunk) {
-          process.send({ type: "chunk", data: chunk });
+          process.send({ type: "log", data: chunk });
           this.emit("data", chunk);
         })
       }}));
