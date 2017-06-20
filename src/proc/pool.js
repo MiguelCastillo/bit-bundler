@@ -153,11 +153,16 @@ function registerProcHandlers(pool, proc) {
         handleResult(message, pool.pending[message.id], proc);
         delete pool.pending[message.id];
       }
-      // else if (message.id && pool.forwarding.hasOwnProperty(message.type)) {
-      //   Promise.resolve(pool.forwarding[message.type](message.data))
-      //     .then((data) => { proc.handle.send({ id: message.id, data: data }); })
-      //     .catch((error) => { proc.handle.send({ id: message.id, error: error }); });
-      // }
+      else if (typeof pool.settings[message.type] === "function") {
+        if (message.id) {
+          Promise.resolve(pool.settings[message.type](message.data))
+            .then(data => proc.handle.send({ id: message.id, data: data }))
+            .catch(error => proc.handle.send({ id: message.id, error: error }));
+        }
+        else {
+          pool.settings[message.type](message.data);
+        }
+      }
     });
 }
 
