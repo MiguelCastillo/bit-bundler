@@ -1,6 +1,7 @@
-'use strict';
+"use strict";
 
 var path = require("path");
+var logger = require("./logger");
 var ProcessPool = require("./proc/pool");
 
 class LoaderProcClient {
@@ -91,7 +92,10 @@ function fetch(loader, name, referrer) {
 }
 
 function createPool(loader, size) {
-  var pool = new ProcessPool(path.join(__dirname, "./loaderProcServer.js"), { size: size });
+  var pool = new ProcessPool(path.join(__dirname, "./loaderProcServer.js"), {
+    size: size,
+    chunk: (chunk) => logger._stream.write(chunk)
+  });
 
   pool.procs.forEach((proc) => {
     proc.handle.stdout.pipe(process.stdout);
