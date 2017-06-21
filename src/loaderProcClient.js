@@ -69,7 +69,7 @@ class LoaderProcClient {
         // console.log("deps", mod.name, mod.deps);
 
         return this._fetchMany(mod.deps, mod).then(deps => {
-          mod.deps = deps.map(dep => Object.assign({}, dep, { deps: [] }));
+          mod.deps = deps.map((dep, i) => Object.assign({}, dep, { deps: [], name: mod.deps[i] }));
           return mod;
         });
       });
