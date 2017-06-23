@@ -52,10 +52,16 @@ Pool.prototype.send = function(type, data, proc) {
 
 Pool.prototype.kill = function(proc) {
   if (proc) {
-    proc.handle.kill();
+    var index = this.procs.indexOf(proc);
+    if (index !== -1) {
+      this.procs.splice(index, 1);
+      proc.handle.kill();
+    }
   }
   else {
-    this.procs.forEach((proc) => proc.handle.kill());
+    var procs = this.procs;
+    this.procs = [];
+    procs.forEach((proc) => proc.handle.kill());
   }
 };
 
