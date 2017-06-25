@@ -17,11 +17,11 @@ class LoaderProcClient {
 
     return deferred
       .then(result => {
-        this.pool.procs.map(proc => this.pool.send("clear", null, proc));
+        this.pool.workers.map(worker => worker.send("clear"));
         return result;
       })
       .catch(err => {
-        this.pool.procs.map(proc => this.pool.send("clear", null, proc));
+        this.pool.workers.map(worker => worker.send("clear"));
         throw err;
       });
   }
@@ -97,11 +97,45 @@ function createPool(loader, size) {
     log: (chunk) => logger._stream.write(chunk)
   });
 
-  pool.procs.forEach((proc) => {
-    proc.handle.stdout.pipe(process.stdout);
-    proc.handle.stderr.pipe(process.stderr);
-    pool.send("init", loader.options, proc);
+  pool.workers.forEach((worker) => {
+    worker.process.stdout.pipe(process.stdout);
+    worker.process.stderr.pipe(process.stderr);
+    worker.process.on("error", workerError);
+
+    return worker
+      .send("init", loader.options)
+      .catch(initError);
+
+    function initError(error) {
+      worker.stop();
+      logError(error);
+      rejectWorkersQueue();
+      rejectPoolsQueue();
+    }
+
+    function workerError(error) {
+      logError(error);
+      rejectWorkersQueue();
+      rejectPoolsQueue();
+    }
+
+    function logError(error) {
+      if (error) {
+        console.error(error);
+      }
+    }
+
+    function rejectWorkersQueue() {
+      worker.rejectQueue();
+    }
+
+    function rejectPoolsQueue() {
+      if (!pool.workers.length) {
+        pool.rejectQueue();
+      }
+    }
   });
+
 
   return pool;
 }
