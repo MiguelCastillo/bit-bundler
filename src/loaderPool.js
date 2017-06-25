@@ -4,7 +4,7 @@ var path = require("path");
 var logger = require("./logger");
 var WorkerPool = require("worker-pool");
 
-class LoaderProcClient {
+class LoaderPool {
   constructor(options) {
     this.options = Object.assign({}, options);
     this.cache = {};
@@ -92,7 +92,7 @@ function fetch(loader, name, referrer) {
 }
 
 function createPool(loader, size) {
-  var pool = new WorkerPool(path.join(__dirname, "./loaderProcServer.js"), {
+  var pool = new WorkerPool(path.join(__dirname, "./loaderWorker.js"), {
     size: size,
     log: (chunk) => logger._stream.write(chunk)
   });
@@ -121,7 +121,7 @@ function createPool(loader, size) {
 
     function logError(error) {
       if (error) {
-        console.error(error);
+        process.stderr.write(error + "\n");
       }
     }
 
@@ -136,8 +136,7 @@ function createPool(loader, size) {
     }
   });
 
-
   return pool;
 }
 
-module.exports = LoaderProcClient;
+module.exports = LoaderPool;

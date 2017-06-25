@@ -3,7 +3,7 @@
 var Loader = require("./loader");
 var es = require("event-stream");
 
-class ProcServer {
+class LoaderWorker {
   init(options, next) {
     this.loader = new Loader(Object.assign({}, options, {
       log: {
@@ -34,4 +34,4 @@ class ProcServer {
   }
 }
 
-module.exports = ProcServer;
+module.exports = LoaderWorker;

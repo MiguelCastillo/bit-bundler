@@ -1,8 +1,8 @@
 var Loader = require("./loader");
-var LoaderProcClient = require("./loaderProcClient");
+var LoaderPool = require("./loaderPool");
 
 function loaderFactory(options) {
-  return options.multiprocess ? new LoaderProcClient(options) : new Loader(options);
+  return options.multiprocess ? new LoaderPool(options) : new Loader(options);
 }
 
 module.exports = loaderFactory;
