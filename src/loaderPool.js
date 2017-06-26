@@ -17,11 +17,11 @@ class LoaderPool {
 
     return deferred
       .then(result => {
-        this.pool.workers.map(worker => worker.send("clear"));
+        this.pool.workers.map(worker => worker.invoke("clear"));
         return result;
       })
       .catch(err => {
-        this.pool.workers.map(worker => worker.send("clear"));
+        this.pool.workers.map(worker => worker.invoke("clear"));
         throw err;
       });
   }
@@ -78,14 +78,14 @@ class LoaderPool {
 }
 
 function resolve(loader, name, referrer) {
-  return loader.pool.send("resolve", {
+  return loader.pool.invoke("resolve", {
     name: name,
     referrer: referrer
   });
 }
 
 function fetch(loader, name, referrer) {
-  return loader.pool.send("fetchShallow", {
+  return loader.pool.invoke("fetchShallow", {
     name: name,
     referrer: referrer
   });
@@ -106,7 +106,7 @@ function createPool(loader, size) {
     worker.process.on("error", workerError);
 
     return worker
-      .send("init", loader.options)
+      .invoke("init", loader.options)
       .catch(initError);
 
     function initError(error) {
