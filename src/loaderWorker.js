@@ -1,24 +1,25 @@
 "use strict";
 
 var Loader = require("./loader");
+var WorkerPool = require("worker-pool");
 var es = require("event-stream");
 
-class LoaderWorker {
-  init(options, next) {
+class LoaderWorker extends WorkerPool.WorkerApi {
+  init(options, done) {
     this.loader = new Loader(Object.assign({}, options, {
       log: {
-        stream: es.through(function(chunk) {
-          process.send({ type: "log", data: chunk });
-          this.emit("data", chunk);
+        stream: es.map((chunk, callback) => {
+          this.send("log", chunk);
+          callback(null, chunk);
         })
       }}));
 
-    next();
+    done();
   }
 
-  clear(options, next) {
+  clear(options, done) {
     this.loader.clear();
-    next();
+    done();
   }
 
   resolve(data) {
