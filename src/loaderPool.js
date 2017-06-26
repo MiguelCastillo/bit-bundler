@@ -94,6 +94,7 @@ function fetch(loader, name, referrer) {
 function createPool(loader, size) {
   var pool = new WorkerPool(path.join(__dirname, "./loaderWorker.js"), {
     size: size,
+    silent: true,
     log: (chunk) => logger._stream.write(chunk)
   });
 
