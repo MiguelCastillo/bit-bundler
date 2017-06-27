@@ -5,13 +5,13 @@ import sinon from "sinon";
 import jsPlugin from "bit-loader-js";
 import splitBundle from "bit-bundler-splitter";
 import BitBundler from "../../src/index";
-import noopLogger from "../../loggers/noop";
+import loggers from "../../loggers";
 
 describe("BitBundler test suite", function() {
   var createBundler, bitbundler;
 
   beforeEach(function() {
-    createBundler = (config) => bitbundler = new BitBundler(Object.assign({ log: { stream: noopLogger() } }, config || {}));
+    createBundler = (config) => bitbundler = new BitBundler(Object.assign({ log: { stream: loggers.through() } }, config || {}));
   });
 
   describe("When creating a bundler with no configuration", function() {

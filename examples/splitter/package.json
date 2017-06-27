@@ -15,7 +15,6 @@
   "devDependencies": {
     "bit-bundler": "^6.0.0",
     "bit-bundler-splitter": "^3.1.0",
-    "bit-loader-babel": "^2.0.0",
     "bit-loader-js": "^1.2.2"
   }
 }
