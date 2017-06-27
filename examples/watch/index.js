@@ -1,13 +1,10 @@
 var Bitbundler = require("bit-bundler");
-var throughStream = require("bit-bundler/loggers/through");
+var streamHelpers = require("bit-bundler/loggers/streamHelpers");
 var buildstatsLogger = require("bit-bundler/loggers/buildstats");
 var watchLogger = require("bit-bundler/loggers/watch");
 
-var logger = throughStream();
-logger.pipe(watchLogger()).pipe(buildstatsLogger());
-
 var bitbundler = new Bitbundler({
-  log: logger,
+  log: streamHelpers.sequence(watchLogger(), buildstatsLogger()),
   loader: [
     "bit-loader-js"
   ],
