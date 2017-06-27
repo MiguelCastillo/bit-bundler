@@ -1,8 +1,6 @@
 var Bitbundler = require("bit-bundler");
 
-var bitbundler = new Bitbundler();
-
-bitbundler.bundle({
+Bitbundler.bundle({
   src: "src/main.js",
   dest: "dest/out.js"
 });
