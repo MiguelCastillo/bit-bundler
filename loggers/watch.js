@@ -13,9 +13,8 @@ function watchStreamFactory() {
       );
 
       var msgs = messageBuilder(chunk);
-
       if (msgs.length) {
-        process.stderr.write(color(">> [" + chunk.name + "]"), msgs.join(" - ") + "\n");
+        process.stderr.write(color(">> [" + chunk.name + "] ") + msgs.join(" - ") + "\n");
       }
     }
 
