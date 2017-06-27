@@ -1,4 +1,5 @@
 {
+  "multiprocess": false,
   "log": "warn",
   "stubNotFound": false,
   "sourceMap": true,

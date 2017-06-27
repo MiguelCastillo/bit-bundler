@@ -5,8 +5,13 @@ var readFile = require("bit-bundler-utils/readFile");
 var pluginLoader = require("./pluginLoader");
 var logger = require("./logger").create("bundler/loader");
 
+var moduleNotFoundError = buildError.bind(null, "Unable to find module");
+var moduleNotLoadedError = buildError.bind(null, "Unable to load module");
+var moduleNotResolvedError = buildError.bind(null, "Unable to resolve module");
 
 function Loader(options) {
+  options = options || {};
+
   Bitloader.call(this, utils.extend({}, options, {
     resolve: configureResolve(options),
     fetch: configureFetch(options),
@@ -14,10 +19,12 @@ function Loader(options) {
   }));
 }
 
-
 Loader.prototype = Object.create(Bitloader.prototype);
 Loader.prototype.constructor = Loader;
 
+Loader.prototype.getCache = function() {
+  return this.cache;
+};
 
 function configureResolve(options) {
   var resolver = resolvePath.configure({baseUrl: options.baseUrl});
@@ -44,7 +51,6 @@ function configureResolve(options) {
   };
 }
 
-
 function configureFetch(options) {
   return function fetchModule(meta) {
     function handleError(err) {
@@ -62,11 +68,6 @@ function configureFetch(options) {
       readFile(meta).then(utils.identity, handleError);
   };
 }
-
-
-var moduleNotFoundError = buildError.bind(null, "Unable to find module");
-var moduleNotLoadedError = buildError.bind(null, "Unable to load module");
-var moduleNotResolvedError = buildError.bind(null, "Unable to resolve module");
 
 function buildError(title, meta) {
   return title + " '" + meta.name + "'." + (meta.referrer ? " Referrer " + JSON.stringify(meta.referrer.path) : "");

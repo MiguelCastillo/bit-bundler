@@ -6,7 +6,7 @@ var EventEmitter = require("events");
 var Stream = require("stream");
 var es = require("event-stream");
 var deprecate = require("deprecate");
-var Loader = require("./loader");
+var loaderFactory = require("./loaderFactory");
 var Bundler = require("./bundler");
 var Context = require("./context");
 var bundleWriter = require("./bundleWriter");
@@ -43,16 +43,22 @@ Bitbundler.prototype.constructor = Bitbundler;
 Bitbundler.prototype.bundle = function(files) {
   var file = new File(files);
   var bitbundler = this;
-  var context = bitbundler._createContext(file, bitbundler.options);
-  bitbundler.context = context;
+  bitbundler.context = bitbundler._createContext(file, bitbundler.options);
   logger.log("build-init");
 
-  return bitbundler.update(files).then(function(ctx) {
+  return bitbundler.update(files).then(function(context) {
     if (bitbundler.options.watch) {
       watch(bitbundler, bitbundler.options.watch);
+
+      if (bitbundler.options.multiprocess) {
+        context.loader.pool.size(1);
+      }
+    }
+    else if (bitbundler.options.multiprocess) {
+      context.loader.pool.size(0);
     }
 
-    return ctx;
+    return context;
   });
 };
 
@@ -70,8 +76,7 @@ Bitbundler.prototype.update = function(files) {
       context.loader.deleteModule(context.cache[filePath]);
     });
 
-  return context
-    .execute(file.src)
+  return bitbundler.context.execute(file.src)
     .then(function writeBundle(context) {
       logger.log("build-writing");
       return bitbundler._writeContext(context);
@@ -86,7 +91,8 @@ Bitbundler.prototype.update = function(files) {
       logger.log("build-success", context);
       logger.log("build-end");
       return context;
-    }, function(err) {
+    })
+    .catch(function(err) {
       logger.error("build-failure", err);
       logger.log("build-end");
       throw err;
@@ -128,8 +134,8 @@ function createLoader(options) {
     };
   }
 
-  var settings = Object.assign(utils.pick(options, ["stubNotFound", "sourceMap", "baseUrl"]), defaultOptions.loader, options.loader);
-  return new Loader(settings);
+  var settings = Object.assign(utils.pick(options, ["stubNotFound", "sourceMap", "baseUrl", "multiprocess"]), defaultOptions.loader, options.loader);
+  return loaderFactory(settings);
 }
 
 function createBundler(options) {
