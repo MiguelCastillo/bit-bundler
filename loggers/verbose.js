@@ -14,9 +14,10 @@ function verboseStreamFactory() {
       chalk.blue
     );
 
-    if (msgs.length) {
-      process.stderr.write(color(">> [" + chunk.name + "]"));
-      msgs.forEach(function(d) { process.stderr.write("  " + d + "\n"); });
+    process.stderr.write(color("[" + chunk.name + "] "));
+    msgs.forEach(function(d) { process.stderr.write(d + "\n"); });
+
+    if (!msgs.length) {
       process.stderr.write("\n");
     }
 
