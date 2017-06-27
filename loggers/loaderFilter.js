@@ -1,7 +1,7 @@
 var utils = require("belty");
 var es = require("event-stream");
 
-function loaderStreamFactory(items) {
+function loaderFilter(items) {
   items = items ? utils.toArray(items) : ["service"];
 
   return es.map(function(chunk, callback) {
@@ -18,4 +18,4 @@ function loaderStreamFactory(items) {
   });
 }
 
-module.exports = loaderStreamFactory;
+module.exports = loaderFilter;
