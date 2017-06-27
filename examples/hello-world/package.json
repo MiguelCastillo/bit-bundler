@@ -1,0 +1,17 @@
+{
+  "name": "examples",
+  "version": "1.0.0",
+  "description": "bit-bundler examples",
+  "main": "index.js",
+  "scripts": {
+    "build": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Miguel Castillo <manchagnu@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "bit-bundler": "^6.0.0"
+  }
+}

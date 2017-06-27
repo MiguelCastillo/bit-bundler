@@ -13,14 +13,16 @@ var bitbundler = new Bitbundler({
     "bit-loader-babel"
   ],
   bundler: [
-    splitBundle("dest/watch-renderer.js", { match: { path: /src\/renderer/ } }),
-    splitBundle("dest/watch-other.js", { match: { fileName: "other.js" } })
+    splitBundle("renderer", { match: { path: /src\/renderer/ }, dest: "dest/renderer.js" }),
+    splitBundle("other.js", { match: { fileName: "other.js" }, dest: "dest/other.js" })
   ],
+
+  // Enable watching. You can alternatively pass
+  // in an object with options for the file watcher
   watch: true
 });
 
-bitbundler
-  .bundle({
-    src: "src/main.js",
-    dest: "dest/watch-main.js"
-  });
+bitbundler.bundle({
+  src: "src/main.js",
+  dest: "dest/main.js"
+});

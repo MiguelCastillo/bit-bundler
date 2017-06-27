@@ -2,123 +2,59 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
 
-- [Most basic example](#most-basic-example)
-  - [Setup](#setup)
+- [Hello World](#hello-world)
   - [Run](#run)
 - [Bundle JavaScript with node.js dependencies](#bundle-javascript-with-nodejs-dependencies)
-  - [Setup](#setup-1)
   - [Run](#run-1)
 - [Bundle JavaScript and transform it with Babel??](#bundle-javascript-and-transform-it-with-babel)
-  - [Setup](#setup-2)
   - [Run](#run-2)
 - [How about splitting bundles??](#how-about-splitting-bundles)
-  - [Setup](#setup-3)
   - [Run](#run-3)
 - [Some file watching, please!](#some-file-watching-please)
-  - [Setup](#setup-4)
   - [Run](#run-4)
 - [ESLint plugin](#eslint-plugin)
-  - [Setup](#setup-5)
   - [Run](#run-5)
 - [Module caching plugin!!](#module-caching-plugin)
-  - [Setup](#setup-6)
   - [Run](#run-6)
 - [Stream to logstash to elasticsearch... Why not?](#stream-to-logstash-to-elasticsearch-why-not)
-  - [Setup](#setup-7)
   - [Run](#run-7)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 These are some examples/recipes to get you started with. These examples cover concepts that range from the most basic setup to a more advanced setup where bundles are split.
 
-You can certainly run these examples too.
 
-```
-$ npm install
-$ node basic
-$ node jsplugin
-```
+## Hello World
 
-## Most basic example
-
-that loads `src/main.js` and bundles it.
-
-### Setup
-
-``` javascript
-var Bitbundler = require("bit-bundler");
-var bitbundler = new Bitbundler();
-
-bitbundler
-  .bundle({
-    src: "src/main.js",
-    dest: "dest/basic.js"
-  });
-```
+Getting started with a really basic setup.
 
 ### Run
 ```
-$ node basic.js
+$ cd hello-world
+$ npm install
+$ npm run build
 ```
 
 ## Bundle JavaScript with node.js dependencies
 
-By default, `bit-bundler` does not understand how to process module dependencies.  So we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to help us out here.
-
-### Setup
-
-``` javascript
-var Bitbundler = require("bit-bundler");
-
-var bitbundler = new Bitbundler({
-  loader: [
-    "bit-loader-js"
-  ]
-});
-
-bitbundler
-  .bundle({
-    src: "src/main.js",
-    dest: "dest/jsplugin.js"
-  });
-```
+By default, `bit-bundler` does not understand how to load module dependencies. So we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to help us out here.
 
 ### Run
 ```
-$ node jsplugin.js
+$ cd js
+$ npm install
+$ npm run build
 ```
 
 ## Bundle JavaScript and transform it with Babel??
 
 Yes please! This setup relies on a helper module called [bit-loader-babel](https://github.com/MiguelCastillo/bit-loader-babel).
 
-### Setup
-
-``` javascript
-var Bitbundler = require("bit-bundler");
-
-var bitbundler = new Bitbundler({
-  loader: [
-    "bit-loader-js",
-    ["bit-loader-babel", {
-      options: {
-        presets: ["es2015"],
-        sourceMap: "inline"
-      }
-    }]
-  ]
-});
-
-bitbundler
-  .bundle({
-    src: "src/main.js",
-    dest: "dest/babel.js"
-  });
-```
-
 ### Run
 ```
-$ node babel
+$ cd babel
+$ npm install
+$ npm run build
 ```
 
 
@@ -128,102 +64,35 @@ Yup, use the bundler plugin [bit-bundler-splitter](https://github.com/MiguelCast
 
 > You can configure multiple bundle splitters with matching rules to generate multiple bundles.
 
-### Setup
-
-``` javascript
-var Bitbundler = require("bit-bundler");
-var splitBundle = require("bit-bundler-splitter");
-
-var bitbundler = new Bitbundler({
-  loader: [
-    "bit-loader-js",
-    "bit-loader-babel"
-  ],
-  bundler: [
-    splitBundle("dest/splitter-vendor.js", { match: { path: /\/node_modules\// } }),
-    splitBundle("dest/splitter-renderer.js", { match: { path: /src\/renderer/ } })
-  ]
-});
-
-bitbundler
-  .bundle({
-    src: "src/main.js",
-    dest: "dest/splitter-main.js"
-  });
-```
-
 ### Run
 ```
-$ node splitter
+$ cd splitter
+$ npm install
+$ npm run build
 ```
 
 
 ## Some file watching, please!
 
-Probably the most common setup would be to include file watching functionality. Just passed `watch: true` to enable file watching.
-
-### Setup
-
-``` javascript
-var Bitbundler = require("bit-bundler");
-var splitBundle = require("bit-bundler-splitter");
-var buildstatsLogger = require("bit-bundler/loggers/buildstats");
-var watchLogger = require("bit-bundler/loggers/watch");
-
-var logger = watchLogger();
-logger.pipe(buildstatsLogger());
-
-var bitbundler = new Bitbundler({
-  log: logger,
-  loader: [
-    "bit-loader-js",
-    "bit-loader-babel"
-  ],
-  bundler: [
-    splitBundle("dest/watch-renderer.js", { match: { path: /src\/renderer/ } }),
-    splitBundle("dest/watch-other.js", { match: { fileName: "other.js" } })
-  ],
-  watch: true
-});
-
-bitbundler
-  .bundle({
-    src: "src/main.js",
-    dest: "dest/watch-main.js"
-  });
-```
+Probably the most common setup would be to include file watching functionality. Just specify `watch: true` to enable file watching.
 
 ### Run
 ```
-$ node watch
+$ cd watch
+$ npm install
+$ npm run build
 ```
 
 
 ## ESLint plugin
 
-### Setup
-
-``` javascript
-var Bitbundler = require("bit-bundler");
-
-var bitloader = new Bitbundler({
-  watch: true,
-  loader: [
-    "bit-loader-js",
-    "bit-loader-eslint"
-  ]
-});
-
-bitloader
-  .bundle({
-    src: "src/main.js",
-    dest: "dest/eslint-build.js"
-  });
-```
+Lint the files that really matter - the files used by your code.
 
 ### Run
 ```
-$ node eslint
+$ cd eslint
+$ npm install
+$ npm run build
 ```
 
 
@@ -231,42 +100,11 @@ $ node eslint
 
 The following example illustrates how to setup a module caching plugin. This is primarily for improving load time after a successful initial load. By default, the cache plugin writes to disk but you can use connectors to use other data sources. The cache plugin includes an elasticsearch connector.
 
-### Setup
-``` javascript
-var Bitbundler = require("bit-bundler");
-var cachePlugin = require("bit-loader-cache");
-
-/**
- * By default the cache plugin will save and load from disk. But you can create/configure
- * cache connectors to use other data sources. The code commented out in the cache plugin
- * configuration is for caching data out to elasticsearch.
- */
-
-// var elasticsearchConnector = require("bit-loader-cache/connectors/elasticsearch");
-
-var bitbundler = new Bitbundler({
-  loader: [
-    "bit-loader-js",
-    cachePlugin({
-      // connector: elasticsearchConnector({
-      //   host: "localhost:9200",
-      //   index: "cache_example",
-      //   type: "modules"
-      // })
-    })
-  ]
-});
-
-bitbundler
-  .bundle({
-    src: "src/main.js",
-    dest: "dest/cache_plugin.js"
-  });
-```
-
 ### Run
 ```
-$ node cache_plugin.js
+$ cd cache
+$ npm install
+$ npm run build
 ```
 
 
@@ -278,36 +116,10 @@ Make sure to checkout the [logstash.config](https://github.com/MiguelCastillo/bi
 
 > This example was setup to run against elasticsearch and logstash 2.4.0.
 
-### Setup
-
-``` javascript
-var Bitbundler = require("bit-bundler");
-var loaderLogger = require("bit-bundler/loggers/loader");
-var JSONStream = require("JSONStream");
-
-var logger = loaderLogger();
-logger
-  .pipe(JSONStream.stringify(false))
-  .pipe(process.stdout);
-
-var bitbundler = new Bitbundler({
-  log: logger,
-  loader: [
-    "bit-loader-js"
-  ]
-});
-
-bitbundler
-  .bundle({
-    src: "src/main.js",
-    dest: "dest/jsplugin.js"
-  })
-  .then(function() {}, function(err) {
-    console.log(err && err.stack ? err.stack : err);
-  });
-```
 
 ### Run
 ```
+$ cd logstash
+$ npm install
 $ node logstash.js | logstash -f logstash.config
 ```

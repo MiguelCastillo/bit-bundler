@@ -14,11 +14,7 @@ var bitbundler = new Bitbundler({
   ]
 });
 
-bitbundler
-  .bundle({
-    src: "src/main.js",
-    dest: "dest/jsplugin.js"
-  })
-  .then(function() {}, function(err) {
-    console.log(err && err.stack ? err.stack : err);
-  });
+bitbundler.bundle({
+  src: "src/main.js",
+  dest: "dest/out.js"
+});
