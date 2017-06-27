@@ -1,5 +1,5 @@
 _book
-/examples/dest
+/examples/**/dest
 /test/dest
 
 .DS_Store

@@ -6,8 +6,7 @@ var bitbundler = new Bitbundler({
   ]
 });
 
-bitbundler
-  .bundle({
-    src: "src/main.js",
-    dest: "dest/jsplugin.js"
-  });
+bitbundler.bundle({
+  src: "src/main.js",
+  dest: "dest/out.js"
+});

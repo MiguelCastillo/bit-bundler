@@ -1,0 +1,21 @@
+{
+  "name": "examples",
+  "version": "1.0.0",
+  "description": "bit-bundler examples",
+  "main": "index.js",
+  "scripts": {
+    "build": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Miguel Castillo <manchagnu@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "log2console": "^1.0.3"
+  },
+  "devDependencies": {
+    "bit-bundler": "^6.0.0",
+    "bit-loader-cache": "^1.0.7",
+    "bit-loader-js": "^1.2.2",
+    "elasticsearch": "^13.1.1"
+  }
+}
