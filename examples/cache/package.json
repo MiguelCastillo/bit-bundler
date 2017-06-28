@@ -13,7 +13,7 @@
     "log2console": "^1.0.3"
   },
   "devDependencies": {
-    "bit-bundler": "^6.0.0",
+    "bit-bundler": "^7.0.0",
     "bit-loader-cache": "^1.0.7",
     "bit-loader-js": "^1.2.2",
     "elasticsearch": "^13.1.1"
