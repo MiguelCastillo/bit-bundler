@@ -12,6 +12,6 @@
   "dependencies": {
   },
   "devDependencies": {
-    "bit-bundler": "^6.0.0"
+    "bit-bundler": "latest",
   }
 }
