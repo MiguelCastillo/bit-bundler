@@ -107,6 +107,17 @@ $ npm install
 $ npm run build
 ```
 
+## Loggers.
+
+bit-bundler streams tons of information, which you can harness via loggers. Loggers themselves are just duplex streams so you can easily create your own loggers.
+
+### Run
+```
+$ cd loggers
+$ npm install
+$ npm run build
+```
+
 
 ## Stream to logstash to elasticsearch... Why not?
 
