@@ -15,6 +15,8 @@
   * [ESLint plugin](Examples.md#eslint-plugin)
   * [Module caching plugin!!](Examples.md#module-caching-plugin)
   * [Stream to logstash to elasticsearch... Why not?](Examples.md#stream-to-logstash-to-elasticsearch-why-not)
+* [Ecosystem](Ecosystem.md)
+* [Tech Summary](Techsummary.md)
 
 
 ## CLI
