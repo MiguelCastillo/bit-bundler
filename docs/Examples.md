@@ -1,27 +1,13 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**
+These are some examples/recipes to get you started with. These examples cover concepts that range from the most basic setup to a more advanced setup with bundle splitting.
 
-- [Hello World](#hello-world)
-  - [Run](#run)
-- [Bundle JavaScript with node.js dependencies](#bundle-javascript-with-nodejs-dependencies)
-  - [Run](#run-1)
-- [Bundle JavaScript and transform it with Babel??](#bundle-javascript-and-transform-it-with-babel)
-  - [Run](#run-2)
-- [How about splitting bundles??](#how-about-splitting-bundles)
-  - [Run](#run-3)
-- [Some file watching, please!](#some-file-watching-please)
-  - [Run](#run-4)
-- [ESLint plugin](#eslint-plugin)
-  - [Run](#run-5)
-- [Module caching plugin!!](#module-caching-plugin)
-  - [Run](#run-6)
-- [Stream to logstash to elasticsearch... Why not?](#stream-to-logstash-to-elasticsearch-why-not)
-  - [Run](#run-7)
+In order to run examples, please clone [bit-bundler](https://github.com/MiguelCastillo/bit-bundler) first.
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+```
+$ git clone https://github.com/MiguelCastillo/bit-bundler.git
+$ cd bit-bundler/examples
+```
 
-These are some examples/recipes to get you started with. These examples cover concepts that range from the most basic setup to a more advanced setup where bundles are split.
+And now you should be able to run each one of the examples below.
 
 
 ## Hello World
@@ -58,7 +44,7 @@ $ npm run build
 ```
 
 
-## How about splitting bundles??
+## How about bundle splitting??
 
 Yup, use the bundler plugin [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) to help us here.
 
