@@ -116,6 +116,20 @@ $ npm run build
 ```
 
 
+### Multiprocess
+
+bit-bundler can process module dependencies in parallel in child processes. To enable this feature you need to set multiprocess to true, which starts one child process. Or set it to a number to specify the number of child processes to start. I have found that the sweet spot for large projects is 4.
+
+##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/multiprocess)
+
+#### Run
+```
+$ cd multiprocess
+$ npm install
+$ npm run build
+```
+
+
 ### Loggers.
 
 bit-bundler streams tons of information, which you can harness via loggers. Loggers themselves are just duplex streams so you can easily create your own loggers.

@@ -13,6 +13,7 @@
   * [How about bundle splitting??](Examples.md#how-about-bundle-splitting)
   * [Some file watching, please!](Examples.md#some-file-watching-please)
   * [ESLint plugin](Examples.md#eslint-plugin)
+  * [Multiprocess](Examples.md#multiprocess)
   * [Module caching plugin!!](Examples.md#module-caching-plugin)
   * [Stream to logstash to elasticsearch... Why not?](Examples.md#stream-to-logstash-to-elasticsearch-why-not)
 * [Ecosystem](Ecosystem.md)
