@@ -130,6 +130,20 @@ $ npm run build
 ```
 
 
+### JavaScript Minification
+
+In order to setup JavaScript minification, we will rely on [bit-bundler-minifyjs](https://github.com/MiguelCastillo/bit-bundler-minifyjs).
+
+##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/minify)
+
+#### Run
+```
+$ cd minify
+$ npm install
+$ npm run build
+```
+
+
 ### Loggers.
 
 bit-bundler streams tons of information, which you can harness via loggers. Loggers themselves are just duplex streams so you can easily create your own loggers.
