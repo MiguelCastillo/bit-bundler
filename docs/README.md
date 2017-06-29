@@ -11,6 +11,7 @@ With that in mind, bit-bundler key features are around:
 - Providing a friendly and flexible plugin API for creating and using plugins
 - Bundling different file types via plugins; JavaScript, CSS, JSON, Text, etc...
 - Pattern matching for fine grained control of the bundling pipelines
+- Parallel processing of module dependencies for improved performance in larger projects
 
 
 ## Links
