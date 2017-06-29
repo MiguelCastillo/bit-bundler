@@ -16,7 +16,7 @@
 - [bit-loader-remove](https://github.com/MiguelCastillo/bit-loader-remove) for removing modules. Useful when we expect to import modules from another bundle that exports modules by name
 
 
-This is the list of [bit-loader-plugin](https://www.npmjs.com/browse/keyword/bit-loader-plugin) available on npm. Be sure to add the `bit-loader-plugin` keyword to the package.json when authoring your plugins.
+This is the list of [bit-loader-plugins](https://www.npmjs.com/browse/keyword/bit-loader-plugin) available on npm. Be sure to add the `bit-loader-plugin` keyword to the package.json when authoring your plugins.
 
 
 ### Bundler plugins

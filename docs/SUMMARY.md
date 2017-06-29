@@ -20,15 +20,15 @@
 * [Tech Summary](Techsummary.md)
 
 
-## CLI
-
-  * [Options](cli/Options.md)
-  * [Examples](cli/Examples.md)
-
-
 ## API
 
   * [Bitbundler](api/Bitbundler.md#bitbundleroptions--bitbundler)
     * [options](api/Bitbundler.md#options)
     * [bundle](api/Bitbundler.md#bundlefiles--promise)
   * [bundle](api/bundle.md)
+
+
+## CLI
+
+  * [Options](cli/Options.md)
+  * [Examples](cli/Examples.md)
