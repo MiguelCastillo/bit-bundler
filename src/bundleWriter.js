@@ -13,6 +13,8 @@ function bundleWriter() {
       if (bundle.content && dest) {
         pending.push(writeBundle(logger, bundle, streamFactory(dest)));
       }
+
+      return bundle;
     });
 
     return Promise.all(pending).then(function() { return context;});

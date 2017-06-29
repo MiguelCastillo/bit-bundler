@@ -84,7 +84,7 @@ Context.prototype.setShard = function(name, shard, dest) {
 
   if (shard) {
     shards[name] = new Bundle(name, shard);
-    shards[name].dest = dest || name;
+    shards[name].dest = shard.dest || dest || name;
   }
   else {
     delete shards[name];
