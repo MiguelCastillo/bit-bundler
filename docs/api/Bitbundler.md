@@ -6,7 +6,7 @@ Contructor for creating instances of bit-bundler. The constructor itself takes s
 
 #### **`multiprocess`** { boolean | number }
 
-Option to enable parallel file processing via worker processes. By default, multiprocess is disabled. But you can enable multiprocess by setting this option to true. You can alternatively specify the number of processes to use with the max capped to the number of cpus available.
+Option to enable parallel file processing via worker processes. By default, multiprocess is disabled. But you can enable multiprocess by setting this option to true, which will start two child processes. You can alternatively specify the number of processes to use with the max capped to the number of cpus available.
 
 #### **`umd`** { string }
 
