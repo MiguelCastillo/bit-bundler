@@ -40,4 +40,4 @@ $ node bitbundler-config.js
 
 With this setup we are recursively loading modules and their dependencies, transpiling with babel, and efficiently linting only the files that are depended upon and used by your code.
 
-Now that we know about loader plugins, next we will talk about bundler plugins.
+So now that we know about loader plugins, next let's talk about bundler plugins.
