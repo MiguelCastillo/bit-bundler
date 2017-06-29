@@ -55,7 +55,7 @@ Bitbundler.prototype.bundle = function(files) {
       }
     }
     else if (bitbundler.options.multiprocess) {
-      context.loader.pool.size(0);
+      context.loader.pool.stop();
     }
 
     return context;
@@ -93,6 +93,14 @@ Bitbundler.prototype.update = function(files) {
       return context;
     })
     .catch(function(err) {
+      if (err) {
+        process.stderr.write((err && err.stack ? err.stack : err) + "\n");
+      }
+
+      if (bitbundler.options.multiprocess) {
+        context.loader.pool.stop();
+      }
+
       logger.error("build-failure", err);
       logger.log("build-end");
       throw err;
