@@ -9,7 +9,7 @@ $ git clone https://github.com/MiguelCastillo/bit-bundler.git
 $ cd bit-bundler/examples
 ```
 
-And now you should be able to run each one of the examples below. This is a quick [link](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples) to the source code for all the examples below.
+And now you should be able to run each one of the examples below. Link for [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples) for all the examples below.
 
 
 ### Hello World
@@ -118,7 +118,7 @@ $ npm run build
 
 ### Multiprocess
 
-bit-bundler can process module dependencies in parallel in child processes. To enable this feature you need to set multiprocess to true, which starts one child process. Or set it to a number to specify the number of child processes to start. I have found that the sweet spot for large projects is 4.
+bit-bundler can process module dependencies in parallel in child processes. To enable this feature you need to set multiprocess to true, which starts two child process. Or set it to a number to specify the number of child processes to start. I have found that the sweet spot for large projects is 4.
 
 ##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/multiprocess)
 
