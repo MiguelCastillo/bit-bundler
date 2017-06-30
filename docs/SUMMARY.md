@@ -15,6 +15,7 @@
   * [ESLint plugin](Examples.md#eslint-plugin)
   * [Multiprocess](Examples.md#multiprocess)
   * [JavaScript Minification](Examples.md#javascript-minification)
+  * [Loggers.](Examples.md#loggers)
   * [Module caching plugin!!](Examples.md#module-caching-plugin)
   * [Stream to logstash to elasticsearch... Why not?](Examples.md#stream-to-logstash-to-elasticsearch-why-not)
 * [Ecosystem](Ecosystem.md)
