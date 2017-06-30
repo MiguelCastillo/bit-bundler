@@ -5,6 +5,7 @@
   "main": "basic.js",
   "scripts": {
     "build": "node .",
+    "analyze": "source-map-explorer dest/main.js && source-map-explorer dest/other.js && source-map-explorer dest/renderer.js && source-map-explorer dest/vendor.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Miguel Castillo <manchagnu@gmail.com>",
@@ -15,6 +16,7 @@
   "devDependencies": {
     "bit-bundler": "latest",
     "bit-bundler-splitter": "^3.1.0",
-    "bit-loader-js": "^1.2.2"
+    "bit-loader-js": "^1.2.2",
+    "source-map-explorer": "^1.3.3"
   }
 }

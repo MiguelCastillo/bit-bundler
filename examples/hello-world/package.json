@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "node .",
+    "analyze": "source-map-explorer dest/out.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Miguel Castillo <manchagnu@gmail.com>",
@@ -13,5 +14,6 @@
   },
   "devDependencies": {
     "bit-bundler": "latest",
+    "source-map-explorer": "^1.3.3"
   }
 }
