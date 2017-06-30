@@ -102,20 +102,6 @@ $ npm run build
 ```
 
 
-### Module caching plugin!!
-
-The following example illustrates how to setup a module caching plugin. This is primarily for improving load time after a successful initial load. By default, the cache plugin writes to disk but you can use connectors to use other data sources. The cache plugin includes an elasticsearch connector.
-
-##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/cache)
-
-#### Run
-```
-$ cd cache
-$ npm install
-$ npm run build
-```
-
-
 ### Multiprocess
 
 bit-bundler can process module dependencies in parallel in child processes. To enable this feature you need to set multiprocess to true, which starts two child process. Or set it to a number to specify the number of child processes to start. I have found that the sweet spot for large projects is 4.
@@ -153,6 +139,22 @@ bit-bundler streams tons of information, which you can harness via loggers. Logg
 #### Run
 ```
 $ cd loggers
+$ npm install
+$ npm run build
+```
+
+
+### Module caching plugin!!
+
+The following example illustrates how to setup a module caching plugin. This is primarily for improving load time after a successful initial load. By default, the cache plugin writes to disk but you can use connectors to use other data sources. The cache plugin includes an elasticsearch connector.
+
+> Caching will not work correctly in multiprocess mode. Simply because caching writes to the same cache file, which means that multiple process override each others work.
+
+##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/cache)
+
+#### Run
+```
+$ cd cache
 $ npm install
 $ npm run build
 ```
