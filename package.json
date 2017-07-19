@@ -13,7 +13,7 @@
     "event-stream": "^3.3.4",
     "filesize": "^3.5.10",
     "glob": "^7.1.2",
-    "log-symbols": "^1.0.2",
+    "log-symbols": "^2.0.0",
     "loggero": "^2.1.0",
     "mkdirp": "^0.5.1",
     "ora": "^1.2.0",
