@@ -7,7 +7,7 @@ var argv = require("subarg")(process.argv.slice(2));
 var options = camelKeys(argv);
 
 if (options.config) {
-  options = Object.assign({}, require(path.join(process.cwd(), options.config)));
+  options = Object.assign({}, camelKeys(require(path.join(process.cwd(), options.config))), options);
 }
 
 var options = Type.coerceValues(options, {
