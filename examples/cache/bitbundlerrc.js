@@ -1,5 +1,3 @@
-var Bitbundler = require("bit-bundler");
-
 /**
  * By default the cache plugin will save and load from disk. But you can create/configure
  * cache connectors to use other data sources. The code commented out in the cache plugin
@@ -8,7 +6,10 @@ var Bitbundler = require("bit-bundler");
 
 // var elasticsearchConnector = require("bit-loader-cache/connectors/elasticsearch");
 
-var bitbundler = new Bitbundler({
+module.exports = {
+  src: "src/main.js",
+  dest: "dest/out.js",
+
   loader: [
     "bit-loader-js",
     ["bit-loader-cache", {
@@ -19,9 +20,4 @@ var bitbundler = new Bitbundler({
       // })
     }]
   ]
-});
-
-bitbundler.bundle({
-  src: "src/main.js",
-  dest: "dest/out.js"
-});
+};
