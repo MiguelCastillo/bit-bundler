@@ -1,20 +1,17 @@
-var Bitbundler = require("bit-bundler");
 var loggers = require("bit-bundler/loggers");
 var buildstatsLogger = require("bit-bundler/loggers/buildstats");
 var watchLogger = require("bit-bundler/loggers/watch");
 
-var bitbundler = new Bitbundler({
-  log: loggers.sequence(watchLogger(), buildstatsLogger()),
-  loader: [
-    "bit-loader-js"
-  ],
-
+module.exports = {
   // Enable watching. You can alternatively pass
   // in an object with options for the file watcher
-  watch: true
-});
+  watch: true,
 
-bitbundler.bundle({
+  log: loggers.sequence(watchLogger(), buildstatsLogger()),
   src: "src/main.js",
-  dest: "dest/main.js"
-});
+  dest: "dest/main.js",
+
+  loader: [
+    "bit-loader-js"
+  ]
+};

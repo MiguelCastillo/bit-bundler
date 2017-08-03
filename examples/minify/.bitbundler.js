@@ -1,8 +1,10 @@
-var Bitbundler = require("bit-bundler");
 var splitBundle = require("bit-bundler-splitter");
 
-var bitbundler = new Bitbundler({
+module.exports = {
   // multiprocess: true,
+  src: "src/main.js",
+  dest: "dest/main.js",
+
   loader: [
     "bit-loader-js",
     "bit-loader-babel"
@@ -13,9 +15,4 @@ var bitbundler = new Bitbundler({
     splitBundle("other.js", { match: { fileName: "other.js" }, dest: "dest/other.js" }),
     "bit-bundler-minifyjs"
   ]
-});
-
-bitbundler.bundle({
-  src: "src/main.js",
-  dest: "dest/main.js"
-});
+};

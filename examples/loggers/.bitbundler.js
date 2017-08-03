@@ -1,16 +1,13 @@
-var Bitbundler = require("bit-bundler");
 var loggers = require("bit-bundler/loggers");
 var verboseLogger = require("bit-bundler/loggers/verbose");
 var loaderFilter = require("bit-bundler/loggers/loaderFilter");
 
-var bitbundler = new Bitbundler({
+module.exports = {
   log: loggers.sequence(loaderFilter(), verboseLogger()),
+  src: "src/main.js",
+  dest: "dest/main.js",
+
   loader: [
     "bit-loader-js"
   ]
-});
-
-bitbundler.bundle({
-  src: "src/main.js",
-  dest: "dest/main.js"
-});
+};

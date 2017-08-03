@@ -1,39 +1,50 @@
 #!/usr/bin/env node
 
 var Type = require("./type");
+var path = require("path");
 var argv = require("subarg")(process.argv.slice(2));
 
-var options = Type.coerceValues(argv, {
-  "src": Type.Array.withTransform(toArray),
+var options = camelKeys(argv);
+
+try {
+  var configFile = path.join(process.cwd(), typeof options.config === "string" ? options.config : ".bitbundler");
+  options = Object.assign({}, camelKeys(require(configFile)), options, { config: configFile });
+}
+catch(ex) {
+  if (typeof options.config === "string") {
+    console.error(ex);
+    process.exit(1);
+  }
+}
+
+options = Type.coerceValues(options, {
+  "config": Type.String,
+  "src": Type.Array.withTransform(configureSrc),
   "dest": Type.String,
-  "base-url": Type.String,
-  "stub-not-found": Type.Boolean,
-  "source-map": Type.Boolean,
-  "export-names": Type.Boolean,
+  "baseUrl": Type.String,
+  "stubNotFound": Type.Boolean,
+  "sourceMap": Type.Boolean,
+  "exportNames": Type.Boolean,
   "watch": Type.Boolean,
   "loader": Type.Array.withTransform(toArray),
   "bundler": Type.Array.withTransform(toArray)
 });
 
 var files = {
-  src: argv.src,
-  dest: argv.dest
+  src: options.src,
+  dest: options.dest
 };
-
 
 if (argv.print) {
   console.log("files: ", JSON.stringify(files));
-  console.log("options: ", JSON.stringify(camelKeys(options)));
+  console.log("options: ", JSON.stringify(options));
 }
 else {
-  require("../src/index").bundle(files, camelKeys(options));
+  require("../src/index").bundle(files, options);
 }
 
-function parseFiles(argv) {
-  return {
-    src: argv._.concat(toArray(argv.src)).filter(Boolean),
-    dest: argv.dest
-  };
+function configureSrc(src) {
+  return options._.length ? options._ : toArray(src);
 }
 
 function toArray(value) {

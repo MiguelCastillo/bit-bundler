@@ -16,7 +16,6 @@ $ npm install --save-dev bit-bundler bit-loader-eslint bit-loader-js bit-loader-
 
 ``` javascript
 var Bitbundler = require("bit-bundler");
-var splitBundle = require("bit-bundler-splitter");
 
 var bitbundler = new Bitbundler({
   loader: [
@@ -25,8 +24,8 @@ var bitbundler = new Bitbundler({
     "bit-loader-babel"
   ],
   bundler: [
-    splitBundle("dest/vendor.js", { match: { path: /\/node_modules\// } }),
-    splitBundle("dest/renderer.js", { match: { path: /src\/renderer/ } })
+    ["bit-bundler-splitter", { dest: "dest/vendor.js", match: { path: /\/node_modules\// } }],
+    ["bit-bundler-splitter", { dest: "dest/renderer.js", match: { path: /src\/renderer/ } }]
   ]
 });
 
