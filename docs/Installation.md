@@ -42,7 +42,8 @@ $ npm run bb-print
 
 > You can read more about this approach [here](https://docs.npmjs.com/cli/run-script).
 
-The CLI also allows you to load settings from configuration files. Since configuration files can be JavaScript, you can more easily scale complicated setups. The configuration file can also be JSON, which currently has limitation when defining regular expressions.
+The CLI also loads any `.bitbundler.js` or `.bitbundler.json` configuration files automatically that are present in your project. You can alternatively specify the name of the configuration file you want to load by specifying a `--config` argument. Options from configuration files are merged with all CLI arguments with CLI arguments taking precedence over options in configuration files.
+
 
 The equivalent configuration for the above command line looks like the following:
 
@@ -57,11 +58,10 @@ module.exports = {
 And your command will now look like:
 
 ```
-$ bitbundler --print --config
+$ bitbundler
 ```
 
-> Any CLI arguments specified will override the corresponding option(s) from the configuration file.
-
+> Configuration files can be JavaScript, which allows you to scale to more complicated setups. The configuration file can also be JSON, which currently has limitation when defining regular expressions.
 
 ### api
 
