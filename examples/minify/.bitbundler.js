@@ -1,5 +1,3 @@
-var splitBundle = require("bit-bundler-splitter");
-
 module.exports = {
   // multiprocess: true,
   src: "src/main.js",
@@ -10,9 +8,9 @@ module.exports = {
     "bit-loader-babel"
   ],
   bundler: [
-    splitBundle("vendor", { match: { path: /\/node_modules\// }, dest: "dest/vendor.js" }),
-    splitBundle("renderer", { match: { path: /\/src\/renderer\// }, dest: "dest/renderer.js" }),
-    splitBundle("other.js", { match: { fileName: "other.js" }, dest: "dest/other.js" }),
+    ["bit-bundler-splitter", { name: "vendor", dest: "dest/vendor.js", match: { path: /\/node_modules\// } }],
+    ["bit-bundler-splitter", { name: "renderer", dest: "dest/renderer.js", match: { path: /\/src\/renderer\// } }],
+    ["bit-bundler-splitter", { name: "other.js", dest: "dest/other.js", match: { fileName: "other.js" } }],
     "bit-bundler-minifyjs"
   ]
 };
