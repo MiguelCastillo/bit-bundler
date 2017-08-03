@@ -1,44 +1,12 @@
 ## Installation
 
-Generally speaking, we would install bit-bundler from the npm repository. And you can that do via the npm cli, yarn, or whatever other tool of your choice.
+> Generally speaking, we would install bit-bundler via the npm cli, yarn, or whatever other tool of your choice.
 
-There are two general ways in which you can use bit-bundler, and that determines how you install bit-bundler.
-
-### api
-
-The first method is to use bit-bundler's API. This option is more suitable when you want to write a JavaScript based setup, which generally provides more felxibility for custom setups. From the command line, execute in the directory you intend to use bit-bundler from:
-
-```
-$ npm install bit-bundler --save-dev
-```
-
-Now you are ready to import bit-bundler.
-
-ES module
-
-``` javascript
-import Bitbundler from 'bit-bundler';
-
-Bitbundler.bundle({
-  src: "src/main.js",
-  dest: "dest/out.js"
-});
-```
-
-CJS module
-
-``` javascript
-const Bitbundler = require('bit-bundler');
-
-Bitbundler.bundle({
-  src: "src/main.js",
-  dest: "dest/out.js"
-});
-```
+There are a several ways in which you can use bit-bundler, and that determines how you install bit-bundler.
 
 ### cli
 
-The second method is bit-bundler's CLI. If you are looking to use bit-bundler's CLI from a shell, you could install bit-bundler globally. So, from the command line execute:
+The first method is bit-bundler's CLI. If you are looking to use bit-bundler's CLI from a shell, you could install bit-bundler globally. So, from the command line execute:
 
 ```
 $ npm install bit-bundler -g
@@ -72,4 +40,57 @@ And in your favorite shell:
 $ npm run bb-print
 ```
 
-You can read more about this approach [here](https://docs.npmjs.com/cli/run-script).
+> You can read more about this approach [here](https://docs.npmjs.com/cli/run-script).
+
+The CLI also allows you to load settings from configuration files. Since configuration files can be JavaScript, you can more easily scale complicated setups. The configuration file can also be JSON, which currently has limitation when defining regular expressions.
+
+The equivalent configuration for the above command line looks like the following:
+
+``` javascript
+// file name is .bitbundlerrc.js
+module.exports = {
+  "src": "src/index.js",
+  "dest": "dest/out.js"
+};
+```
+
+And your command will now look like:
+
+```
+$ bitbundler --print --config
+```
+
+> Any CLI arguments specified will override the corresponding option(s) from the configuration file.
+
+
+### api
+
+The second method is to use bit-bundler's API. This option is similar in nature to specifying a configuration file for the CLI. From the command line, execute in the directory you intend to use bit-bundler from:
+
+```
+$ npm install bit-bundler --save-dev
+```
+
+Now you are ready to import bit-bundler.
+
+ES module
+
+``` javascript
+import Bitbundler from 'bit-bundler';
+
+Bitbundler.bundle({
+  src: "src/main.js",
+  dest: "dest/out.js"
+});
+```
+
+CJS module
+
+``` javascript
+const Bitbundler = require('bit-bundler');
+
+Bitbundler.bundle({
+  src: "src/main.js",
+  dest: "dest/out.js"
+});
+```
