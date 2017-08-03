@@ -2,6 +2,8 @@
 
 Bitbundler affords you with a CLI that uses [subarg](https://github.com/substack/subarg) syntax, and below are the available options.
 
+- **`--config`** { boolean | string } - config is either true so that the cli automatically picks up the default file `.bitbundlerrc.js` or `.bitbundlerrc.json`. Or a string if you want to specify your own file name. Any other CLI options will be merged and override the options from the config file.
+
 - **`--src`** { string | string[] } - source file names to bundle.
 
 - **`--dest`** { string } - file name to write the bundle to.
