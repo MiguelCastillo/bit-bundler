@@ -4,7 +4,7 @@
   "description": "bit-bundler examples",
   "main": "basic.js",
   "scripts": {
-    "build": "bitbundler --config bitbundlerrc",
+    "build": "bitbundler --config",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Miguel Castillo <manchagnu@gmail.com>",
