@@ -28,15 +28,15 @@ $ bitbundler --print --src src/main.js --dest dest/out.js --loader [ [ --name bi
 
 #### Loading the default config file
 
-Use this when you are looking to setup all your configuration in a config file. Either `.bitbundlerrc.js` or `bitbundlerrc.json`, whichever is found first.
+bit-bundler will automatically try to load `.bitbundler.js` or `.bitbundler.json`. If both are present then `.bitbundler.js` will be used. The configuration file is optional, so if a configuration file does not exist then only CLI arguments are used.
 
 ```
-$ bitbundler --config
+$ bitbundler
 ```
 
 #### Specifying a config file
 
-If you want to load a particular config file, you can provide a string
+If you want to load a particular config file, you can provide a string to the `--config` option.
 
 ```
 $ bitbundler --config my-bit-bundler-config.js

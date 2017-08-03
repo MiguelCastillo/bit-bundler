@@ -47,7 +47,7 @@ The CLI also allows you to load settings from configuration files. Since configu
 The equivalent configuration for the above command line looks like the following:
 
 ``` javascript
-// file name is .bitbundlerrc.js
+// file name is .bitbundler.js
 module.exports = {
   "src": "src/index.js",
   "dest": "dest/out.js"

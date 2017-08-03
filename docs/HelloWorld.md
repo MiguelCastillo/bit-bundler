@@ -8,7 +8,7 @@ The smallest setup would be bit-bundler with no options and bundle a file.
 $ npm install bit-bundler -g
 ```
 
-#### setup .bitbundlerrc.js
+#### setup .bitbundler.js
 
 ``` javascript
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
 #### run bitbundler
 
 ```
-$ bitbundler --config
+$ bitbundler
 ```
 
 That's it. That will bundle `src/main.js` and put the result in `dest/out.js`. But this is not really as interesting as it could be. In the next section we are going to setup a couple of loader plugins to enable features such as transpilation and linting.
