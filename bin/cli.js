@@ -7,7 +7,7 @@ var argv = require("subarg")(process.argv.slice(2));
 var options = camelKeys(argv);
 
 try {
-  options.config = path.join(process.cwd(), typeof options.config === "string" ? options.config : ".bitbundlerrc");
+  options.config = path.join(process.cwd(), typeof options.config === "string" ? options.config : ".bitbundler");
   options = Object.assign({}, camelKeys(require(options.config)), options);
 }
 catch(ex) {

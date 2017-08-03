@@ -4,7 +4,7 @@
   "description": "bit-bundler examples",
   "main": "index.js",
   "scripts": {
-    "build": "bitbundler --config",
+    "build": "bitbundler",
     "analyze": "source-map-explorer dest/out.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
