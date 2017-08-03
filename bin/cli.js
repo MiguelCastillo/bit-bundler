@@ -13,9 +13,9 @@ try {
 catch(ex) {
 }
 
-var options = Type.coerceValues(options, {
+options = Type.coerceValues(options, {
   "config": Type.String,
-  "src": Type.Array.withTransform(toArray),
+  "src": Type.Array.withTransform(configureSrc),
   "dest": Type.String,
   "baseUrl": Type.String,
   "stubNotFound": Type.Boolean,
@@ -39,11 +39,8 @@ else {
   require("../src/index").bundle(files, options);
 }
 
-function parseFiles(options) {
-  return {
-    src: options._.concat(toArray(options.src)).filter(Boolean),
-    dest: options.dest
-  };
+function configureSrc(src) {
+  return options._.length ? options._ : toArray(src);
 }
 
 function toArray(value) {
