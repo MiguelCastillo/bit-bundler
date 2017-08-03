@@ -5,7 +5,7 @@ The smallest setup would be bit-bundler with no options and bundle a file.
 #### install bit-bundler
 
 ```
-$ npm install --save-dev bit-bundler
+$ npm install bit-bundler -g
 ```
 
 #### setup .bitbundlerrc.js
