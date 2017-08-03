@@ -174,5 +174,5 @@ Make sure to checkout the [logstash.config](https://github.com/MiguelCastillo/bi
 ```
 $ cd logstash
 $ npm install
-$ node index.js | logstash -f logstash.config
+$ npm run build | logstash -f logstash.config
 ```
