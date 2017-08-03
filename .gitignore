@@ -1,5 +1,6 @@
 _book
 /examples/**/dest
+/examples/**/.bundler-cache.json
 /test/dest
 
 .DS_Store
