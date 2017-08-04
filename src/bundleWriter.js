@@ -1,3 +1,5 @@
+"use strict";
+
 var fs = require("fs");
 var path = require("path");
 var mkdirp = require("mkdirp");
@@ -9,7 +11,7 @@ function bundleWriter() {
   return function writerDelegate(context) {
     var pending = [];
 
-    context.visitBundles(function(bundle) {
+    context.visitBundles((bundle) => {
       if (bundle.content && bundle.dest) {
         pending.push(writeBundle(logger, bundle));
       }
@@ -17,13 +19,13 @@ function bundleWriter() {
       return bundle;
     });
 
-    return Promise.all(pending).then(function() { return context;});
+    return Promise.all(pending).then(() => context);
   };
 }
 
 function writeBundle(logger, bundle) {
-  return new Promise(function(resolve, reject) {
-    streamFactory(bundle.dest).write(bundle.content, function(err) {
+  return new Promise((resolve, reject) => {
+    streamFactory(bundle.dest).write(bundle.content, (err) => {
       if (err) {
         logger.error("write-failure", bundle, err);
         reject(err);
