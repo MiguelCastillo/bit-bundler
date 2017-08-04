@@ -3,7 +3,14 @@ var utils = require("belty");
 
 function Bundle(name, options, main) {
   this.name = name;
-  this.main = !!main;
+
+  Object.defineProperties(this, {
+    "isMain": {
+      value: !!main,
+      writable: false
+    }
+  });
+
   configurator.configure(this, options);
 }
 

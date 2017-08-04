@@ -36,8 +36,7 @@ Context.prototype.execute = function(files) {
     .fetch(files)
     .then(function mergeModules(modules) {
       var updates = flattenModules(context.loader, modules);
-      var dest = truncateFilepath(context.file.dest, context.file.cwd);
-      var bundle = context.bundle || new Bundle("main", { dest: dest }, true);
+      var bundle = context.bundle || new Bundle("main", { dest: context.file.dest }, true);
 
       // TODO:
       // https://github.com/MiguelCastillo/bit-bundler/issues/81
@@ -69,8 +68,8 @@ Context.prototype.visitBundles = function(visitor) {
   var context = this;
 
   return Object.keys(context.shards).reduce(function(context, name) {
-    return context.setShard(name, visitor(context.shards[name], context.shards[name].dest, false));
-  }, context.setBundle(visitor(context.bundle, context.file.dest, true)));
+    return context.setShard(name, visitor(context.shards[name]));
+  }, context.setBundle(visitor(context.bundle)));
 };
 
 Context.prototype.setBundle = function(bundle) {
