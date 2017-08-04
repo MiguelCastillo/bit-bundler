@@ -1,111 +1,95 @@
+"use strict";
+
 var utils = require("belty");
 var types = require("dis-isa");
 var jsBundler = require("bit-bundler-browserpack");
 var configurator = require("setopt")();
 var pluginLoader = require("./pluginLoader");
 
+class Bundler {
+  constructor(options) {
+    this._prebundle = [];
+    this._postbundle = [];
 
-function Bundler(options) {
-  this._prebundle = [];
-  this._postbundle = [];
-
-  if (!options.provider) {
-    options.provider = jsBundler(options);
-  }
-
-  configurator.configure(this, options);
-}
-
-
-Bundler.prototype.configure = function(options) {
-  configurator.configure(this, options);
-  return this;
-};
-
-
-Bundler.prototype.provider = function(provider) {
-  this._provider = provider;
-  return this;
-};
-
-
-Bundler.prototype.plugins = function(plugins) {
-  var bundler = this;
-
-  pluginLoader(utils.toArray(plugins)).forEach(function(plugin) {
-    if (types.isFunction(plugin)) {
-      plugin = {
-        prebundle: plugin
-      };
+    if (!options.provider) {
+      options.provider = jsBundler(options);
     }
 
-    configurator.configure(bundler, plugin);
-  });
-
-  return this;
-};
-
-
-Bundler.prototype.prebundle = function(plugins) {
-  if (!plugins) {
-    throw new TypeError("Must provide plugins to register for prebundle");
+    configurator.configure(this, options);
   }
 
-  this._prebundle = this._prebundle.concat(utils.toArray(plugins));
-  return this;
-};
-
-
-Bundler.prototype.postbundle = function(plugins) {
-  if (!plugins) {
-    throw new TypeError("Must provide plugins to register for postbundle");
+  configure(options) {
+    configurator.configure(this, options);
+    return this;
   }
 
-  this._postbundle = this._postbundle.concat(utils.toArray(plugins));
-  return this;
-};
-
-
-Bundler.prototype.bundle = function(context) {
-  if (!context) {
-    throw new TypeError("Must provide bundle context");
+  provider(provider) {
+    this._provider = provider;
+    return this;
   }
 
-  if (!this._provider) {
-    throw new TypeError("Bundler does not have a provider configured");
+  plugins(plugins) {
+    pluginLoader(utils.toArray(plugins)).forEach((plugin) => {
+      if (types.isFunction(plugin)) {
+        plugin = {
+          prebundle: plugin
+        };
+      }
+
+      configurator.configure(this, plugin);
+    });
+
+    return this;
   }
 
-  return [runPlugins(this, this._prebundle), runBundler(this), runPlugins(this, this._postbundle)]
-    .reduce(function(promise, next) {
-      return promise.then(next);
-    }, Promise.resolve(context));
-};
+  prebundle(plugins) {
+    if (!plugins) {
+      throw new TypeError("Must provide plugins to register for prebundle");
+    }
 
+    this._prebundle = this._prebundle.concat(utils.toArray(plugins));
+    return this;
+  }
 
-function runBundler(bundler) {
-  return function(context) {
-    return Promise
-      .resolve(bundler._provider.bundle(context))
-      .then(function(result) {
-        return context.setBundle(result);
-      });
-  };
+  postbundle(plugins) {
+    if (!plugins) {
+      throw new TypeError("Must provide plugins to register for postbundle");
+    }
+
+    this._postbundle = this._postbundle.concat(utils.toArray(plugins));
+    return this;
+  }
+
+  bundle(context) {
+    if (!context) {
+      throw new TypeError("Must provide bundle context");
+    }
+
+    if (!this._provider) {
+      throw new TypeError("Bundler does not have a provider configured");
+    }
+
+    return [runPlugins(this, this._prebundle), runBundler(this), runPlugins(this, this._postbundle)]
+      .reduce((promise, next) => promise.then(next), Promise.resolve(context));
+  }
 }
 
+function runBundler(bundler) {
+  return function bundlerRunner(context) {
+    return Promise
+      .resolve(bundler._provider.bundle(context))
+      .then((result) => context.setBundle(result));
+  };
+}
 
 function runPlugins(bundler, plugins) {
   return function pluginRunner(context) {
-    return plugins.reduce(function(next, plugin) {
-      return next
-        .then(function(context) {
-          return plugin(bundler._provider, context);
-        })
-        .then(function(result) {
-          return context.configure(result);
-        });
-    }, Promise.resolve(context));
+    return plugins.reduce((next, plugin) => (
+      next
+        .then((context) => plugin(bundler._provider, context))
+        .then((result) => context.configure(result))
+    ), Promise.resolve(context));
   };
 }
-
 
 module.exports = Bundler;
