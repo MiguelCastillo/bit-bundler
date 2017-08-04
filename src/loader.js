@@ -1,3 +1,5 @@
+"use strict";
+
 var Bitloader = require("bit-loader");
 var utils = require("belty");
 var resolvePath = require("bit-bundler-utils/resolvePath");
@@ -9,22 +11,21 @@ var moduleNotFoundError = buildError.bind(null, "Unable to find module");
 var moduleNotLoadedError = buildError.bind(null, "Unable to load module");
 var moduleNotResolvedError = buildError.bind(null, "Unable to resolve module");
 
-function Loader(options) {
-  options = options || {};
+class Loader extends Bitloader {
+  constructor(options) {
+    options = options || {};
 
-  Bitloader.call(this, utils.extend({}, options, {
-    resolve: configureResolve(options),
-    fetch: configureFetch(options),
-    plugins: pluginLoader(options.plugins)
-  }));
+    super(utils.extend({}, options, {
+      resolve: configureResolve(options),
+      fetch: configureFetch(options),
+      plugins: pluginLoader(options.plugins)
+    }));
+  }
+
+  getCache() {
+    return this.cache;
+  }
 }
-
-Loader.prototype = Object.create(Bitloader.prototype);
-Loader.prototype.constructor = Loader;
-
-Loader.prototype.getCache = function() {
-  return this.cache;
-};
 
 function configureResolve(options) {
   var resolver = resolvePath.configure({baseUrl: options.baseUrl});
