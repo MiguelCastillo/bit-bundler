@@ -84,8 +84,8 @@ Bitbundler.prototype.update = function(files) {
     .then(function(context) {
       bitbundler.context = context;
 
-      context.visitBundles(function(bundle, dest, isMain) {
-        logger.log(bundle.content ? "bundle" : "empty-bundle", bundle, isMain);
+      context.visitBundles(function(bundle) {
+        logger.log("bundle", bundle);
       });
 
       logger.log("build-success", context);
