@@ -9,9 +9,9 @@ function bundleWriter() {
   return function writerDelegate(context) {
     var pending = [];
 
-    context.visitBundles(function(bundle, dest) {
-      if (bundle.content && dest) {
-        pending.push(writeBundle(logger, bundle, streamFactory(dest)));
+    context.visitBundles(function(bundle) {
+      if (bundle.content && bundle.dest) {
+        pending.push(writeBundle(logger, bundle));
       }
 
       return bundle;
@@ -21,7 +21,9 @@ function bundleWriter() {
   };
 }
 
-function writeBundle(logger, bundle, stream) {
+function writeBundle(logger, bundle) {
+  var stream = streamFactory(bundle.dest);
+
   if (!bundle || !bundle.content || !stream) {
     return Promise.resolve();
   }
