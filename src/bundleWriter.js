@@ -22,14 +22,8 @@ function bundleWriter() {
 }
 
 function writeBundle(logger, bundle) {
-  var stream = streamFactory(bundle.dest);
-
-  if (!bundle || !bundle.content || !stream) {
-    return Promise.resolve();
-  }
-
   return new Promise(function(resolve, reject) {
-    stream.write(bundle.content, function(err) {
+    streamFactory(bundle.dest).write(bundle.content, function(err) {
       if (err) {
         logger.error("write-failure", bundle, err);
         reject(err);
