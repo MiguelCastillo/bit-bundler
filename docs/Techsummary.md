@@ -8,4 +8,4 @@ The way that `bit-bundler` works is simple. The files to be bundled are handed o
 
 `bit-bundler` then creates a `context`, which has the dependency graph created by `bit-loader`. This `context` is passed to the [bundler](https://github.com/MiguelCastillo/bit-bundler-browserpack) in order to conver the dependecy graph into an actual bundle.
 
-What you write to disk is generally `context.bundle.result`. You also write to disk `context.shards`, if you are using bundler plugins such as [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) that can split up `context.bundle`.
+What you write to disk is generally `context.bundle.content`. You also write to disk `context.shards`, if you are using bundler plugins such as [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) that can split up `context.bundle`.
