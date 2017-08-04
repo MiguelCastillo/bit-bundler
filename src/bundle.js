@@ -1,55 +1,59 @@
+"use strict";
+
 var configurator = require("setopt")();
 var utils = require("belty");
 
-function Bundle(name, options, main) {
-  this.name = name;
+class Bundle {
+  constructor(name, options, main) {
+    this.name = name;
 
-  Object.defineProperties(this, {
-    "isMain": {
-      value: !!main,
-      writable: false
-    }
-  });
+    Object.defineProperties(this, {
+      "isMain": {
+        value: !!main,
+        writable: false
+      }
+    });
 
-  configurator.configure(this, options);
+    configurator.configure(this, options);
+  }
+
+  configure(options) {
+    return !options || options === this ? this : new Bundle(this.name, utils.merge({}, this, options), this.main);
+  }
+
+  clear() {
+    return this.configure({ content: null, sourcemap: null });
+  }
+
+  setDest(dest) {
+    this.dest = dest;
+    return this;
+  }
+
+  setName(name) {
+    this.name = name;
+    return this;
+  }
+
+  setContent(content) {
+    this.content = content;
+    return this;
+  }
+
+  setExports(exports) {
+    this.exports = exports;
+    return this;
+  }
+
+  setModules(modules) {
+    this.modules = modules;
+    return this;
+  }
+
+  setSourcemap(sourcemap) {
+    this.sourcemap = sourcemap;
+    return this;
+  }
 }
-
-Bundle.prototype.configure = function(options) {
-  return !options || options === this ? this : new Bundle(this.name, utils.merge({}, this, options), this.main);
-};
-
-Bundle.prototype.clear = function() {
-  return this.configure({ content: null, sourcemap: null });
-};
-
-Bundle.prototype.setDest = function(dest) {
-  this.dest = dest;
-  return this;
-};
-
-Bundle.prototype.setName = function(name) {
-  this.name = name;
-  return this;
-};
-
-Bundle.prototype.setContent = Bundle.prototype.setResult = function(result) {
-  this.result = this.content = result;
-  return this;
-};
-
-Bundle.prototype.setExports = function(exports) {
-  this.exports = exports;
-  return this;
-};
-
-Bundle.prototype.setModules = function(modules) {
-  this.modules = modules;
-  return this;
-};
-
-Bundle.prototype.setSourcemap = function(sourcemap) {
-  this.sourcemap = sourcemap;
-  return this;
-};
 
 module.exports = Bundle;
