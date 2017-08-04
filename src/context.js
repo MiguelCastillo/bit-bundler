@@ -1,3 +1,5 @@
+"use strict";
+
 var utils = require("belty");
 var File = require("src-dest");
 var Bundle = require("./bundle");
@@ -17,108 +19,101 @@ var defaults = {
   lastUpdatedModules: null
 };
 
-function Context(options) {
-  if (!(this instanceof Context)) {
-    return new Context(options);
+class Context {
+  constructor(options) {
+    utils.merge(this, defaults, options);
   }
 
-  utils.merge(this, defaults, options);
-}
+  configure(options) {
+    return !options || this === options ? this : new Context(utils.extend({}, this, options));
+  }
 
-Context.prototype.configure = function(options) {
-  return !options || this === options ? this : new Context(utils.extend({}, this, options));
-};
+  execute(files) {
+    var context = this;
 
-Context.prototype.execute = function(files) {
-  var context = this;
+    return this.loader
+      .fetch(files)
+      .then((modules) => {
+        var updates = flattenModules(this.loader, modules);
+        var bundle = this.bundle || new Bundle("main", { dest: this.file.dest }, true);
 
-  return context.loader
-    .fetch(files)
-    .then(function mergeModules(modules) {
-      var updates = flattenModules(context.loader, modules);
-      var bundle = context.bundle || new Bundle("main", { dest: context.file.dest }, true);
+        // TODO:
+        // https://github.com/MiguelCastillo/bit-bundler/issues/81
+        // Add logic to handle ability to also include new dependencies.
+        // But in the meantime, we will just reprocess everything.
+        //updates = this.lastUpdatedModules ? onlyChanged(files, updates) : updates;
 
-      // TODO:
-      // https://github.com/MiguelCastillo/bit-bundler/issues/81
-      // Add logic to handle ability to also include new dependencies.
-      // But in the meantime, we will just reprocess everything.
-      //updates = context.lastUpdatedModules ? onlyChanged(files, updates) : updates;
-
-      return context.configure({
-        cache: context.loader.getCache(),
-        modules: context.modules ? context.modules : modules,
-        lastUpdatedModules: updates,
-        bundle: bundle,
-        shards: {},
-        exclude: []
+        return this.bundler.bundle(this.configure({
+          cache: this.loader.getCache(),
+          modules: this.modules ? this.modules : modules,
+          lastUpdatedModules: updates,
+          bundle: bundle,
+          shards: {},
+          exclude: []
+        }));
       });
-    })
-    .then(function createBundle(context) {
-      return context.bundler.bundle(context);
+  }
+
+  setFile(file) {
+    return this.configure({
+      file: new File(file)
     });
-};
-
-Context.prototype.setFile = function(file) {
-  return this.configure({
-    file: new File(file)
-  });
-};
-
-Context.prototype.visitBundles = function(visitor) {
-  var context = this;
-
-  return Object.keys(context.shards).reduce(function(context, name) {
-    return context.setShard(name, visitor(context.shards[name]));
-  }, context.setBundle(visitor(context.bundle)));
-};
-
-Context.prototype.setBundle = function(bundle) {
-  return this.configure({
-    bundle: bundle ? this.bundle.configure(bundle) : this.bundle.clear()
-  });
-};
-
-Context.prototype.setShard = function(name, shard, dest) {
-  var shards = utils.extend({}, this.shards);
-
-  if (shard) {
-    shards[name] = new Bundle(name, shard);
-    shards[name].dest = shard.dest || dest || name;
   }
-  else {
+
+  visitBundles(visitor) {
+    return Object
+      .keys(this.shards)
+      .reduce((context, name) => this.setShard(name, visitor(this.shards[name])), this.setBundle(visitor(this.bundle)));
+  };
+
+  setBundle(bundle) {
+    return this.configure({
+      bundle: bundle ? this.bundle.configure(bundle) : this.bundle.clear()
+    });
+  }
+
+  setShard(name, shard, dest) {
+    var shards = utils.extend({}, this.shards);
+
+    if (shard) {
+      shards[name] = new Bundle(name, shard);
+      shards[name].dest = shard.dest || dest || name;
+    }
+    else {
+      delete shards[name];
+    }
+
+    return this.configure({
+      shards: shards
+    });
+  }
+
+  deleteShard(name) {
+    var shards = utils.extend({}, this.shards);
     delete shards[name];
+
+    return this.configure({
+      shards: shards
+    });
   }
 
-  return this.configure({
-    shards: shards
-  });
-};
+  addExclude(exclude) {
+    exclude = this.exclude
+      .concat(utils.toArray(exclude))
+      .reduce((container, item) => {
+        container[item] = true;
+        return container;
+      }, {});
 
-Context.prototype.deleteShard = function(name) {
-  var shards = utils.extend({}, this.shards);
-  delete shards[name];
+    return this.configure({
+      exclude: Object.keys(exclude)
+    });
+  }
 
-  return this.configure({
-    shards: shards
-  });
-};
-
-Context.prototype.addExclude = function(exclude) {
-  exclude = this.exclude
-    .concat(utils.toArray(exclude))
-    .reduce(function(container, item) {
-      container[item] = true;
-      return container;
-    }, {});
-
-  return this.configure({
-    exclude: Object.keys(exclude)
-  });
-};
-
-Context.prototype.getLogger = function(name) {
-  return loggerFactory.create(name);
-};
+  getLogger(name) {
+    return loggerFactory.create(name);
+  }
+}
 
 function flattenModules(loader, modules) {
   var i = 0;
@@ -151,10 +146,5 @@ function flattenModules(loader, modules) {
 //     return changedModules;
 //   }, {});
 // }
-
-function truncateFilepath(filepath, cwd) {
-  filepath = filepath || "";
-  return filepath && typeof filepath === "string" ? filepath.replace(cwd, "") : filepath;
-}
 
 module.exports = Context;
