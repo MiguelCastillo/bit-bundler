@@ -68,8 +68,8 @@ Context.prototype.visitBundles = function(visitor) {
   var context = this;
 
   return Object.keys(context.shards).reduce(function(context, name) {
-    return context.setShard(name, visitor(context.shards[name], context.shards[name].dest, false));
-  }, context.setBundle(visitor(context.bundle, context.bundle.dest, true)));
+    return context.setShard(name, visitor(context.shards[name]));
+  }, context.setBundle(visitor(context.bundle)));
 };
 
 Context.prototype.setBundle = function(bundle) {
