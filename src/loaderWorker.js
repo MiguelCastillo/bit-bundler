@@ -1,10 +1,10 @@
 "use strict";
 
 var Loader = require("./loader");
-var WorkerPool = require("worker-pool");
+var Workit = require("workit");
 var es = require("event-stream");
 
-class LoaderWorker extends WorkerPool.WorkerApi {
+class LoaderWorker extends Workit.Worker {
   init(options, done) {
     this.loader = new Loader(Object.assign({}, options, {
       log: {

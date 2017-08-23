@@ -29,8 +29,6 @@ class Context {
   }
 
   execute(files) {
-    var context = this;
-
     return this.loader
       .fetch(files)
       .then((modules) => {

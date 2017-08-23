@@ -2,7 +2,13 @@
 
 var path = require("path");
 var logger = require("./logger");
-var WorkerPool = require("worker-pool");
+var Workit = require("workit");
+
+class WorkerPool extends Workit.Pool {
+  log(chunk) {
+    logger._stream.write(chunk);
+  }
+}
 
 class LoaderPool {
   constructor(options) {
@@ -95,9 +101,6 @@ function createPool(loader, size) {
   var pool = new WorkerPool(path.join(__dirname, "./loaderWorker.js"), {
     size: size === true ? 2 : size,
     silent: true
-  })
-  .withApi({
-    log: (chunk) => logger._stream.write(chunk)
   });
 
   pool.workers.forEach((worker) => {
