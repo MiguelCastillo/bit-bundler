@@ -15,8 +15,6 @@ function bundleWriter() {
       if (bundle.content && bundle.dest) {
         pending.push(writeBundle(logger, bundle));
       }
-
-      return bundle;
     });
 
     return Promise.all(pending).then(() => context);
