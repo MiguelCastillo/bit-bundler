@@ -3,10 +3,17 @@
     "ecmaVersion": 6,
     "sourceType": "module",
     "ecmaFeatures": {
+      "jsx": true
     }
   },
   "rules": {
     "semi": 2,
     "no-console": "warn"
-  }
+  },
+  "plugins": [
+    "react"
+  ],
+  "extends": [
+    "plugin:react/recommended"
+  ]
 }
