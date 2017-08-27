@@ -117,7 +117,7 @@ function writeSpinner(spinner, text, htime, level) {
   text = htime ? text + " " + prettyHrtime(process.hrtime(htime)) : text;
 
   if (!spinner || !spinner.enabled) {
-    writeStream(process.stderr, text, level);
+    writeStream(process.stdout, text, level);
   }
   else {
     spinner.clear();
@@ -150,7 +150,7 @@ function writeStream(stream, text, level) {
 
 function createSpinner(text) {
   return ora({
-    stream: process.stderr,
+    stream: process.stdout,
     text: text,
     spinner: "dots"
   });
