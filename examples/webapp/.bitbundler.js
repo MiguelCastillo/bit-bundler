@@ -4,6 +4,7 @@ module.exports = {
 
   loader: [
     "bit-loader-js",
-    "bit-loader-babel"
+    "bit-loader-babel",
+    "bit-loader-eslint"
   ]
 };

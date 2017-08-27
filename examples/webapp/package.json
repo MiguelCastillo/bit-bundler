@@ -25,6 +25,7 @@
     "bit-bundler-minifyjs": "latest",
     "bit-bundler-splitter": "latest",
     "bit-loader-babel": "latest",
+    "bit-loader-eslint": "^1.2.0",
     "bit-loader-js": "latest",
     "cpx": "^1.5.0",
     "live-server": "MiguelCastillo/live-server#9209e8b4caa7cd7ec16cdf264baf8b1007ed8f41",
