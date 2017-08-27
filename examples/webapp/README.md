@@ -48,7 +48,7 @@ $ npm restart
 $ npm run cleanup
 ```
 
-### To show the current build system proccesses
+### To show the current build system processes
 
 ```
 $ npm run monit
