@@ -1,0 +1,33 @@
+{
+  "name": "examples",
+  "version": "1.0.0",
+  "description": "bit-bundler examples",
+  "main": "basic.js",
+  "scripts": {
+    "assets": "cpx 'src/**/*.html' dest",
+    "build": "bitbundler",
+    "server": "live-server",
+    "analyze": "source-map-explorer dest/bundle.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "pm2 start dev.config.js",
+    "stop": "pm2 stop assets server build",
+    "restart": "pm2 restart assets server build",
+    "cleanup": "pm2 delete assets server build",
+    "monit": "pm2 monit",
+    "logs": "pm2 logs"
+  },
+  "author": "Miguel Castillo <manchagnu@gmail.com>",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "bit-bundler": "latest",
+    "bit-bundler-minifyjs": "latest",
+    "bit-bundler-splitter": "latest",
+    "bit-loader-babel": "latest",
+    "bit-loader-js": "latest",
+    "cpx": "^1.5.0",
+    "live-server": "MiguelCastillo/live-server#9209e8b4caa7cd7ec16cdf264baf8b1007ed8f41",
+    "pm2": "^2.6.1",
+    "source-map-explorer": "^1.3.3"
+  }
+}
