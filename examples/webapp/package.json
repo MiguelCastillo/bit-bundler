@@ -20,14 +20,20 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
     "bit-bundler": "latest",
     "bit-bundler-minifyjs": "latest",
     "bit-bundler-splitter": "latest",
     "bit-loader-babel": "latest",
+    "bit-loader-builtins": "^2.0.0",
+    "bit-loader-eslint": "^1.2.0",
     "bit-loader-js": "latest",
     "cpx": "^1.5.0",
     "live-server": "MiguelCastillo/live-server#9209e8b4caa7cd7ec16cdf264baf8b1007ed8f41",
     "pm2": "^2.6.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "source-map-explorer": "^1.3.3"
   }
 }
