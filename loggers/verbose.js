@@ -14,13 +14,8 @@ function verboseStreamFactory() {
       chalk.blue
     );
 
-    process.stderr.write(color("[" + chunk.name + "] "));
-    msgs.forEach(function(d) { process.stderr.write(d + "\n"); });
-
-    if (!msgs.length) {
-      process.stderr.write("\n");
-    }
-
+    process.stdout.write(color("[" + chunk.name + "] "));
+    process.stdout.write(msgs.length ? msgs.join("\n") + "\n" : "\n");
     this.emit("data", chunk);
   });
 }

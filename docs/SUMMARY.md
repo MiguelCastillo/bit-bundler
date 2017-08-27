@@ -17,6 +17,7 @@
   * [Loggers.](Examples.md#loggers)
   * [Module caching plugin!!](Examples.md#module-caching-plugin)
   * [Stream to logstash to elasticsearch... Why not?](Examples.md#stream-to-logstash-to-elasticsearch-why-not)
+  * [Sample webapp setup, of course](Examples.md#sample-webapp-setup-of-course)
 * [Ecosystem](Ecosystem.md)
 * [Tech Summary](Techsummary.md)
 
