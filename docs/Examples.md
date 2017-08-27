@@ -176,3 +176,28 @@ $ cd logstash
 $ npm install
 $ npm run build | logstash -f logstash.config
 ```
+
+### And a sample webapp setup
+
+The webapp example illustrates how we can put together a build system with a few key tools.
+
+- dev server with [live-server](https://github.com/tapio/live-server)
+- copy of static assets with [cpx](https://github.com/mysticatea/cpx)
+- bundling with (of course) [bit-bundler](https://github.com/MiguelCastillo/bit-bundler)
+- process management with [pm2](https://github.com/Unitech/pm2)
+
+The configuration in the setup is designed to be resillient, modular, and scalable. Why this approach? Simple. After working with several build systems that couple all the pieces together under a single unified system, a few things happen:
+
+1. One piece break, it all goes down.
+2. Wrappers plugins around tools that are generally unrelated cause friction in your setup.
+3. Wrappers plugins tend to have dependencies fall behind.
+4. Levels of indirection add complexity.
+
+With the approach of separate processes acting as their own service, you can restart individual pieces when needed without bringing down the entire build system. Also - process management with [pm2](https://github.com/Unitech/pm2) is pretty magical.
+
+### Run
+```
+$ cd webapp
+$ npm install
+$ npm start
+```
