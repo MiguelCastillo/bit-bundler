@@ -4,8 +4,8 @@ In this example, I have setup a full environment for developing your webapp. Thi
 
 - dev server with [live-server](https://github.com/tapio/live-server)
 - copy of static assets with [cpx](https://github.com/mysticatea/cpx)
-- bundling with (of course) (bit-bundler)[https://github.com/MiguelCastillo/bit-bundler]
-- process management with (pm2)(https://github.com/Unitech/pm2)
+- bundling with (of course) [bit-bundler](https://github.com/MiguelCastillo/bit-bundler)
+- process management with [pm2](https://github.com/Unitech/pm2)
 
 
 # Usage
