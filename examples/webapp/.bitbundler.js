@@ -4,6 +4,6 @@ module.exports = {
 
   loader: [
     "bit-loader-js",
-    ["bit-loader-babel", { sourceMap: "inline" }]
+    "bit-loader-babel"
   ]
 };
