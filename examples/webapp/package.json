@@ -10,9 +10,8 @@
     "analyze": "source-map-explorer dest/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "pm2 start dev.config.js",
-    "stop": "pm2 stop assets server build",
-    "restart": "pm2 restart assets server build",
-    "cleanup": "pm2 delete assets server build",
+    "stop": "pm2 delete assets server build",
+    "restart": "npm stop && npm start",
     "monit": "pm2 monit",
     "logs": "pm2 logs"
   },
