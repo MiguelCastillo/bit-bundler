@@ -5,16 +5,36 @@ function pluginLoader(plugins) {
     return;
   }
 
-  return [].concat(plugins)
+  return []
+    .concat(plugins)
     .filter(Boolean)
-    .map(function(plugin) {
-      return (
-        typeof plugin === "function" ? plugin :
-        typeof plugin === "string" ? requireModule(plugin)() :
-        plugin.constructor === Object ? ( plugin.name ? requireModule(plugin.name)(plugin) : plugin ) :
-        Array.isArray(plugin) ? requireModule(plugin[0]).apply(null, plugin.slice(1)) : null
-      );
-    });
+    .map(loadPlugin);
+}
+
+function loadPlugin(plugin) {
+  return (
+    typeof plugin === "string" ? pluginModule(plugin) :
+    typeof plugin === "function" ? pluginFunction(plugin) :
+    plugin.constructor === Object ? pluginObject(plugin) :
+    Array.isArray(plugin) ? pluginArray(plugin) : null
+  );
+}
+
+function pluginFunction(plugin) {
+  return plugin;
+}
+
+function pluginObject(plugin) {
+  return plugin.name ? pluginModule(plugin.name, plugin) : plugin;
+}
+
+function pluginArray(plugin) {
+  return pluginModule.apply(null, plugin);
+}
+
+function pluginModule(plugin, options) {
+  var result = requireModule(plugin);
+  return typeof result === "function" ? result(options) : result;
 }
 
 function requireModule(name) {
