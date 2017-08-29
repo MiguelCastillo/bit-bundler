@@ -23,7 +23,7 @@
     "setopt": "^1.0.1",
     "src-dest": "^1.1.0",
     "subarg": "^1.0.0",
-    "workit": "git+https://github.com/MiguelCastillo/workit.git#v0.0.1"
+    "workit": "^2.0.0"
   },
   "main": "src/index.js",
   "engines": {
