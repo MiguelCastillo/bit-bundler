@@ -1,6 +1,6 @@
 {
   "name": "bit-bundler",
-  "version": "7.0.3",
+  "version": "7.0.4",
   "dependencies": {
     "belty": "^5.0.3",
     "bit-bundler-browserpack": "^4.0.1",
