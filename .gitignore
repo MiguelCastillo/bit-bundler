@@ -36,3 +36,6 @@ node_modules
 .lock-wscript
 
 .vscode
+
+# JetBrains IDE
+.idea
