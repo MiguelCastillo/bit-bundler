@@ -204,6 +204,8 @@ $ npm install
 $ npm run start
 ```
 
+Open webapp in the browser. [link](http://localhost:3000)
+
 To stop the build system
 
 ```
