@@ -8,7 +8,7 @@ module.exports = {
     name: "server",
     script: "npm",
     args: "run server",
-    watch: [".live-server.js"],
+    watch: [".3dub.js"],
     ignore_watch: ["node_modules"]
   }, {
     name: "build",
