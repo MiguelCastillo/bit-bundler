@@ -203,3 +203,21 @@ $ cd webapp
 $ npm install
 $ npm run start
 ```
+
+To stop the build system
+
+```
+$ npm run stop
+```
+
+To see the build logs in realtime
+
+```
+$ npm run logs
+```
+
+To see the health of the build system and logs
+
+```
+$ npm run monit
+```
