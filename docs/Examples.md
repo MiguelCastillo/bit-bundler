@@ -199,5 +199,5 @@ With the approach of separate processes acting as their own service, you can sta
 ```
 $ cd webapp
 $ npm install
-$ npm start
+$ npm run start
 ```
