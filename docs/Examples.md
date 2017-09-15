@@ -195,6 +195,8 @@ The configuration in the setup is designed to be resillient, modular, and scalab
 
 With the approach of separate processes acting as their own service, you can start/restart/update/stop individual pieces without bringing down the entire build system. Also - process management with [pm2](https://github.com/Unitech/pm2) is pretty magical.
 
+##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/webapp)
+
 ### Run
 ```
 $ cd webapp
