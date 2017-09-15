@@ -30,11 +30,11 @@ $ npm run build
 
 By default, `bit-bundler` does not understand how to load module dependencies. So we will rely on [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js) to help us out here.
 
-##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/js)
+##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/dependencies)
 
 #### Run
 ```
-$ cd js
+$ cd dependencies
 $ npm install
 $ npm run build
 ```
