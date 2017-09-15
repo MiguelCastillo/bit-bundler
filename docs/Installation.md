@@ -1,3 +1,8 @@
+## Requirements
+
+nodejs version 4.8.0 (or later) as well as npm, yarn, or equivalent to install packages. Throughout the docs, unless otherwise stated, the assumption is that your environment is node.
+
+
 ## Installation
 
 > Generally speaking, we would install bit-bundler via the npm cli, yarn, or whatever other tool of your choice.
@@ -14,11 +19,11 @@ $ npm install bit-bundler -g
 
 This is the quickest setup, and at this point you can start using bit-bundler's CLI.
 
-Alternatively, bit-bundler can be installed in your project as a dev dependency. When you do that, you will have access to bit-bundler's CLI from npm scripts defined in your package.json. This integration with the npm scripts in your package.json removes the need to install bit-bundler globally, and also allows you specify a particular version of bit-bundler for your project.
+Alternatively, bit-bundler can be installed in your project as a dev dependency. When you do that, you will have access to bit-bundler's CLI from npm scripts defined in your package.json. This integration with npm scripts in your package.json removes the need to install bit-bundler globally, and also allows you specify a particular version of bit-bundler for your project.
 
 > npm scripts integration is the preferred method when using bit-bundler's CLI in your project.
 
-From the command line in the your project's directory, execute:
+From the command line in your project's directory, execute:
 
 ```
 $ npm install bit-bundler --save-dev
@@ -61,11 +66,11 @@ And your command will now look like:
 $ bitbundler
 ```
 
-> Configuration files can be JavaScript, which allows you to scale to more complicated setups. The configuration file can also be JSON, which currently has limitation when defining regular expressions.
+> Configuration files can be JavaScript, which allows you to scale for more complicated setups. The configuration file can also be JSON, which currently has limitation when defining regular expressions.
 
 ### api
 
-The second method is to use bit-bundler's API. This option is similar in nature to specifying a configuration file for the CLI. From the command line, execute in the directory you intend to use bit-bundler from:
+The second method is to use bit-bundler's API. From the command line, execute in the directory you intend to use bit-bundler from:
 
 ```
 $ npm install bit-bundler --save-dev
@@ -94,7 +99,3 @@ Bitbundler.bundle({
   dest: "dest/out.js"
 });
 ```
-
-## Requirements
-
-The requirements are node version 4 (or later) as the environment as well as npm, yarn, or equivalent to install packages. Throughout the docs, unless otherwise stated, the assumption is that your environment is node.
