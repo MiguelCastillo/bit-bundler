@@ -9,7 +9,7 @@ In this example, we are going to use [bit-bundler-splitter](https://github.com/M
 #### install bit-bundler and plugins
 
 ```
-$ npm install --save-dev bit-bundler bit-loader-eslint bit-loader-js bit-loader-babel bit-bundler-splitter
+$ npm install --save-dev bit-bundler bit-loader-eslint bit-loader-babel bit-bundler-splitter
 ```
 
 #### setup bitbundler-config.js
@@ -19,7 +19,6 @@ var Bitbundler = require("bit-bundler");
 
 var bitbundler = new Bitbundler({
   loader: [
-    "bit-loader-js",
     "bit-loader-eslint",
     "bit-loader-babel"
   ],
@@ -40,8 +39,6 @@ bitbundler.bundle({
 ```
 $ node bitbundler-config.js
 ```
-
-Let's break down the splitter plugin. The splitter plugin takes as its first argument the destination where the bundle is going to be written to. And the second argument defines which modules go in a particular bundle. The mental model of the flow is like a waterfall in which the main bundle has all the modules, and the splitters are taking the output of the previous splitter pulling out the modules that need to go in a separate bundle.
 
 There are other options and rules you can specify available at [bit-bundler-splitter's](https://github.com/MiguelCastillo/bit-bundler-splitter) repo.
 
