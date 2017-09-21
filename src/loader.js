@@ -79,7 +79,7 @@ function configureDependency(options) {
   }, utils.pick(options, ["amd", "cjs"]));
 
   return function getDependencies(meta) {
-    if (meta.source && /\.(js|jsx|mjs)/.test(meta.path)) {
+    if (meta.source && /[\w]+\.(js|jsx|mjs)$/.test(meta.path)) {
       return {
         deps: pullingDeps(meta.source, depsOptions).dependencies
       };
