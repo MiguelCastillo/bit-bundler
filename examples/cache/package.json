@@ -16,7 +16,6 @@
   "devDependencies": {
     "bit-bundler": "latest",
     "bit-loader-cache": "^1.0.7",
-    "bit-loader-js": "^1.2.2",
     "elasticsearch": "^13.1.1",
     "source-map-explorer": "^1.3.3"
   }
