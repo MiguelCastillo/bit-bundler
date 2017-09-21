@@ -2,7 +2,6 @@
 
 import { expect } from "chai";
 import sinon from "sinon";
-import jsPlugin from "bit-loader-js";
 import splitBundle from "bit-bundler-splitter";
 import BitBundler from "../../src/index";
 import loggers from "../../loggers";
@@ -17,34 +16,6 @@ describe("BitBundler test suite", function() {
   describe("When creating a bundler with no configuration", function() {
     beforeEach(function() {
       createBundler();
-    });
-
-    it("then the bundler is an instance of Bundler", function() {
-      expect(bitbundler).to.be.an.instanceof(BitBundler);
-    });
-
-    describe("and bundling a modules with a couple dependencies", function() {
-      var result;
-
-      beforeEach(function() {
-        return bitbundler.bundle("test/sample/X.js").then(function(ctx) {
-          result = ctx;
-        });
-      });
-
-      it("then result does not contain the dependencies", function() {
-        expect(trimResult(result.bundle.content)).to.be.equal(`require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){/*eslint no-console: ["off"]*/var Y = require("./Y");function X() {  console.log("Say X");  this._y = new Y();}module.exports = new X();},{}]},{},[1])`);
-      });
-    });
-  });
-
-  describe("When creating a bundler with the JS plugin", function() {
-    beforeEach(function() {
-      createBundler({
-        loader: {
-          plugins: jsPlugin()
-        }
-      });
     });
 
     it("then the bundler is an instance of Bundler", function() {
@@ -69,9 +40,6 @@ describe("BitBundler test suite", function() {
   describe("When creating a bundler with the JS plugin and spitting bundles", function() {
     beforeEach(function() {
       createBundler({
-        loader: {
-          plugins: jsPlugin()
-        },
         bundler: {
           plugins: [
             splitBundle("test/dest/Y.js", { match: { fileName: "Y.js" }}),
