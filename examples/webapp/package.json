@@ -28,7 +28,6 @@
     "bit-loader-babel": "latest",
     "bit-loader-builtins": "^2.0.0",
     "bit-loader-eslint": "^1.2.0",
-    "bit-loader-js": "latest",
     "cpx": "^1.5.0",
     "eslint-plugin-react": "^7.3.0",
     "pm2": "^2.7.0",

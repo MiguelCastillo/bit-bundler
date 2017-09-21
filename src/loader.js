@@ -2,6 +2,7 @@
 
 var Bitloader = require("bit-loader");
 var utils = require("belty");
+var pullingDeps = require("pulling-deps");
 var resolvePath = require("bit-bundler-utils/resolvePath");
 var readFile = require("bit-bundler-utils/readFile");
 var pluginLoader = require("./pluginLoader");
@@ -18,6 +19,7 @@ class Loader extends Bitloader {
     super(utils.extend({}, options, {
       resolve: configureResolve(options),
       fetch: configureFetch(options),
+      dependency: configureDependency(options),
       plugins: pluginLoader(options.plugins)
     }));
   }
@@ -67,6 +69,21 @@ function configureFetch(options) {
     return meta.id === "@notfound" && options.stubNotFound ?
       Promise.resolve({ source: "" }) :
       readFile(meta).then(utils.identity, handleError);
+  };
+}
+
+function configureDependency(options) {
+  var depsOptions = utils.assign({
+    amd: false,
+    cjs: true
+  }, utils.pick(options, ["amd", "cjs"]));
+
+  return function getDependencies(meta) {
+    if (meta.source && /[\w]+\.(js|jsx|mjs)$/.test(meta.path)) {
+      return {
+        deps: pullingDeps(meta.source, depsOptions).dependencies
+      };
+    }
   };
 }
 

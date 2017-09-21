@@ -13,7 +13,6 @@
     "log2console": "^1.0.3"
   },
   "devDependencies": {
-    "bit-bundler": "latest",
-    "bit-loader-js": "^1.2.2"
+    "bit-bundler": "latest"
   }
 }

@@ -9,9 +9,5 @@ module.exports = {
 
   log: loggers.sequence(watchLogger(), buildstatsLogger()),
   src: "src/main.js",
-  dest: "dest/main.js",
-
-  loader: [
-    "bit-loader-js"
-  ]
+  dest: "dest/main.js"
 };

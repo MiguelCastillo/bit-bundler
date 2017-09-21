@@ -5,9 +5,5 @@ var loaderFilter = require("bit-bundler/loggers/loaderFilter");
 module.exports = {
   log: loggers.sequence(loaderFilter(), verboseLogger()),
   src: "src/main.js",
-  dest: "dest/main.js",
-
-  loader: [
-    "bit-loader-js"
-  ]
+  dest: "dest/main.js"
 };

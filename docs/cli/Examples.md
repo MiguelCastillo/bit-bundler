@@ -1,15 +1,15 @@
 ## Examples
 
-#### Loader plugin for processing node and ES6 dependencies
+#### hello world bundling.
 
 ```
-$ bitbundler --src src/main.js --dest dest/out.js --loader [ bit-loader-js ]
+$ bitbundler --src src/main.js --dest dest/out.js
 ```
 
-#### Also include eslint loader plugin
+#### Include eslint loader plugin to lint only the modules used by your code.
 
 ```
-$ bitbundler --src src/main.js --dest dest/out.js --loader [ bit-loader-js bit-loader-eslint ]
+$ bitbundler --src src/main.js --dest dest/out.js --loader [ bit-loader-eslint ]
 ```
 
 #### Passing in options to a loader plugin.
@@ -29,6 +29,8 @@ $ bitbundler --print --src src/main.js --dest dest/out.js --loader [ [ --name bi
 #### Loading the default config file
 
 bit-bundler will automatically try to load `.bitbundler.js` or `.bitbundler.json`. If both are present then `.bitbundler.js` will be used. The configuration file is optional, so if a configuration file does not exist then only CLI arguments are used.
+
+So just run bit-bundler in the CLI to load the default configuration file.
 
 ```
 $ bitbundler

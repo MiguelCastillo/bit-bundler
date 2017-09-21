@@ -11,7 +11,6 @@ module.exports = {
   dest: "dest/out.js",
 
   loader: [
-    "bit-loader-js",
     ["bit-loader-cache", {
       // connector: elasticsearchConnector({
       //   host: "localhost:9200",

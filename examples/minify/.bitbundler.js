@@ -4,7 +4,6 @@ module.exports = {
   dest: "dest/main.js",
 
   loader: [
-    "bit-loader-js",
     "bit-loader-babel"
   ],
   bundler: [
