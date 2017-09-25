@@ -22,7 +22,7 @@ class Bundle {
   }
 
   clear() {
-    return this.configure({ content: null, sourcemap: null });
+    return this.configure({ content: null });
   }
 
   setDest(dest) {
@@ -47,11 +47,6 @@ class Bundle {
 
   setModules(modules) {
     this.modules = modules;
-    return this;
-  }
-
-  setSourcemap(sourcemap) {
-    this.sourcemap = sourcemap;
     return this;
   }
 }
