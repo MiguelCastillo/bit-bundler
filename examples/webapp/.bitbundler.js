@@ -7,5 +7,9 @@ module.exports = {
     "bit-loader-babel",
     "bit-loader-eslint",
     "bit-loader-builtins"
+  ],
+  bundler: [
+    "bit-bundler-minifyjs",
+    "bit-bundler-extractsm"
   ]
 };
