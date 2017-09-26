@@ -2,7 +2,6 @@
 
 import { expect } from "chai";
 import sinon from "sinon";
-import splitBundle from "bit-bundler-splitter";
 import BitBundler from "../../src/index";
 import loggers from "../../loggers";
 
@@ -40,12 +39,12 @@ describe("BitBundler test suite", function() {
   describe("When creating a bundler with the JS plugin and spitting bundles", function() {
     beforeEach(function() {
       createBundler({
-        bundler: {
-          plugins: [
-            splitBundle("test/dest/Y.js", { match: { fileName: "Y.js" }}),
-            splitBundle("test/dest/Z.js", { match: { fileName: "z.js" } })
+        bundler: [
+          ["bit-bundler-splitter", [
+            { dest: "test/dest/Y.js", match: { fileName: "Y.js" }},
+            { dest: "test/dest/Z.js", match: { fileName: "z.js" }}]
           ]
-        }
+        ]
       });
     });
 
