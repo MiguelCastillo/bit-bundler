@@ -23,8 +23,10 @@ var bitbundler = new Bitbundler({
     "bit-loader-babel"
   ],
   bundler: [
-    ["bit-bundler-splitter", { dest: "dest/vendor.js", match: { path: /\/node_modules\// } }],
-    ["bit-bundler-splitter", { dest: "dest/renderer.js", match: { path: /src\/renderer/ } }]
+    ["bit-bundler-splitter", [
+      { dest: "dest/vendor.js", match: { path: /\/node_modules\// } },
+      { dest: "dest/renderer.js", match: { path: /src\/renderer/ } }]
+    ]
   ]
 });
 
