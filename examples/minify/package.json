@@ -15,8 +15,8 @@
   },
   "devDependencies": {
     "bit-bundler": "latest",
-    "bit-bundler-extractsm": "^2.0.0",
-    "bit-bundler-minifyjs": "^1.0.4",
+    "bit-bundler-extractsm": "latest",
+    "bit-bundler-minifyjs": "latest",
     "bit-bundler-splitter": "latest",
     "bit-loader-babel": "^2.0.0",
     "source-map-explorer": "^1.3.3"
