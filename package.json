@@ -41,7 +41,7 @@
     "babel-core": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-register": "^6.24.1",
-    "bit-bundler-splitter": "^3.0.0",
+    "bit-bundler-splitter": "^4.0.0",
     "chai": "~4.1.0",
     "config-grunt-tasks": "^1.0.3",
     "eslint-tap": "^2.0.1",
