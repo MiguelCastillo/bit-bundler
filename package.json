@@ -50,7 +50,7 @@
     "grunt-eslint": "^20.1.0",
     "grunt-release": "^0.14.0",
     "load-grunt-tasks": "^3.5.2",
-    "mocha": "~3.5.3",
+    "mocha": "~4.0.0",
     "sinon": "^4.0.0",
     "spromise": "^1.0.0"
   },
