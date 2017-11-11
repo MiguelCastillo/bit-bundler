@@ -7,7 +7,7 @@ var types = require("dis-isa");
 var EventEmitter = require("events");
 var Stream = require("stream");
 var es = require("event-stream");
-var deprecate = require("deprecate");
+var deprecatedOptions = require("./deprecatedOptions")("bit-bundler");
 var loaderFactory = require("./loaderFactory");
 var Bundler = require("./bundler");
 var Context = require("./context");
@@ -24,13 +24,7 @@ class Bitbundler extends EventEmitter {
 
     this.context = null;
     this.options = Object.assign({}, defaultOptions, options);
-
-    // ignoreNotFound is deprecated...
-    if (this.options.hasOwnProperty("ignoreNotFound")) {
-      this.options.stubNotFound = this.options.ignoreNotFound;
-      delete this.options.ignoreNotFound;
-      deprecate("ignoreNotFound is deprecated", "Please use stubNotFound");
-    }
+    this.options = processDeprecated(this.options);
 
     configureNotifications(this, this.options.notifications);
     configureLogger(this, this.options.log, loggerFactory);
@@ -146,6 +140,15 @@ function createBundler(options) {
   return new Bundler(settings);
 }
 
+function processDeprecated(options) {
+  return deprecatedOptions({
+    ignoreNotFound: {
+      replacement: "stubNotFound",
+      autocorrect: true
+    }
+  })(options);
+}
+
 function configureNotifications(bitbundler, notifications) {
   if (!notifications) {
     return;
@@ -191,10 +194,11 @@ function configureLogger(bitbundler, options, loggerFactory) {
       this.emit("data", chunk);
     }))
     .pipe(options && options.stream ? options.stream : buildstats(options));
-};
+}
 
 Bitbundler.dest = bundleWriter;
 Bitbundler.watch = watch;
 Bitbundler.Context = Context;
 Bitbundler.File = File;
 module.exports = Bitbundler;
+
