@@ -96,11 +96,15 @@ describe("BitBundler test suite", function() {
 
     beforeEach(function() {
       createBundler();
-      sinon.spy(bitbundler, "emit");
       context = createMockContext();
-      bitbundler._createContext = sinon.stub().returns(context);
-      bitbundler._writeContext = sinon.stub().returns(context);
-
+      bitbundler.context = context;
+      
+      sinon.spy(bitbundler, "emit");
+      bitbundler.buildBundles = sinon.stub().resolves(context);
+      bitbundler.loader.hasModule = sinon.stub();
+      bitbundler.loader.getModule = sinon.stub();
+      bitbundler.loader.deleteModule = sinon.stub();
+      
       buildInit = sinon.stub();
       buildStart = sinon.stub();
       buildEnd = sinon.stub();
@@ -136,8 +140,20 @@ describe("BitBundler test suite", function() {
         sinon.assert.called(buildEnd);
       });
 
-      it("then context is executed with the given file names", function() {
-        sinon.assert.calledWith(context.execute, sinon.match(arrayItemContains("test/sample/X.js")));
+      it("then loader.hasModule is called", function() {
+        sinon.assert.called(bitbundler.loader.hasModule);
+      });
+
+      it("then loader.getModule is not called", function() {
+        sinon.assert.notCalled(bitbundler.loader.getModule);
+      });
+
+      it("then loader.deleteModule is not called", function() {
+        sinon.assert.notCalled(bitbundler.loader.deleteModule);
+      });
+
+      it("then buildBundles is called with the corresponding file names", function() {
+        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match(arrayItemContains("test/sample/X.js")));
       });
 
       it("then visitBundles is called", function() {
@@ -150,12 +166,7 @@ describe("BitBundler test suite", function() {
 
       beforeEach(function() {
         file = new BitBundler.File("test/sample/X.js");
-
-        file.src.forEach(function(filePath) {
-          context.cache[filePath] = true;
-        });
-
-        bitbundler.context = context;
+        file.src.forEach((filePath) => bitbundler.loader.hasModule.withArgs(filePath).returns(true));
         return bitbundler.update(file.src);
       });
 
@@ -165,10 +176,6 @@ describe("BitBundler test suite", function() {
 
       it("then emit is called with `build-start`", function() {
         sinon.assert.calledWith(bitbundler.emit, "build-start");
-      });
-
-      it("then context loader delete module is called", function() {
-        sinon.assert.called(context.loader.deleteModule);
       });
 
       it("then initBuild event handler is NOT called", function() {
@@ -183,14 +190,30 @@ describe("BitBundler test suite", function() {
         sinon.assert.called(buildEnd);
       });
 
-      it("then context is executed with the given file names", function() {
-        sinon.assert.calledWith(context.execute, sinon.match(arrayItemContains("test/sample/X.js")));
+      it("then loader.hasModule is called", function() {
+        sinon.assert.called(bitbundler.loader.hasModule);
+      });
+
+      it("then loader.getModule is called", function() {
+        sinon.assert.called(bitbundler.loader.getModule);
+      });
+
+      it("then loader.deleteModule is called", function() {
+        sinon.assert.called(bitbundler.loader.deleteModule);
+      });
+
+      it("then buildBundles is called with the corresponding file names", function() {
+        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match(arrayItemContains("test/sample/X.js")));
+      });
+
+      it("then visitBundles is called", function() {
+        sinon.assert.called(context.visitBundles);
       });
     });
 
     describe("And bundling fails", function() {
       beforeEach(function() {
-        context.execute = sinon.stub().rejects("bad");
+        bitbundler.buildBundles = sinon.stub().rejects("bad");
         return bitbundler.bundle(["test/sample/X.js"]).catch(function() {});
       });
 
@@ -226,8 +249,7 @@ describe("BitBundler test suite", function() {
 
       sinon.spy(bitbundler, "emit");
       context = createMockContext();
-      bitbundler._createContext = sinon.stub().returns(context);
-      bitbundler._writeContext = sinon.stub().returns(context);
+      bitbundler.buildBundles = sinon.stub().resolves(context);
 
       return bitbundler.bundle(["test/sample/X.js"]);
     });
@@ -253,8 +275,7 @@ describe("BitBundler test suite", function() {
 
       sinon.spy(bitbundler, "emit");
       context = createMockContext();
-      bitbundler._createContext = sinon.stub().returns(context);
-      bitbundler._writeContext = sinon.stub().returns(context);
+      bitbundler.buildBundles = sinon.stub().resolves(context);
 
       return bitbundler.bundle(["test/sample/X.js"]);
     });
@@ -290,8 +311,7 @@ describe("BitBundler test suite", function() {
 
       sinon.spy(bitbundler, "emit");
       context = createMockContext();
-      bitbundler._createContext = sinon.stub().returns(context);
-      bitbundler._writeContext = sinon.stub().returns(context);
+      bitbundler.buildBundles = sinon.stub().resolves(context);
 
       return bitbundler.bundle(["test/sample/X.js"]);
     });
@@ -304,11 +324,7 @@ describe("BitBundler test suite", function() {
 
 function createMockContext() {
   var context = {
-    execute: sinon.stub().resolves(context),
     cache: {},
-    loader: {
-      deleteModule: sinon.stub(),
-    },
     visitBundles: sinon.stub().returns(context)
   };
 
