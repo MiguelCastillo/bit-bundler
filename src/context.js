@@ -19,7 +19,7 @@ class Context {
   }
 
   configure(options) {
-    return !options || this === options ? this : new Context(utils.extend({}, this, options));
+    return !options || this === options ? this : new Context(utils.assign({}, this, options));
   }
 
   visitBundles(visitor) {
@@ -30,12 +30,12 @@ class Context {
 
   setBundle(bundle) {
     return this.configure({
-      bundle: bundle ? this.bundle.configure(bundle) : this.bundle.clear()
+      bundle: this.bundle ? (bundle ? this.bundle.configure(bundle) : this.bundle.clear()) : bundle
     });
   }
 
   setShard(name, shard, dest) {
-    var shards = utils.extend({}, this.shards);
+    var shards = utils.assign({}, this.shards);
 
     if (shard) {
       shards[name] = new Bundle(name, shard);
@@ -51,7 +51,7 @@ class Context {
   }
 
   deleteShard(name) {
-    var shards = utils.extend({}, this.shards);
+    var shards = utils.assign({}, this.shards);
     delete shards[name];
 
     return this.configure({

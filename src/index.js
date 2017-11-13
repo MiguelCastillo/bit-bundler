@@ -27,7 +27,6 @@ class Bitbundler extends EventEmitter {
     configureNotifications(this, this.options.notifications);
     configureLogger(this, this.options.log, loggerFactory);
 
-    this.file = null;
     this.context = null;
     this.loader = createLoader(this.options);
     this.bundler = createBundler(this.options);
@@ -35,10 +34,11 @@ class Bitbundler extends EventEmitter {
 
   bundle(files) {
     logger.log("build-init");
-    this.file = new File(files);
-    this.context = new Context();
 
-    return this.update(files).then((context) => {
+    var file = files instanceof File ? files : new File(files);
+    this.context = new Context().setBundle(new Bundle("main", { dest: file.dest }, true));
+
+    return this.update(file).then((context) => {
       if (this.options.watch) {
         watch(this, this.options.watch);
       }
@@ -59,16 +59,16 @@ class Bitbundler extends EventEmitter {
   update(files) {
     logger.log("build-start");
 
-    var src = new File(files).src;
+    var file = files instanceof File ? files : new File(files);
     var loader = this.loader;
 
-    src
+    file.src
       .filter(filePath => loader.hasModule(filePath))
       .map(filePath => loader.getModule(filePath))
       .forEach(mod => loader.deleteModule(mod));
 
     return this
-      .buildBundles(src)
+      .buildBundles(file)
       .then((context) => {
         logger.log("build-writing");
         return bundleWriter()(context);
@@ -99,22 +99,19 @@ class Bitbundler extends EventEmitter {
     return loggerFactory.create(name);
   }
 
-  buildBundles(src) {
+  buildBundles(files) {
+    var file = files instanceof File ? files : new File(files);
     var context = this.context;
     var loader = this.loader;
     var bundler = this.bundler;
 
     return loader
-      .fetch(src)
+      .fetch(file.src)
       .then((modules) => {
-        var updates = flattenModules(loader, modules);
-        var bundle = context.bundle || new Bundle("main", { dest: this.file.dest }, true);
-
         return bundler.bundle(context.configure({
           cache: loader.getCache(),
           modules: context.modules ? context.modules : modules,
-          lastUpdatedModules: updates,
-          bundle: bundle,
+          lastUpdatedModules: flattenModules(loader, modules),
           shards: {},
           exclude: []
         }));
@@ -209,7 +206,7 @@ function configureLogger(bitbundler, options, loggerFactory) {
 function flattenModules(loader, modules) {
   var i = 0;
   var stack = modules.slice(0);
-  var id, mod, cache = {};
+  var id, mod, result = {};
 
   while (stack.length !== i) {
     if (!stack[i].id) {
@@ -218,16 +215,16 @@ function flattenModules(loader, modules) {
 
     id = stack[i++].id;
 
-    if (!id || cache.hasOwnProperty(id)) {
+    if (!id || result.hasOwnProperty(id)) {
       continue;
     }
 
     mod = loader.getModule(id);
     stack = stack.concat(mod.deps);
-    cache[mod.id] = mod;
+    result[mod.id] = mod;
   }
 
-  return cache;
+  return result;
 }
 
 
