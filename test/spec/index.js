@@ -153,7 +153,7 @@ describe("BitBundler test suite", function() {
       });
 
       it("then buildBundles is called with the corresponding file names", function() {
-        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match(arrayItemContains("test/sample/X.js")));
+        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("src", sinon.match(arrayItemContains("test/sample/X.js"))));
       });
 
       it("then visitBundles is called", function() {
@@ -203,7 +203,7 @@ describe("BitBundler test suite", function() {
       });
 
       it("then buildBundles is called with the corresponding file names", function() {
-        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match(arrayItemContains("test/sample/X.js")));
+        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("src", sinon.match(arrayItemContains("test/sample/X.js"))));
       });
 
       it("then visitBundles is called", function() {
