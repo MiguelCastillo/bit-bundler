@@ -95,14 +95,6 @@ class Bitbundler extends EventEmitter {
       });
   }
 
-  hasModule(modulePath) {
-    return this.context.cache.hasOwnProperty(modulePath);
-  }
-
-  getModules() {
-    return this.context.cache;
-  }
-
   getLogger(name) {
     return loggerFactory.create(name);
   }
