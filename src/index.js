@@ -35,7 +35,7 @@ class Bitbundler extends EventEmitter {
   bundle(files) {
     logger.log("build-init");
 
-    var file = files instanceof File ? files : new File(files);
+    var file = new File(files);
     this.context = new Context().setBundle(new Bundle("main", { dest: file.dest }, true));
 
     return this.update(file).then((context) => {
@@ -59,7 +59,7 @@ class Bitbundler extends EventEmitter {
   update(files) {
     logger.log("build-start");
 
-    var file = files instanceof File ? files : new File(files);
+    var file = new File(files);
     var loader = this.loader;
 
     file.src
@@ -100,7 +100,7 @@ class Bitbundler extends EventEmitter {
   }
 
   buildBundles(files) {
-    var file = files instanceof File ? files : new File(files);
+    var file = new File(files);
     var context = this.context;
     var loader = this.loader;
     var bundler = this.bundler;
