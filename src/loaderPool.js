@@ -36,6 +36,10 @@ class LoaderPool {
     this.cache[mod.id] = mod;
   }
 
+  hasModule(id) {
+    return this.cache.hasOwnProperty(id);
+  }
+
   getModule(id) {
     return this.cache[id];
   }

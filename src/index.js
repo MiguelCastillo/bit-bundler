@@ -10,6 +10,7 @@ var es = require("event-stream");
 var deprecatedOptions = require("./deprecatedOptions")("bit-bundler");
 var loaderFactory = require("./loaderFactory");
 var Bundler = require("./bundler");
+var Bundle = require("./bundle");
 var Context = require("./context");
 var bundleWriter = require("./bundleWriter");
 var watch = require("./watch");
@@ -22,49 +23,55 @@ class Bitbundler extends EventEmitter {
   constructor(options) {
     super();
 
-    this.context = null;
-    this.options = Object.assign({}, defaultOptions, options);
-    this.options = processDeprecated(this.options);
-
+    this.options = processDeprecated(Object.assign({}, defaultOptions, options));
     configureNotifications(this, this.options.notifications);
     configureLogger(this, this.options.log, loggerFactory);
+
+    this.file = null;
+    this.context = null;
+    this.loader = createLoader(this.options);
+    this.bundler = createBundler(this.options);
   }
 
   bundle(files) {
-    var file = new File(files);
-    this.context = this._createContext(file, this.options);
     logger.log("build-init");
+    this.file = new File(files);
+    this.context = new Context();
 
     return this.update(files).then((context) => {
       if (this.options.watch) {
         watch(this, this.options.watch);
+      }
 
-        if (this.options.multiprocess) {
-          context.loader.pool.size(1);
+      if (this.options.multiprocess) {
+        if (this.options.watch) {
+          this.loader.pool.size(1);          
+        }
+        else {
+          this.loader.pool.stop();          
         }
       }
-      else if (this.options.multiprocess) {
-        context.loader.pool.stop();
-      }
 
-      this.context = context;
       return context;
     });
   }
 
   update(files) {
-    var file = new File(files);
     logger.log("build-start");
 
-    file.src
-      .filter((filePath) => this.context.cache[filePath])
-      .forEach((filePath) => this.context.loader.deleteModule(this.context.cache[filePath]));
+    var src = new File(files).src;
+    var loader = this.loader;
 
-    return this.context
-      .execute(file.src)
+    src
+      .filter(filePath => loader.hasModule(filePath))
+      .map(filePath => loader.getModule(filePath))
+      .forEach(mod => loader.deleteModule(mod));
+
+    return this
+      .buildBundles(src)
       .then((context) => {
         logger.log("build-writing");
-        return this._writeContext(context);
+        return bundleWriter()(context);
       })
       .then((context) => {
         context.visitBundles((bundle) => logger.log("bundle", bundle));
@@ -79,7 +86,7 @@ class Bitbundler extends EventEmitter {
         }
 
         if (this.options.multiprocess) {
-          context.loader.pool.stop();
+          this.loader.pool.stop();
         }
 
         logger.error("build-failure", err);
@@ -88,28 +95,30 @@ class Bitbundler extends EventEmitter {
       });
   }
 
-  hasModule(modulePath) {
-    return this.context.cache.hasOwnProperty(modulePath);
-  }
-
-  getModules() {
-    return this.context.cache;
-  }
-
   getLogger(name) {
     return loggerFactory.create(name);
   }
 
-  _createContext(file, options) {
-    return new Context({
-      file: file,
-      loader: createLoader(options),
-      bundler: createBundler(options)
-    });
-  }
+  buildBundles(src) {
+    var context = this.context;
+    var loader = this.loader;
+    var bundler = this.bundler;
 
-  _writeContext(context) {
-    return bundleWriter()(context);
+    return loader
+      .fetch(src)
+      .then((modules) => {
+        var updates = flattenModules(loader, modules);
+        var bundle = context.bundle || new Bundle("main", { dest: this.file.dest }, true);
+
+        return bundler.bundle(context.configure({
+          cache: loader.getCache(),
+          modules: context.modules ? context.modules : modules,
+          lastUpdatedModules: updates,
+          bundle: bundle,
+          shards: {},
+          exclude: []
+        }));
+      });
   }
 }
 
@@ -139,6 +148,7 @@ function createBundler(options) {
   var settings = Object.assign(utils.pick(options, ["umd", "sourceMap"]), defaultOptions.bundler, options.bundler);
   return new Bundler(settings);
 }
+
 
 function processDeprecated(options) {
   return deprecatedOptions({
@@ -195,6 +205,31 @@ function configureLogger(bitbundler, options, loggerFactory) {
     }))
     .pipe(options && options.stream ? options.stream : buildstats(options));
 }
+
+function flattenModules(loader, modules) {
+  var i = 0;
+  var stack = modules.slice(0);
+  var id, mod, cache = {};
+
+  while (stack.length !== i) {
+    if (!stack[i].id) {
+      logger.warn("not-found", stack[i]);
+    }
+
+    id = stack[i++].id;
+
+    if (!id || cache.hasOwnProperty(id)) {
+      continue;
+    }
+
+    mod = loader.getModule(id);
+    stack = stack.concat(mod.deps);
+    cache[mod.id] = mod;
+  }
+
+  return cache;
+}
+
 
 Bitbundler.dest = bundleWriter;
 Bitbundler.watch = watch;
