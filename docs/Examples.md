@@ -28,9 +28,7 @@ $ npm run build
 
 ### node.js dependencies
 
-bit-bundler can understand dependencies defined with `require` and `import` statements without transpiling. It will load files with extensions `js`, `jsx`, and `mjs`. If you need to customize this, then you should consider configuring the loader plugin [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js).
-
-> If you are using a version of node or browser that does not support `import` statements, then this example will not run. Use Babel to transpile as shown in the next example.
+bit-bundler can understand dependencies defined with `require` and `import` statements out of the box. It will load files with extensions `js`, `jsx`, and `mjs`. If you need to customize this, then you should consider configuring the loader plugin [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js).
 
 ##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/dependencies)
 
