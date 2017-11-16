@@ -1,51 +1,129 @@
+"use strict";
+
 var types = require("dis-isa");
 
-function Type(type) {
-  this.name = types.typeName(type);
-  this.transform = coerceValue;
-}
 
-Type.prototype.matchType = function(value) {
-  return this.name === types.typeName(value);
-};
-
-Type.prototype.withDefault = function(value) {
-  this.default = value;
-  return this;
-};
-
-Type.prototype.hasDefault = function() {
-  return this.hasOwnProperty("default");
-};
-
-Type.prototype.withItem = function(item) {
-  if (this.name !== "array") {
-    throw new TypeError("item is only valid for array types");
+class Type {
+  constructor(typeName) {
+    this.name = typeName;    
   }
 
-  this.item = item;
-  return this;
-};
+  matchType(value) {
+    return this.name === types.typeName(value);
+  };
+  
+  withDefault(value) {
+    this.default = value;
+    return this;
+  };
+  
+  hasDefault() {
+    return this.hasOwnProperty("default");
+  }
+  
+  withTransform(transform) {
+    this.transform = transform;
+    return this;
+  }
 
-Type.prototype.withTransform = function(transform) {
-  this.transform = transform;
-  return this;
-};
+  transform(value) {
+    return value;
+  }
+}
+
+class BooleanType extends Type {
+  constructor() {
+    super(types.typeName(true));
+  }
+
+  transform(value) {
+    if (!this.matchType(value)) {
+      return (
+        value === "true" ? true :
+        value === "false" ? false :
+        Boolean(value)
+      );
+    }
+  
+    return value;
+  }
+}
+
+class NumberType extends Type {
+  constructor() {
+    super(types.typeName(1));
+  }
+
+  transform(value) {
+    if (!this.matchType(value)) {
+      return Number(value);
+    }
+  
+    return value;
+  }
+}
+
+class ArrayType extends Type {
+  constructor() {
+    super(types.typeName([]));
+  }
+
+  transform(value) {
+    if (!this.matchType(value)) {
+      return [].contact(value);
+    }
+  
+    return value;
+  }
+
+  withItem(item) {
+    this.item = item;
+    return this;
+  }
+}
+
+class StringType extends Type {
+  constructor() {
+    super(types.typeName(""));
+  }
+
+  transform(value) {
+    if (!this.matchType(value)) {
+      return value === null || value === undefined ? value : value.toString();
+    }
+  
+    return value;
+  }
+}
+
+class AnyType extends Type {
+  constructor() {
+    super("*");
+  }
+
+  matchType() {
+    return true;
+  }
+}
 
 Object.defineProperties(Type, {
   "Boolean": {
-    get: () => new Type(true)
+    get: () => new BooleanType()
   },
   "Number": {
-    get: () => new Type(1)
+    get: () => new NumberType()
   },
   "Array": {
-    get: () => new Type([])
+    get: () => new ArrayType()
   },
   "String": {
-    get: () => new Type("")
+    get: () => new StringType()
+  },
+  "Any": {
+    get: () => new AnyType()
   }
 });
+
 
 function coerceValues(value, valueType) {
   if (!valueType) {
@@ -61,38 +139,13 @@ function coerceValues(value, valueType) {
       .forEach(key => result[key] = valueType[key] ? coerceValues(value[key], valueType[key]) : value[key]);
   }
   else if (Type.check.isArray(value) && valueType.item) {
-    result = value.map(v => coerceValues(v, valueType.item))
+    result = value.map(v => coerceValues(v, valueType.item));
   }
   else {
     result = value;
   }
 
-  return valueType instanceof Type ? valueType.transform(result, valueType) : result;
-}
-
-function coerceValue(value, type) {
-  if (!type.matchType(value)) {
-    switch(type.name) {
-      case "boolean":
-        value = (
-          value === "true" ? true :
-          value === "false" ? false :
-          Boolean(value)
-        );
-        break;
-      case "number":
-        value = Number(value);
-        break;
-      case "string":
-        value = value === null || value === undefined ? value : value.toString();
-        break;
-      case "array":
-        value = [].contact(value);
-        break;
-    }
-  }
-
-  return value;
+  return valueType instanceof Type ? valueType.transform(result) : result;
 }
 
 module.exports = Type;

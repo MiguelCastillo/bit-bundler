@@ -28,7 +28,7 @@ options = Type.coerceValues(options, {
   "watch": Type.Boolean,
   "loader": Type.Array.withTransform(toArray),
   "bundler": Type.Array.withTransform(toArray),
-  "multiprocess": Type.Number.withTransform(toNumber)
+  "multiprocess": Type.Any.withTransform(toNumberOrBoolean)
 });
 
 var files = {
@@ -52,7 +52,7 @@ function toArray(value) {
   return value && value._ ? value._ : [].concat(value);
 }
 
-function toNumber(value) {
+function toNumberOrBoolean(value) {
   if (!value || value === "false") {
     return false;
   }
