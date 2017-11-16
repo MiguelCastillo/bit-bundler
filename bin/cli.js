@@ -27,7 +27,8 @@ options = Type.coerceValues(options, {
   "exportNames": Type.Boolean,
   "watch": Type.Boolean,
   "loader": Type.Array.withTransform(toArray),
-  "bundler": Type.Array.withTransform(toArray)
+  "bundler": Type.Array.withTransform(toArray),
+  "multiprocess": Type.Number.withTransform(toNumber)
 });
 
 var files = {
@@ -51,11 +52,23 @@ function toArray(value) {
   return value && value._ ? value._ : [].concat(value);
 }
 
+function toNumber(value) {
+  if (!value || value === "false") {
+    return 0;
+  }
+  else if (value === "true") {
+    return 1;
+  }
+  else {
+    return Number(value);
+  }
+}
+
 function camelKeys(args) {
   var result;
 
   if (args && args.constructor === Object) {
-    result = {}
+    result = {};
     Object.keys(args).forEach(arg => result[toCamel(arg)] = camelKeys(args[arg]));
   }
   else if (Array.isArray(args)) {
