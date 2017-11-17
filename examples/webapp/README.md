@@ -2,7 +2,7 @@
 
 The webapp example illustrates how we can put together a build system with a few key tools.
 
-- dev server with [live-server](https://github.com/tapio/live-server)
+- dev server with [3dub](https://github.com/MiguelCastillo/3dub)
 - copy of static assets with [cpx](https://github.com/mysticatea/cpx)
 - bundling with (of course) [bit-bundler](https://github.com/MiguelCastillo/bit-bundler)
 - process management with [pm2](https://github.com/Unitech/pm2)
@@ -28,6 +28,7 @@ With the approach of separate processes acting as their own service, you can sta
 ```
 $ npm install
 $ npm start
+$ open http://localhost:3000
 ```
 
 ### To stop the build system

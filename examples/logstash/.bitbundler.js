@@ -5,5 +5,5 @@ var JSONStream = require("JSONStream");
 module.exports = {
   log: loggers.sequence(loaderLogger(), JSONStream.stringify(false), process.stdout),
   src: "src/main.js",
-  dest: "dest/out.js"
+  dest: "dist/out.js"
 };

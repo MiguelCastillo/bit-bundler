@@ -24,15 +24,15 @@ var bitbundler = new Bitbundler({
   ],
   bundler: [
     ["bit-bundler-splitter", [
-      { dest: "dest/vendor.js", match: { path: /\/node_modules\// } },
-      { dest: "dest/renderer.js", match: { path: /src\/renderer/ } }]
+      { dest: "dist/vendor.js", match: { path: /\/node_modules\// } },
+      { dest: "dist/renderer.js", match: { path: /src\/renderer/ } }]
     ]
   ]
 });
 
 bitbundler.bundle({
   src: "src/main.js",
-  dest: "dest/app.js"
+  dest: "dist/app.js"
 });
 ```
 

@@ -1,7 +1,7 @@
 _book
-/examples/**/dest
+/examples/**/dist
 /examples/**/.bundler-cache.json
-/test/dest
+/test/dist
 
 .DS_Store
 /dist

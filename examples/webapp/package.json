@@ -4,10 +4,10 @@
   "description": "bit-bundler examples",
   "main": "basic.js",
   "scripts": {
-    "assets": "cpx 'src/**/*.html' dest",
+    "assets": "cpx 'src/**/*.html' dist",
     "build": "bitbundler",
     "server": "3dub",
-    "analyze": "source-map-explorer dest/bundle.js",
+    "analyze": "source-map-explorer dist/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "pm2 start dev.config.js",
     "stop": "pm2 delete assets server build",

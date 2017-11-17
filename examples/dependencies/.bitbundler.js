@@ -1,4 +1,4 @@
 module.exports = {
   src: "src/main.js",
-  dest: "dest/out.js"
+  dest: "dist/out.js"
 };

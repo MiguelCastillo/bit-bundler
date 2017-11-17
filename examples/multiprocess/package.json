@@ -5,7 +5,7 @@
   "main": "basic.js",
   "scripts": {
     "build": "bitbundler",
-    "analyze": "source-map-explorer dest/out.js",
+    "analyze": "source-map-explorer dist/out.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Miguel Castillo <manchagnu@gmail.com>",
