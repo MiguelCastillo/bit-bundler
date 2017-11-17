@@ -9,5 +9,5 @@ module.exports = {
 
   log: loggers.sequence(watchLogger(), buildstatsLogger()),
   src: "src/main.js",
-  dest: "dest/main.js"
+  dest: "dist/main.js"
 };

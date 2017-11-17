@@ -1,3 +1,3 @@
 module.exports = {
-  "root": "./dest"
+  "root": "./dist"
 };
