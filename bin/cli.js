@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
-var Type = require("./type");
-var path = require("path");
-var argv = require("subarg")(process.argv.slice(2));
+const Type = require("./type");
+const path = require("path");
+const camelcaseKeys = require("camelcase-keys");
+const argv = require("subarg")(process.argv.slice(2));
 
-var options = camelKeys(argv);
+var options = camelcaseKeys(argv, { deep: true });
 
 try {
   var configFile = path.join(process.cwd(), typeof options.config === "string" ? options.config : ".bitbundler");
-  options = Object.assign({}, camelKeys(require(configFile)), options, { config: configFile });
+  options = Object.assign({}, camelcaseKeys(require(configFile), { deep: true }), options, { config: configFile });
 }
 catch(ex) {
   if (typeof options.config === "string") {
@@ -62,22 +63,4 @@ function toNumberOrBoolean(value) {
   else {
     return Number(value);
   }
-}
-
-function camelKeys(args) {
-  var result;
-
-  if (args && args.constructor === Object) {
-    result = {};
-    Object.keys(args).forEach(arg => result[toCamel(arg)] = camelKeys(args[arg]));
-  }
-  else if (Array.isArray(args)) {
-    result = args.map(camelKeys);
-  }
-
-  return result || args;
-}
-
-function toCamel(name) {
-  return name.replace(/\-(\w)/g, (match, value) => value.toUpperCase());
 }
