@@ -13,7 +13,7 @@ $ npm install bit-bundler -g
 ``` javascript
 module.exports = {
   src: "src/main.js",
-  dest: "dest/out.js"
+  dest: "dist/out.js"
 };
 ```
 
@@ -23,4 +23,4 @@ module.exports = {
 $ bitbundler
 ```
 
-That's it. That will bundle `src/main.js` and put the result in `dest/out.js`. But this is not really as interesting as it could be. In the next section we are going to setup a couple of loader plugins to enable features such as transpilation and linting.
+That's it. That will bundle `src/main.js` and put the result in `dist/out.js`. But this is not really as interesting as it could be. In the next section we are going to setup a couple of loader plugins to enable features such as transpilation and linting.

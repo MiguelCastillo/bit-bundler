@@ -34,7 +34,7 @@ Now in the package.json you can define a sample command as such:
 ``` javascript
 {
   "scripts": {
-    "bb-print": "bitbundler --print --src src/index.js --out dest/out.js"
+    "bb-print": "bitbundler --print --src src/index.js --dest dist/out.js"
   }
 }
 ```
@@ -56,7 +56,7 @@ The equivalent configuration for the above command line looks like the following
 // file name is .bitbundler.js
 module.exports = {
   "src": "src/index.js",
-  "dest": "dest/out.js"
+  "dest": "dist/out.js"
 };
 ```
 
@@ -85,7 +85,7 @@ import Bitbundler from 'bit-bundler';
 
 Bitbundler.bundle({
   src: "src/main.js",
-  dest: "dest/out.js"
+  dest: "dist/out.js"
 });
 ```
 
@@ -96,6 +96,6 @@ const Bitbundler = require('bit-bundler');
 
 Bitbundler.bundle({
   src: "src/main.js",
-  dest: "dest/out.js"
+  dest: "dist/out.js"
 });
 ```

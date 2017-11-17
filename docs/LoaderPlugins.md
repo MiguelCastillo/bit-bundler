@@ -25,7 +25,7 @@ var bitbundler = new Bitbundler({
 
 bitbundler.bundle({
   src: "src/main.js",
-  dest: "dest/app.js"
+  dest: "dist/app.js"
 });
 ```
 
