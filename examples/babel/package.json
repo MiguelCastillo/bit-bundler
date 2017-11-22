@@ -14,6 +14,7 @@
     "log2console": "^1.0.3"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.24.1",
     "bit-bundler": "latest",
     "bit-loader-babel": "^2.0.0",
     "source-map-explorer": "^1.3.3"
