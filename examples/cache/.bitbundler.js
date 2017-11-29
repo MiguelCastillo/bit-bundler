@@ -4,15 +4,18 @@
  * configuration is for caching data out to elasticsearch.
  */
 
-// var elasticsearchConnector = require("bit-loader-cache/connectors/elasticsearch");
+const redisConnector = require("bit-loader-cache/connectors/redis");
+// const esConnector = require("bit-loader-cache/connectors/elasticsearch");
 
 module.exports = {
   src: "src/main.js",
   dest: "dist/out.js",
 
   loader: [
+    "bit-loader-babel",
     ["bit-loader-cache", {
-      // connector: elasticsearchConnector({
+      connector: redisConnector()
+      // connector: esConnector({
       //   host: "localhost:9200",
       //   index: "cache_example",
       //   type: "modules"
