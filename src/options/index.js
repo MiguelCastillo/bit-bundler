@@ -2,7 +2,9 @@ const type = require("../type");
 const path = require("path");
 const camelcaseKeys = require("camelcase-keys");
 const subarg = require("subarg");
+const deprecated = require("./deprecated")("bit-bundler");
 const defaults = require("./defaults");
+const deprecatedOptions = require("./deprecated.json");
 
 module.exports = function parseCliOptions(args) {
   const cliOptions = camelcaseKeys(subarg(args || []), { deep: true });
@@ -23,7 +25,7 @@ module.exports = function parseCliOptions(args) {
     Object.assign(options, cliOptions);
   }
 
-  return type.coerceValues(options, {
+  return type.coerceValues(processDeprecated(options), {
     "config": type.String,
     "src": type.Array.withTransform(configureSrc),
     "dest": type.String,
@@ -55,5 +57,9 @@ module.exports = function parseCliOptions(args) {
     else {
       return Number(value);
     }
+  }
+
+  function processDeprecated(options) {
+    return deprecated(deprecatedOptions)(options);
   }
 };

@@ -5,7 +5,6 @@ var types = require("dis-isa");
 var EventEmitter = require("events");
 var Stream = require("stream");
 var es = require("event-stream");
-var deprecatedOptions = require("./deprecatedOptions")("bit-bundler");
 var loaderFactory = require("./loader/factory");
 var bundlerFactory = require("./bundler/factory");
 var Bundle = require("./bundle");
@@ -21,7 +20,7 @@ class Bitbundler extends EventEmitter {
   constructor(options) {
     super();
 
-    this.options = processDeprecated(Object.assign({}, options));
+    this.options = Object.assign({}, options);
     configureNotifications(this, this.options.notifications);
     configureLogger(this, this.options.log, loggerFactory);
 
@@ -120,15 +119,6 @@ class Bitbundler extends EventEmitter {
 Bitbundler.bundle = function(files, settings) {
   return new Bitbundler(settings).bundle(files);
 };
-
-function processDeprecated(options) {
-  return deprecatedOptions({
-    ignoreNotFound: {
-      replacement: "stubNotFound",
-      autocorrect: true
-    }
-  })(options);
-}
 
 function configureNotifications(bitbundler, notifications) {
   if (!notifications) {

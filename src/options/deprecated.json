@@ -1,0 +1,6 @@
+{
+  "ignoreNotFound": {
+    "replacement": "stubNotFound",
+    "autocorrect": true
+  }
+}
