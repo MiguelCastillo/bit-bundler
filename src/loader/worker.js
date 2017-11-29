@@ -1,11 +1,12 @@
 "use strict";
 
-var Loader = require("./index");
-var Workit = require("workit");
-var es = require("event-stream");
+const Loader = require("./index");
+const Workit = require("workit");
+const es = require("event-stream");
+const options = require("../options")(process.argv.slice(2));
 
 class LoaderWorker extends Workit.Worker {
-  init(options, done) {
+  init() {
     this.loader = new Loader(Object.assign({}, options, {
       log: {
         stream: es.map((chunk, callback) => {
@@ -14,12 +15,12 @@ class LoaderWorker extends Workit.Worker {
         })
       }}));
 
-    done();
+    return Promise.resolve();
   }
 
-  clear(options, done) {
+  clear() {
     this.loader.clear();
-    done();
+    return Promise.resolve();
   }
 
   resolve(data) {

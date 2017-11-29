@@ -1,19 +1,19 @@
 const type = require("../type");
 const path = require("path");
-const camelcaseKeys = require("camelcase-keys");
 const subarg = require("subarg");
 const deprecated = require("./deprecated")("bit-bundler");
 const defaults = require("./defaults");
 const deprecatedOptions = require("./deprecated.json");
+const cammelCaseKeys = require("../cammelCaseKeys");
 
 module.exports = function parseCliOptions(args) {
-  const cliOptions = camelcaseKeys(subarg(args || []), { deep: true });
+  const cliOptions = cammelCaseKeys(subarg(args || []), { deep: true });
   const options = Object.assign({}, defaults, cliOptions);
   
   try {
     var configFilePath = path.join(process.cwd(), options.config);
     var configFile = require(configFilePath);
-    Object.assign(options, camelcaseKeys(configFile, { deep: true }));
+    Object.assign(options, cammelCaseKeys(configFile, { deep: true }));
   }
   catch(ex) {
     if (typeof options.config === "string") {
