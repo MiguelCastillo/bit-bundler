@@ -102,7 +102,7 @@ function fetch(loader, name, referrer) {
 }
 
 function createPool(loader, size) {
-  var pool = new WorkerPool(path.join(__dirname, "./loaderWorker.js"), {
+  var pool = new WorkerPool(path.join(__dirname, "./worker.js"), {
     size: size === true ? 2 : size,
     silent: true
   });
