@@ -1,6 +1,5 @@
 "use strict";
 
-var defaultOptions = require("./defaultOptions");
 var File = require("src-dest");
 var types = require("dis-isa");
 var EventEmitter = require("events");
@@ -22,7 +21,7 @@ class Bitbundler extends EventEmitter {
   constructor(options) {
     super();
 
-    this.options = processDeprecated(Object.assign({}, defaultOptions, options));
+    this.options = processDeprecated(Object.assign({}, options));
     configureNotifications(this, this.options.notifications);
     configureLogger(this, this.options.log, loggerFactory);
 

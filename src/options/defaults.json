@@ -1,4 +1,5 @@
 {
+  "config": ".bitbundler",
   "multiprocess": false,
   "log": "warn",
   "stubNotFound": false,
