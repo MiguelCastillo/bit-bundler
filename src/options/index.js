@@ -7,13 +7,13 @@ const deprecatedOptions = require("./deprecated.json");
 const cammelCaseKeys = require("../cammelCaseKeys");
 
 module.exports = function parseCliOptions(args) {
-  const cliOptions = cammelCaseKeys(subarg(args || []), { deep: true });
+  const cliOptions = cammelCaseKeys(subarg(args || []), { ignore: "notifications" });
   const options = Object.assign({}, defaults, cliOptions);
   
   try {
     var configFilePath = path.join(process.cwd(), options.config);
     var configFile = require(configFilePath);
-    Object.assign(options, cammelCaseKeys(configFile, { deep: true }));
+    Object.assign(options, cammelCaseKeys(configFile, { ignore: "notifications" }));
   }
   catch(ex) {
     if (typeof options.config === "string") {
