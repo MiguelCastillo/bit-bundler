@@ -148,7 +148,7 @@ $ npm run build
 
 The following example illustrates how to setup a module caching plugin. This is primarily for improving load time after a successful initial load. By default, the cache plugin writes to disk but you can use connectors to use other data sources. The cache plugin includes an elasticsearch connector.
 
-> Caching will not work correctly in multiprocess mode. Simply because caching writes to the same cache file, which means that multiple process override each others work.
+The default strategy for caching provided by [bit-loader-cache](https://github.com/MiguelCastillo/bit-loader-cache) does not work correctly in multiprocess mode. So you should alternatively use the redis or elastichsearch (or your own) connector if you need caching in multiprocess mode. I tend to use elasticsearch because I can easily take a close look at the loaded modules using Kibana. And bonus - `bit-loader-cache` comes with docker-compose files to easily spin up a caching layer.
 
 ##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/cache)
 
