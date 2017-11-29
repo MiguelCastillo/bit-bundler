@@ -1,5 +1,5 @@
-var Loader = require("./loader");
-var LoaderPool = require("./loaderPool");
+var Loader = require("./index");
+var LoaderPool = require("./pool");
 
 function loaderFactory(options) {
   return options.multiprocess ? new LoaderPool(options) : new Loader(options);

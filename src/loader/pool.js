@@ -1,7 +1,7 @@
 "use strict";
 
 var path = require("path");
-var logger = require("./logger");
+var logger = require("../logger");
 var Workit = require("workit");
 
 class WorkerPool extends Workit.Pool {
