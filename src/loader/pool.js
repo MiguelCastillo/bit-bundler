@@ -113,7 +113,7 @@ function createPool(loader, size) {
     worker.process.on("error", workerError);
 
     return worker
-      .invoke("init", loader.options)
+      .invoke("init")
       .catch(initError);
 
     function initError(error) {

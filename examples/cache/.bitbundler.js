@@ -4,22 +4,23 @@
  * configuration is for caching data out to elasticsearch.
  */
 
-const redisConnector = require("bit-loader-cache/connectors/redis");
-// const esConnector = require("bit-loader-cache/connectors/elasticsearch");
+// const redisConnector = require("bit-loader-cache/connectors/redis");
+const esConnector = require("bit-loader-cache/connectors/elasticsearch");
 
 module.exports = {
   src: "src/main.js",
   dest: "dist/out.js",
+  multiprocess: 2,
 
   loader: [
     "bit-loader-babel",
     ["bit-loader-cache", {
-      connector: redisConnector()
-      // connector: esConnector({
-      //   host: "localhost:9200",
-      //   index: "cache_example",
-      //   type: "modules"
-      // })
+      // connector: redisConnector()
+      connector: esConnector({
+        host: "localhost:9200",
+        index: "cache_example",
+        type: "modules"
+      })
     }]
   ]
 };
