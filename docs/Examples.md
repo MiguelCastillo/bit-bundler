@@ -168,8 +168,6 @@ There is a [docker-compose.yml](https://github.com/MiguelCastillo/bit-bundler/bl
 
 Also, checkout the [logstash.conf](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/logstash/logstash.conf) file if you want to see how logstash is configured.
 
-> This example was setup to run against elasticsearch and logstash 2.4.0.
-
 ##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/logstash)
 
 #### Run
