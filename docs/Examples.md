@@ -164,7 +164,7 @@ $ npm run build
 
 The following example illustrates the use of streams to filter and format data. The data is then streamed to process.stdout so that the output of but-bundler can be piped to logstash.
 
-Make sure to checkout the [logstash.config](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/logstash.config) file.
+Make sure to checkout the [logstash.config](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/logstash/logstash.config) file.
 
 > This example was setup to run against elasticsearch and logstash 2.4.0.
 
