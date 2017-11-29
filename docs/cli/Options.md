@@ -8,7 +8,7 @@ Bitbundler affords you with a CLI that uses [subarg](https://github.com/substack
 
 - **`--dest`** { string } - file name to write the bundle to.
 
-- **`--multiprocess`** { booleand | number } - option to enable parallel file processing via worker processes. By default, multiprocess is disabled. But you can enable multiprocess by setting this option to true, which will start two child processes. You can alternatively specify the number of processes to use with the max capped to the number of cpus available.
+- **`--multiprocess`** { boolean | number } - option to enable parallel file processing via worker processes. By default, multiprocess is disabled. But you can enable multiprocess by setting this option to true, which will start two child processes. You can alternatively specify the number of processes to use with the max capped to the number of cpus available.
 
 - **`--umd`** { string } - `UMD` name to be exported. `UMD` is a module format that allows bundles to run in nodejs and in the browser via requirejs and traditional script tags. Consider using this setting when writing libraries and utilities that are intended to run in the browser and nodejs. [This is some literature on it](https://github.com/umdjs/umd).
 
