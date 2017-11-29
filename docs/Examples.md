@@ -162,19 +162,29 @@ $ npm run build
 
 ### Stream to logstash to elasticsearch... Why not?
 
-The following example illustrates the use of streams to filter and format data. The data is then streamed to process.stdout so that the output of but-bundler can be piped to logstash.
+The following example illustrates the use of streams to filter and format data. The data from the bit-bundler is piped to a filter using the `loaderFilter` logger stream, then piped to JSONStream to generate JSON lines, and then piped to a TCP socket where logstash is awaiting data which gets logged and persistend in elasticsearch.
 
-Make sure to checkout the [logstash.config](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/logstash/logstash.config) file.
+There is a [docker-compose.yml](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/logstash/docker-compose.yml) file that you can use to quickly spin an environment with logstash. The docker-compose will start elasticsearch, logstash, and kibana which is exposed on [http://localhost:5601](http://localhost:5601).  The elasticsearch index this example uses is `bit_bundler_log_example`. So if you are using kibana be sure to add that as an index pattern so that you can see what bit-bundler has sent to elasticsearch through logstash.
+
+Also, checkout the [logstash.conf](https://github.com/MiguelCastillo/bit-bundler/blob/master/examples/logstash/logstash.conf) file if you want to see how logstash is configured.
 
 > This example was setup to run against elasticsearch and logstash 2.4.0.
 
 ##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/logstash)
 
 #### Run
+
+On one terminal, spin up the docker images with docker-compose. From the `logstash` example directory:
+
 ```
-$ cd logstash
+$ docker-compose up
+```
+
+Once the docker containers are up, send some logs over to logstash with
+
+```
 $ npm install
-$ npm run build | logstash -f logstash.config
+$ npm run build
 ```
 
 ### Sample webapp setup, of course.
