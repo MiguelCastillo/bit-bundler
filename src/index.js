@@ -1,7 +1,6 @@
 "use strict";
 
 var defaultOptions = require("./defaultOptions");
-var utils = require("belty");
 var File = require("src-dest");
 var types = require("dis-isa");
 var EventEmitter = require("events");
@@ -9,7 +8,7 @@ var Stream = require("stream");
 var es = require("event-stream");
 var deprecatedOptions = require("./deprecatedOptions")("bit-bundler");
 var loaderFactory = require("./loader/factory");
-var Bundler = require("./bundler");
+var bundlerFactory = require("./bundler/factory");
 var Bundle = require("./bundle");
 var Context = require("./context");
 var bundleWriter = require("./bundleWriter");
@@ -28,8 +27,8 @@ class Bitbundler extends EventEmitter {
     configureLogger(this, this.options.log, loggerFactory);
 
     this.context = null;
-    this.loader = createLoader(this.options);
-    this.bundler = createBundler(this.options);
+    this.loader = loaderFactory(this.options);
+    this.bundler = bundlerFactory(this.options);
   }
 
   bundle(files) {
@@ -122,30 +121,6 @@ class Bitbundler extends EventEmitter {
 Bitbundler.bundle = function(files, settings) {
   return new Bitbundler(settings).bundle(files);
 };
-
-
-function createLoader(options) {
-  if (Array.isArray(options.loader)) {
-    options.loader = {
-      plugins: options.loader
-    };
-  }
-
-  var settings = Object.assign(utils.pick(options, ["stubNotFound", "sourceMap", "baseUrl", "multiprocess"]), defaultOptions.loader, options.loader);
-  return loaderFactory(settings);
-}
-
-function createBundler(options) {
-  if (Array.isArray(options.bundler)) {
-    options.bundler = {
-      plugins: options.bundler
-    };
-  }
-
-  var settings = Object.assign(utils.pick(options, ["umd", "sourceMap"]), defaultOptions.bundler, options.bundler);
-  return new Bundler(settings);
-}
-
 
 function processDeprecated(options) {
   return deprecatedOptions({
