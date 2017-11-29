@@ -1,6 +1,6 @@
 "use strict";
 
-var Loader = require("./loader");
+var Loader = require("./index");
 var Workit = require("workit");
 var es = require("event-stream");
 
