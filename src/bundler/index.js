@@ -4,7 +4,7 @@ var utils = require("belty");
 var types = require("dis-isa");
 var jsBundler = require("bit-bundler-browserpack");
 var configurator = require("setopt")();
-var pluginLoader = require("./pluginLoader");
+var pluginLoader = require("../pluginLoader");
 
 class Bundler {
   constructor(options) {
