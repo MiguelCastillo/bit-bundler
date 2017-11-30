@@ -60,6 +60,8 @@ class Context {
   }
 
   addExclude(exclude) {
+    var rootModules = this.modules.map(mod => mod.id);
+
     exclude = this.exclude
       .concat(utils.toArray(exclude))
       .reduce((container, item) => {
@@ -68,7 +70,7 @@ class Context {
       }, {});
 
     return this.configure({
-      exclude: Object.keys(exclude)
+      exclude: Object.keys(exclude).filter(id => !rootModules.includes(id))
     });
   }
 
