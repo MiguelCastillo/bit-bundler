@@ -60,17 +60,16 @@ class Context {
   }
 
   addExclude(exclude) {
-    var rootModules = this.modules.map(mod => mod.id);
-
     exclude = this.exclude
-      .concat(utils.toArray(exclude))
+      .concat(exclude)
+      .filter(Boolean)
       .reduce((container, item) => {
         container[item] = true;
         return container;
       }, {});
 
     return this.configure({
-      exclude: Object.keys(exclude).filter(id => rootModules.indexOf(id) === -1)
+      exclude: Object.keys(exclude)
     });
   }
 
