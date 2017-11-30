@@ -70,7 +70,7 @@ class Context {
       }, {});
 
     return this.configure({
-      exclude: Object.keys(exclude).filter(id => !rootModules.includes(id))
+      exclude: Object.keys(exclude).filter(id => rootModules.indexOf(id) === -1)
     });
   }
 
