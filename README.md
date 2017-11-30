@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/MiguelCastillo/bit-bundler/master/img/bit-bundler_white.png" width="100%"></img>
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/MiguelCastillo/bit-bundler.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.org/MiguelCastillo/bit-bundler.svg?branch=master)](https://travis-ci.org/MiguelCastillo/bit-bundler) [![Greenkeeper badge](https://badges.greenkeeper.io/MiguelCastillo/bit-bundler.svg)](https://greenkeeper.io/)
 
 > JavaScript bundler for your Web Application.
 
