@@ -3,7 +3,7 @@
 const Loader = require("./index");
 const Workit = require("workit");
 const es = require("event-stream");
-const options = require("../options")(process.argv.slice(2));
+const options = require("./options")(require("../options")(process.argv.slice(2)));
 
 class LoaderWorker extends Workit.Worker {
   init() {

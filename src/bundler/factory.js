@@ -1,14 +1,8 @@
-var utils = require("belty");
-var Bundler = require("./index");
+const optionsParser = require("./options");
+const Bundler = require("./index");
 
 function factory(options) {
-  if (Array.isArray(options.bundler)) {
-    options.bundler = {
-      plugins: options.bundler
-    };
-  }
-
-  var settings = Object.assign(utils.pick(options, ["umd", "sourceMap"]), options.bundler);
+  const settings = optionsParser(options);
   return new Bundler(settings);
 }
 
