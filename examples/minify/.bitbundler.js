@@ -1,5 +1,5 @@
 module.exports = {
-  // multiprocess: true,
+  multiprocess: 2,
   src: "src/main.js",
   dest: "dist/main.js",
 
