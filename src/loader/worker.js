@@ -10,7 +10,7 @@ class LoaderWorker extends Workit.Worker {
     this.loader = new Loader(Object.assign({}, options, {
       log: {
         stream: es.map((chunk, callback) => {
-          this.send("log", chunk);
+          this.invoke("log", chunk);
           callback(null, chunk);
         })
       }}));
