@@ -1,7 +1,7 @@
 module.exports = {
   multiprocess: true,
-  src: "src/main.js",
-  dest: "dist/bundle.js",
+  src: "src/main.jsx",
+  dest: "dist/index.js",
 
   loader: [
     "bit-loader-babel",
@@ -9,6 +9,9 @@ module.exports = {
     "bit-loader-builtins"
   ],
   bundler: [
+    ["bit-bundler-splitter", [
+      { name: "vendor", dest: "dist/vendor.js", match: { path: /\/node_modules\// } }
+    ]],
     "bit-bundler-minifyjs",
     "bit-bundler-extractsm"
   ]
