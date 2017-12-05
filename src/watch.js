@@ -16,7 +16,7 @@ function watch(bitbundler, options) {
   }
 
   var nextPaths = {}, inProgress;
-  var filesToWatch = Object.keys(bitbundler.getModules()).concat(include.src);
+  var filesToWatch = Object.keys(bitbundler.loader.getCache()).concat(include.src);
   var watcher = chokidar.watch(filesToWatch, settings);
   var watching = utils.arrayToObject(filesToWatch);
 
@@ -31,7 +31,7 @@ function watch(bitbundler, options) {
     var paths = utils
       .toArray(path)
       .filter(function(path) {
-        return bitbundler.hasModule(path);
+        return bitbundler.loader.hasModule(path);
       });
 
     if (inProgress) {
@@ -68,13 +68,13 @@ function watch(bitbundler, options) {
   }
 
   function onAdd(path) {
-    if (bitbundler.hasModule(path) || include.src.indexOf(path) !== -1) {
+    if (bitbundler.loader.hasModule(path) || include.src.indexOf(path) !== -1) {
       logger.log("watching", path);
     }
   }
 
   function onDelete(path) {
-    if (bitbundler.hasModule(path) || include.src.indexOf(path) !== -1) {
+    if (bitbundler.loader.hasModule(path) || include.src.indexOf(path) !== -1) {
       logger.log("removed", path);
     }
   }
