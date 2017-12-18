@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/*eslint no-console: ["off"]*/
+
 const options = require("../src/options")(process.argv.slice(2));
 
 var files = {
