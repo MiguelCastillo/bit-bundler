@@ -3,14 +3,12 @@
 var utils = require("belty");
 var Bundle = require("./bundle");
 var loggerFactory = require("./logger");
+var flattenModules = require("./flattenModules");
 
 var defaults = {
-  bundle: null,
   cache: {},
   exclude: [],
-  modules: null,
-  shards: {},
-  lastUpdatedModules: null
+  shards: {}
 };
 
 class Context {
@@ -19,38 +17,50 @@ class Context {
   }
 
   configure(options) {
-    return !options || this === options ? this : new Context(utils.assign({}, this, options));
+    return !options || this === options ? this : new Context(Object.assign({}, this, options));
+  }
+
+  updateBundles(visitor) {
+    return Object
+      .keys(this.shards)
+      .reduce((context, name) => context.setBundle(context.shards[name].configure(visitor(context.shards[name]))), this);
   }
 
   visitBundles(visitor) {
-    return Object
+    Object
       .keys(this.shards)
-      .reduce((context, name) => this.setShard(name, visitor(this.shards[name])), this.setBundle(visitor(this.bundle)));
-  };
+      .forEach((name) => visitor(this.shards[name]));
+
+    return this;
+  }
+
+  getBundle(name) {
+    return this.shards[name];
+  }
 
   setBundle(bundle) {
+    if (!bundle) {
+      throw new Error("bundle cannot be null");
+    }
+
+    if (!bundle.name) {
+      throw new Error("Must provide bundle.name");
+    }
+
+    const shard = (
+      bundle instanceof Bundle ? bundle :
+      this.shards[bundle.name] ? this.shards[bundle.name].configure(bundle) :
+      new Bundle(bundle.name, Object.assign({}, bundle, { dest: bundle.dest === null ? null : (bundle.dest || bundle.name) }))
+    );
+
     return this.configure({
-      bundle: this.bundle ? (bundle ? this.bundle.configure(bundle) : this.bundle.clear()) : bundle
+      shards: Object.assign({}, this.shards, {
+        [shard.name]: shard
+      })
     });
   }
 
-  setShard(name, shard, dest) {
-    var shards = utils.assign({}, this.shards);
-
-    if (shard) {
-      shards[name] = new Bundle(name, shard);
-      shards[name].dest = shard.dest || dest || name;
-    }
-    else {
-      delete shards[name];
-    }
-
-    return this.configure({
-      shards: shards
-    });
-  }
-
-  deleteShard(name) {
+  deleteBundle(name) {
     var shards = utils.assign({}, this.shards);
     delete shards[name];
 
@@ -71,6 +81,24 @@ class Context {
     return this.configure({
       exclude: Object.keys(exclude)
     });
+  }
+
+  flattenModules(modules) {
+    return flattenModules(this.cache, modules || this.modules);
+  }
+
+  setCache(cache) {
+    return this.configure({
+      cache: Object.keys(cache).filter(id => this.exclude.indexOf(id) === -1).reduce((accumulator, id) => (accumulator[id] = cache[id], accumulator), {})
+    });
+  }
+
+  getCache() {
+    return this.cache;
+  }
+
+  getModules(ids) {
+    return Array.isArray(ids) ? ids.map(id => this.cache[id]) : this.cache[id];
   }
 
   getLogger(name) {

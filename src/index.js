@@ -9,7 +9,7 @@ var loaderFactory = require("./loader/factory");
 var bundlerFactory = require("./bundler/factory");
 var Bundle = require("./bundle");
 var Context = require("./context");
-var bundleWriter = require("./bundleWriter");
+var bundleWriter = require("./bundle/writer");
 var watch = require("./watch");
 var loggerFactory = require("./logger");
 var buildstats = require("../loggers/buildstats");
@@ -33,7 +33,7 @@ class Bitbundler extends EventEmitter {
     logger.log("build-init");
 
     var file = new File(files);
-    this.context = new Context().setBundle(new Bundle("main", { dest: file.dest }, true));
+    this.context = new Context().setBundle(new Bundle("main", { dest: file.dest, entries: file.src }, true));
 
     return this.update(file).then((context) => {
       if (this.options.watch) {
@@ -97,21 +97,23 @@ class Bitbundler extends EventEmitter {
   }
 
   buildBundles(files) {
-    var file = new File(files);
-    var context = this.context;
-    var loader = this.loader;
-    var bundler = this.bundler;
+    const file = new File(files);
+    const context = this.context;
+    const loader = this.loader;
+    const bundler = this.bundler;
 
     return loader
       .fetch(file.src)
       .then((modules) => {
-        return bundler.bundle(context.configure({
-          cache: loader.getCache(),
-          modules: context.modules ? context.modules : modules,
-          lastUpdatedModules: flattenModules(loader, modules),
-          shards: {},
-          exclude: []
-        }));
+        const cache = loader.getCache();
+        const mainBundle = context.getBundle("main");
+        const moduleIds = Object.keys(cache);
+
+        const updatedContext = context
+          .setBundle(mainBundle.setModules(moduleIds))
+          .setCache(cache);
+
+        return bundler.bundle(updatedContext);
       });
   }
 }
@@ -165,30 +167,6 @@ function configureLogger(bitbundler, options, loggerFactory) {
       this.emit("data", chunk);
     }))
     .pipe(options && options.stream ? options.stream : buildstats(options));
-}
-
-function flattenModules(loader, modules) {
-  var i = 0;
-  var stack = modules.slice(0);
-  var id, mod, result = {};
-
-  while (stack.length !== i) {
-    if (!stack[i].id) {
-      logger.warn("not-found", stack[i]);
-    }
-
-    id = stack[i++].id;
-
-    if (!id || result.hasOwnProperty(id)) {
-      continue;
-    }
-
-    mod = loader.getModule(id);
-    stack = stack.concat(mod.deps);
-    result[mod.id] = mod;
-  }
-
-  return result;
 }
 
 

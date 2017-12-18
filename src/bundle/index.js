@@ -1,12 +1,9 @@
 "use strict";
 
-var configurator = require("setopt")();
 var utils = require("belty");
 
 class Bundle {
   constructor(name, options, main) {
-    this.name = name;
-
     Object.defineProperties(this, {
       "isMain": {
         value: !!main,
@@ -14,11 +11,11 @@ class Bundle {
       }
     });
 
-    configurator.configure(this, options);
+    Object.assign(this, options, { name: name });
   }
 
   configure(options) {
-    return !options || options === this ? this : new Bundle(this.name, utils.merge({}, this, options), this.main);
+    return !options || options === this ? this : new Bundle(this.name, Object.assign({}, this, options), this.isMain);
   }
 
   clear() {
@@ -40,8 +37,8 @@ class Bundle {
     return this;
   }
 
-  setExports(exports) {
-    this.exports = exports;
+  setEntries(entires) {
+    this.entries = entires;
     return this;
   }
 

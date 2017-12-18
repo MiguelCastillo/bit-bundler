@@ -2,7 +2,7 @@
 
 var utils = require("belty");
 var types = require("dis-isa");
-var jsBundler = require("bit-bundler-browserpack");
+var BundleBuilder = require("../bundle/builder");
 var configurator = require("setopt")();
 var pluginLoader = require("../pluginLoader");
 
@@ -12,7 +12,7 @@ class Bundler {
     this._postbundle = [];
 
     if (!options.provider) {
-      options.provider = jsBundler(options);
+      options.provider = new BundleBuilder(options);
     }
 
     configurator.configure(this, options);
@@ -76,19 +76,13 @@ class Bundler {
 
 function runBundler(bundler) {
   return function bundlerRunner(context) {
-    return Promise
-      .resolve(bundler._provider.bundle(context))
-      .then((result) => context.setBundle(result));
+    return Promise.resolve(bundler._provider.bundle(context));
   };
 }
 
 function runPlugins(bundler, plugins) {
   return function pluginRunner(context) {
-    return plugins.reduce((next, plugin) => (
-      next
-        .then((context) => plugin(bundler._provider, context))
-        .then((result) => context.configure(result))
-    ), Promise.resolve(context));
+    return plugins.reduce((next, plugin) => next.then((context) => plugin(bundler._provider, context)), Promise.resolve(context));
   };
 }
 
