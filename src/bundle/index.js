@@ -1,7 +1,5 @@
 "use strict";
 
-var utils = require("belty");
-
 class Bundle {
   constructor(name, options, main) {
     Object.defineProperties(this, {

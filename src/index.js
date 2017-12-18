@@ -104,7 +104,7 @@ class Bitbundler extends EventEmitter {
 
     return loader
       .fetch(file.src)
-      .then((modules) => {
+      .then(() => {
         const cache = loader.getCache();
         const mainBundle = context.getBundles("main");
         const moduleIds = Object.keys(cache);
