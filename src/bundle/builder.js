@@ -24,6 +24,7 @@ const defaults = {
 class Builder {
   constructor(options) {
     this._options = Object.assign({}, defaults, options);
+    this._uniqueIdGenerator = uniqueId.create();
   }
 
   bundle(context, options) {
@@ -42,11 +43,11 @@ class Builder {
   }
   
   getId(moduleId) {
-    return uniqueId.getId(moduleId);
+    return this._uniqueIdGenerator.getId(moduleId);
   }
 
   setId(moduleId, value) {
-    uniqueId.setId(moduleId, value);
+    this._uniqueIdGenerator.setId(moduleId, value);
   }
 }
 
