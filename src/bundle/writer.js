@@ -4,10 +4,10 @@ var fs = require("fs");
 var path = require("path");
 var mkdirp = require("mkdirp");
 var types = require("dis-isa");
-var loggerFactory = require("./logger");
+var loggerFactory = require("../logger");
 var logger = loggerFactory.create("bundler/build");
 
-function bundleWriter() {
+function writer() {
   return function writerDelegate(context) {
     var pending = [];
 
@@ -49,5 +49,5 @@ function streamFactory(dest) {
   return types.isString(dest) ? fileStream(dest) : dest;
 }
 
-bundleWriter.stream = streamFactory;
-module.exports = bundleWriter;
+writer.stream = streamFactory;
+module.exports = writer;

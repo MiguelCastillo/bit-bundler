@@ -48,7 +48,7 @@ function watch(bitbundler, options) {
         });
 
         var newFiles = Object
-          .keys(result.lastUpdatedModules)
+          .keys(result.getCache())
           .filter(function(moduleId) {
             return !watching[moduleId];
           });
