@@ -32,7 +32,7 @@
     "bitbundler": "bin/cli.js"
   },
   "scripts": {
-    "prepublish": "grunt build",
+    "prepublish": "eslint bin/**/*.js src/**/*.js",
     "test": "eslint bin/**/*.js src/**/*.js && mocha --require babel-register",
     "linter": "eslint bin/**/*.js src/**/*.js"
   },
