@@ -3,7 +3,7 @@
   "version": "8.0.6",
   "dependencies": {
     "belty": "^5.1.0",
-    "bit-bundler-utils": "^5.0.1",
+    "bit-bundler-utils": "^5.1.0",
     "bit-loader": "^7.1.0",
     "browser-pack": "^6.0.2",
     "chalk": "^2.3.0",
