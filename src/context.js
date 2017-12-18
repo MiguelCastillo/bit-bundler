@@ -34,6 +34,10 @@ class Context {
     return this;
   }
 
+  getBundles(names) {
+    return Array.isArray(names) ? names.map(name => this.shards[name]) : this.shards[names];
+  }
+
   getBundle(name) {
     return this.shards[name];
   }
