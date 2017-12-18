@@ -84,7 +84,13 @@ class Context {
   }
 
   flattenModules(modules) {
-    return flattenModules(this.cache, modules || this.modules, this.exclude);
+    return flattenModules(this.cache, modules || this.modules);
+  }
+
+  setCache(cache) {
+    return this.configure({
+      cache: Object.keys(cache).filter(id => this.exclude.indexOf(id) === -1).reduce((accumulator, id) => (accumulator[id] = cache[id], accumulator), {})
+    });
   }
 
   getCache() {

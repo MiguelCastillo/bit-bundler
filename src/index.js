@@ -111,7 +111,7 @@ class Bitbundler extends EventEmitter {
 
         const updatedContext = context
           .setBundle(mainBundle.setModules(moduleIds))
-          .configure({ cache: cache });
+          .setCache(cache);
 
         return bundler.bundle(updatedContext);
       });
