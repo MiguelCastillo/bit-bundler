@@ -1,5 +1,6 @@
 import React from "react";
+import Span from "./span.jsx";
 
 export default function Hello() {
-  return <span>Hello</span>;
+  return <Span>Hello</Span>;
 };
