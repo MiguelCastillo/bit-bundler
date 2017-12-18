@@ -34,8 +34,10 @@ class Context {
     return this;
   }
 
-  getBundle(name) {
-    return this.shards[name];
+  getBundles(names) {
+    return names ?
+      (Array.isArray(names) ? names.map(name => this.shards[name]) : this.shards[names]) :
+      (Object.keys(this.shards).map(shardName => this.shard[shardName]));
   }
 
   setBundle(bundle) {
@@ -98,7 +100,9 @@ class Context {
   }
 
   getModules(ids) {
-    return Array.isArray(ids) ? ids.map(id => this.cache[id]) : this.cache[id];
+    return ids ?
+      (Array.isArray(ids) ? ids.map(id => this.cache[id]) : this.cache[id]) :
+      (Object.keys(this.cache).map(id => this.cache[id]));
   }
 
   getLogger(name) {
