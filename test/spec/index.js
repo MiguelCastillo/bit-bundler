@@ -3,13 +3,12 @@
 import { expect } from "chai";
 import sinon from "sinon";
 import BitBundler from "../../src/index";
-import loggers from "../../loggers";
 
 describe("BitBundler test suite", function() {
   var createBundler, bitbundler;
 
   beforeEach(function() {
-    createBundler = (config) => bitbundler = new BitBundler(Object.assign({ log: { stream: loggers.through() } }, config || {}));
+    createBundler = (config) => bitbundler = new BitBundler(Object.assign({ log: false }, config || {}));
   });
 
   describe("When creating a bundler with no configuration", function() {

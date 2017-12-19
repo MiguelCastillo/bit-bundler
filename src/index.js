@@ -157,7 +157,7 @@ function configureLogger(bitbundler, options, loggerFactory) {
     };
   }
 
-  loggerFactory
+  const logger = loggerFactory
     .enableAll()
     .pipe(es.through(function(chunk) {
       chunk.name === "bundler/build" ?
@@ -165,8 +165,11 @@ function configureLogger(bitbundler, options, loggerFactory) {
         bitbundler.emit(chunk.name, chunk);
 
       this.emit("data", chunk);
-    }))
-    .pipe(options && options.stream ? options.stream : buildstats(options));
+    }));
+
+  if (options !== false) {
+    logger.pipe(options && options.stream ? options.stream : buildstats(options));
+  }
 }
 
 
