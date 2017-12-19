@@ -36,7 +36,8 @@ module.exports = function parseCliOptions(args) {
     "watch": type.Boolean,
     "loader": type.Array.withTransform(toArray),
     "bundler": type.Array.withTransform(toArray),
-    "multiprocess": type.Any.withTransform(toNumberOrBoolean)
+    "multiprocess": type.Any.withTransform(toNumberOrBoolean),
+    "log": type.Any.withTransform(maybeBoolean)
   });
 
   function configureSrc(src) {
@@ -45,6 +46,18 @@ module.exports = function parseCliOptions(args) {
   
   function toArray(value) {
     return value && value._ ? value._ : [].concat(value);
+  }
+
+  function maybeBoolean(value) {
+    if (value === "false") {
+      return false;
+    }
+    else if (value === "true") {
+      return true;
+    }
+    else {
+      return value;
+    }    
   }
   
   function toNumberOrBoolean(value) {
