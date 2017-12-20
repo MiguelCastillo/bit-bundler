@@ -9,7 +9,8 @@ class Bundle {
       }
     });
 
-    Object.assign(this, options, { name: name });
+    options = options || {};
+    Object.assign(this, options, { name: name, dest: options.dest === false ? false : (options.dest || name) });
   }
 
   configure(options) {
