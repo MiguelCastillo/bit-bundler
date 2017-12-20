@@ -19,7 +19,7 @@ $ npm install bit-bundler -g
 
 This is the quickest setup, and at this point you can start using bit-bundler's CLI.
 
-Alternatively, bit-bundler can be installed in your project as a dev dependency. When you do that, you will have access to bit-bundler's CLI from npm scripts defined in your package.json. This integration with npm scripts in your package.json removes the need to install bit-bundler globally, and also allows you specify a particular version of bit-bundler for your project.
+Alternatively, bit-bundler can be installed in your project as a dev dependency. When you do that, you will have access to bit-bundler's CLI from npm scripts defined in your package.json. This integration with npm scripts in your package.json removes the need to install bit-bundler globally, and since its a devDependency you can specify a particular version of bit-bundler for your project.
 
 > npm scripts integration is the preferred method when using bit-bundler's CLI in your project.
 
