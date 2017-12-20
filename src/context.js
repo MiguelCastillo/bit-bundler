@@ -52,7 +52,7 @@ class Context {
     const shard = (
       bundle instanceof Bundle ? bundle :
       this.shards[bundle.name] ? this.shards[bundle.name].configure(bundle) :
-      new Bundle(bundle.name, Object.assign({}, bundle, { dest: bundle.dest === null ? null : (bundle.dest || bundle.name) }))
+      new Bundle(bundle.name, Object.assign({}, bundle))
     );
 
     return this.configure({
