@@ -10,7 +10,15 @@ class Bundle {
     });
 
     options = options || {};
-    Object.assign(this, options, { name: name, dest: options.dest === false ? false : (options.dest || name) });
+    var dest = options.dest;
+
+    // Try to see if we need to use the bundle as the dest. This
+    // helps simplify the syntax for creating bundles.
+    if (!dest) {
+      dest = dest !== false && looksLikeFileName(name) ? name : false;
+    }
+
+    Object.assign(this, options, { name: name, dest: dest });
   }
 
   configure(options) {
@@ -45,6 +53,10 @@ class Bundle {
     this.modules = modules;
     return this;
   }
+}
+
+function looksLikeFileName(name) {
+  return /[\w]+[\.][\w]+$/.test(name);
 }
 
 module.exports = Bundle;
