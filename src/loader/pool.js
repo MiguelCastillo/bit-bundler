@@ -105,7 +105,7 @@ function createPool(loader, size) {
   var pool = new WorkerPool(path.join(__dirname, "./worker.js"), {
     size: size === true ? 2 : size,
     silent: true
-  });
+  }, ["--color"]);
 
   pool.workers.forEach((worker) => {
     worker.process.stdout.pipe(process.stdout);
