@@ -2,6 +2,7 @@
 
 import { expect } from "chai";
 import sinon from "sinon";
+import path from "path";
 import BitBundler from "../../src/index";
 
 describe("BitBundler test suite", function() {
@@ -20,7 +21,7 @@ describe("BitBundler test suite", function() {
       expect(bitbundler).to.be.an.instanceof(BitBundler);
     });
 
-    describe("and bundling a module with a couple of dependencies", function() {
+    describe("and bundling a module with a couple of dependencies and no bundle destination", function() {
       var result;
 
       beforeEach(function() {
@@ -29,8 +30,30 @@ describe("BitBundler test suite", function() {
         });
       });
 
-      it("then result contains the dependencies", function() {
+      it("then result in the main bundle contains correct content", function() {
         expect(trimResult(result.getBundles("main").content)).to.be.equal(`require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){/*eslint no-console: ["off"]*/var Y = require("./Y");function X() {  console.log("Say X");  this._y = new Y();}module.exports = new X();},{"./Y":2}],2:[function(require,module,exports){/*eslint no-console: ["off"]*/var z = require("./z");var X = require("./X");function Y() {  console.log(X, typeof X);  console.log("Say Y");  z.potatoes();}module.exports = Y;},{"./X":1,"./z":3}],3:[function(require,module,exports){/*eslint no-console: ["off"]*/module.exports = {  roast: "this",  potatoes: function() {    console.log("Say potatoes");  }};},{}]},{},[1])`);
+      });
+
+      it("then the main bundle has the dest set to false", function() {
+        expect(result.getBundles("main").dest).to.be.false;
+      });
+    });
+
+    describe("and bundling a module with a couple of dependencies with a bundle destination", function() {
+      var result;
+
+      beforeEach(function() {
+        return bitbundler.bundle({ src: "test/sample/X.js", dest: "test/dist/dest-test-bundle.js" }).then(function(ctx) {
+          result = ctx;
+        });
+      });
+
+      it("then result contains correct bundle content", function() {
+        expect(trimResult(result.getBundles("main").content)).to.be.equal(`require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){/*eslint no-console: ["off"]*/var Y = require("./Y");function X() {  console.log("Say X");  this._y = new Y();}module.exports = new X();},{"./Y":2}],2:[function(require,module,exports){/*eslint no-console: ["off"]*/var z = require("./z");var X = require("./X");function Y() {  console.log(X, typeof X);  console.log("Say Y");  z.potatoes();}module.exports = Y;},{"./X":1,"./z":3}],3:[function(require,module,exports){/*eslint no-console: ["off"]*/module.exports = {  roast: "this",  potatoes: function() {    console.log("Say potatoes");  }};},{}]},{},[1])`);
+      });
+
+      it("then the main bundle has the dest set to correct full path", function() {
+        expect(result.getBundles("main").dest).to.be.equal(path.join(process.cwd(), "test/dist/dest-test-bundle.js"));
       });
     });
   });
