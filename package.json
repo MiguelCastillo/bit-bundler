@@ -42,7 +42,7 @@
     "babel-register": "^6.26.0",
     "chai": "~4.1.2",
     "eslint": "^4.13.1",
-    "mocha": "~4.0.1",
+    "mocha": "~4.1.0",
     "sinon": "^4.1.2",
     "spromise": "^1.0.0"
   },
