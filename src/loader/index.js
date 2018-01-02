@@ -79,12 +79,24 @@ function configureDependency(options) {
   }, utils.pick(options, ["amd", "cjs"]));
 
   return function getDependencies(meta) {
-    if (meta.source && /[\w]+\.(js|jsx|mjs)$/.test(meta.path)) {
-      return {
-        deps: pullingDeps(meta.source, depsOptions).dependencies
-      };
+    if (meta.source && (checkExtensions(meta.path) || checkDependencies(meta.source))) {
+      try {
+        return {
+          deps: pullingDeps(meta.source, depsOptions).dependencies
+        };
+      }
+      catch(ex) {
+      }
     }
   };
+}
+
+function checkExtensions(path) {
+  return path && /[\w]+\.(js|jsx|mjs)$/.test(path);
+}
+
+function checkDependencies(source) {
+  return source && /\brequire|import\b/.test(source);
 }
 
 function buildError(title, meta) {

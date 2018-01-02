@@ -18,18 +18,19 @@ class LoaderPool {
     this.pool = createPool(this, options.multiprocess);
   }
 
-  fetch(names, referrer) {
-    var deferred = Array.isArray(names) ? this._fetchMany(names, referrer) : this._fetchOne(names, referrer);
-
-    return deferred
-      .then(result => {
-        this.pool.workers.map(worker => worker.invoke("clear"));
-        return result;
-      })
-      .catch(err => {
-        this.pool.workers.map(worker => worker.invoke("clear"));
-        throw err;
-      });
+  fetch(file, referrer) {
+    return (
+      file.contents ? this._fetchContents(file) :
+      file.src.length === 1 ? this._fetchOne(file.src[0], referrer) : this._fetchMany(file.src, referrer)
+    )
+    .then(result => {
+      this.pool.workers.map(worker => worker.invoke("clear"));
+      return result;
+    })
+    .catch(err => {
+      this.pool.workers.map(worker => worker.invoke("clear"));
+      throw err;
+    });
   }
 
   setModule(mod) {
@@ -71,18 +72,26 @@ class LoaderPool {
       return pending.then(mod => {
         delete this.pending[mod.path];
         this.setModule(mod);
-
-        if (!mod.deps.length) {
-          return mod;
-        }
-
-        // console.log("deps", mod.name, mod.deps);
-
-        return this._fetchMany(mod.deps, mod).then(deps => {
-          mod.deps = deps.map((dep, i) => Object.assign({}, dep, { deps: [], name: mod.deps[i] }));
-          return mod;
-        });
+        return this._fetchDependencies(mod);
       });
+    });
+  }
+
+  _fetchContents(data, referrer) {
+    return fetch(this, data, referrer).then(mod => {
+      this.setModule(mod);
+      return this._fetchDependencies(mod);
+    });
+  }
+
+  _fetchDependencies(mod) {
+    if (!mod.deps.length) {
+      return Promise.resolve(mod);
+    }
+  
+    return this._fetchMany(mod.deps, mod).then(deps => {
+      mod.deps = deps.map((dep, i) => Object.assign({}, dep, { deps: [], name: mod.deps[i] }));
+      return mod;
     });
   }
 }
@@ -94,9 +103,9 @@ function resolve(loader, name, referrer) {
   });
 }
 
-function fetch(loader, name, referrer) {
+function fetch(loader, file, referrer) {
   return loader.pool.invoke("fetchShallow", {
-    name: name,
+    file: file,
     referrer: referrer
   });
 }

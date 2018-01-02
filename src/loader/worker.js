@@ -28,11 +28,11 @@ class LoaderWorker extends Workit.Worker {
   }
 
   fetch(data) {
-    return this.loader.fetch(data.name, data.referrer);
+    return this.loader.fetch(data.file, data.referrer);
   }
 
   fetchShallow(data) {
-    return this.loader.fetchShallow(data.name, data.referrer);
+    return this.loader.fetchShallow(data.file, data.referrer);
   }
 }
 

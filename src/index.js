@@ -103,7 +103,7 @@ class Bitbundler extends EventEmitter {
     const bundler = this.bundler;
 
     return loader
-      .fetch(file.src)
+      .fetch(file)
       .then(() => {
         const cache = loader.getCache();
         const mainBundle = context.getBundles("main");
