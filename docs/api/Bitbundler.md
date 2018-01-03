@@ -61,33 +61,31 @@ Plugins to be registered with the bundler to manipulate bundles. Plugins can be 
 
 Method to bundle a list of files. `bundle` returns a promise that when resolved returns the bundling [context](#context).
 
-#### **`files`** { string[] | { string[] : src, string: dest } }
+#### **`files`** { string[] | { src: string[], dest: string } | { contents: string | Buffer } }
 
 File definition that contains the files to be bundled, and optionally the destination where the bundle is written to. bit-bundler uses [src-dest](https://github.com/MiguelCastillo/src-dest) to handle file configuration parsing, so check it out if you need more details.
 
   - **`string[]`** - when files is a string or an array of strings, then those are the files that are bundled.
 
-  - **`{ string[]: src, string: dest }`** - When files is an object, then it is expected to contain an `src` property defined in it which can either be a string of an array of strings; and these are the files that are bundled. The file object can optionally contain a `dest` property defined in it, which is the where the bundle is written to.
+  - **`{ src: string[], dest: string }`** - An object with a property named `src` whose value can be either a string of an array of strings; and these are the files that are bundled. The file object can optionally contain a `dest` property defined in it, which is the where the bundle is written to.
 
     - **`dest`** - can be a string, which is treated as the file name where the bundle is written to. dest can alternatively be a writable stream, which is the stream the bundle is written to.
+
+  - **`{ contents: string | Buffer, dest: string }`** - An object with a property named `contents` whose value can be either a string or Buffer. It is this contents that gets bundled.
 
 
 Basic setup for bundling a file.
 
 ``` javascript
-const Bitbundler = require("bit-bundler");
-const bitbundler = new Bitbundler();
-
-bitbundler.bundle(["path/to/file.js"]);
+require("bit-bundler").bundle(["path/to/file.js"]);
 ```
 
 You can specify the destination of the bundle.
 
 ``` javascript
 const Bitbundler = require("bit-bundler");
-const bitbundler = new Bitbundler();
 
-bitbundler.bundle({
+Bitbundler.bundle({
   src: ["path/to/file.js"],
   dest: "output/bundle.js"
 });
@@ -96,10 +94,23 @@ bitbundler.bundle({
 Destination can be a stream
 ``` javascript
 const Bitbundler = require("bit-bundler");
-const bitbundler = new Bitbundler();
 
-bitbundler.bundle({
+Bitbundler.bundle({
   src: ["path/to/file.js"],
   dest: process.stdout
+});
+```
+
+Bundle contents
+``` javascript
+const Bitbundler = require("bit-bundler");
+
+Bitbundler.bundle({
+  dest: "dist/out.js",
+  contents: `
+    const hello = require("./src/hello");
+    const world = require("./src/world");
+    console.log(hello() + " + " + world());
+  `
 });
 ```

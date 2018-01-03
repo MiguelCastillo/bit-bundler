@@ -26,15 +26,15 @@ $ npm run build
 ```
 
 
-### node.js dependencies
+### Bundling a JavaScript string
 
-bit-bundler can understand dependencies defined with `require` and `import` statements out of the box. It will load files with extensions `js`, `jsx`, and `mjs`. If you need to customize this, then you should consider configuring the loader plugin [bit-loader-js](https://github.com/MiguelCastillo/bit-loader-js).
+bit-bundler gives you the ability to bundle a string instead of a file. This is helpful when you are looking to bundle something without requiring you to have a file on disk.
 
-##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/dependencies)
+##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/from-contents)
 
 #### Run
 ```
-$ cd dependencies
+$ cd babel
 $ npm install
 $ npm run build
 ```

@@ -15,6 +15,7 @@ var loggerFactory = require("./logger");
 var buildstats = require("../loggers/buildstats");
 
 var logger = loggerFactory.create("bundler/build");
+var id = 0;
 
 class Bitbundler extends EventEmitter {
   constructor(options) {
@@ -32,8 +33,9 @@ class Bitbundler extends EventEmitter {
   bundle(files) {
     logger.log("build-init");
 
-    var file = new File(files);
-    this.context = new Context().setBundle(new Bundle("main", { dest: file.dest, entries: file.src }, true));
+    const file = new File(files);
+    const entries = file.contents ? ["@anonymous-" + id++] : file.src;
+    this.context = new Context().setBundle(new Bundle("main", { dest: file.dest, entries: entries }, true));
 
     return this.update(file).then((context) => {
       if (this.options.watch) {

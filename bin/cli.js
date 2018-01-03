@@ -2,17 +2,14 @@
 
 /*eslint no-console: ["off"]*/
 
+const utils = require("belty");
 const options = require("../src/options")(process.argv.slice(2));
-
-var files = {
-  src: options.src,
-  dest: options.dest
-};
+const files = utils.pick(options, ["src", "dest", "contents", "path"]);
 
 if (options.print) {
   console.log("files: ", JSON.stringify(files));
   console.log("options: ", JSON.stringify(options));
 }
 else {
-  require("../src/index").bundle(files, options);
+  require("../src/index").bundle(files, utils.omit(options, ["src", "dest", "contents", "path"]));
 }
