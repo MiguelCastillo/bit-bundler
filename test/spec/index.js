@@ -82,6 +82,44 @@ describe("BitBundler test suite", function() {
         .on("build-end", buildEnd);
     });
 
+    describe("And creating a bundle from javascript contents", function() {
+      beforeEach(function() {
+        return bitbundler.bundle({ contents: "console.log('hello world');" });
+      });
+
+      it("then emit is called with `build-init`", function() {
+        sinon.assert.calledWith(bitbundler.emit, "build-init");
+      });
+
+      it("then emit is called with `build-start`", function() {
+        sinon.assert.calledWith(bitbundler.emit, "build-start");
+      });
+
+      it("then initBuild event handler is called", function() {
+        sinon.assert.called(buildInit);
+      });
+
+      it("then preBuild event handler is called", function() {
+        sinon.assert.called(buildStart);
+      });
+
+      it("then postBuild event handler is called", function() {
+        sinon.assert.called(buildEnd);
+      });
+
+      it("then loader.hasModule is not called", function() {
+        sinon.assert.notCalled(bitbundler.loader.hasModule);
+      });
+
+      it("then loader.deleteModule is not called", function() {
+        sinon.assert.notCalled(bitbundler.loader.deleteModule);
+      });
+
+      it("then buildBundles is called with the corresponding contents", function() {
+        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("contents", "console.log('hello world');"));
+      });
+    });
+
     describe("And creating a bundle with one files", function() {
       beforeEach(function() {
         return bitbundler.bundle(["test/sample/X.js"]);

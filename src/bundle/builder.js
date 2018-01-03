@@ -162,7 +162,7 @@ function getBrowserPackExports(bundler, bundle, context, bpOptions) {
 
 function createBrowserPackModule(mod) {
   return Object.assign({
-    sourceFile: path.relative(".", mod.path),
+    sourceFile: path.relative(".", mod.path || ""),
     deps: mod.deps.reduce((result, dep) => (result[dep.name] = dep.id, result), {})
   }, utils.pick(mod, ["id", "name", "path", "source"]));
 }
