@@ -5,12 +5,13 @@
   "main": "basic.js",
   "scripts": {
     "build": "bitbundler",
-    "analyze": "source-map-explorer dist/main.js && source-map-explorer dist/other.js && source-map-explorer dist/renderer.js && source-map-explorer dist/vendor.js",
+    "analyze": "source-map-explorer dist/main.js && source-map-explorer dist/renderer.js && source-map-explorer dist/vendor.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Miguel Castillo <manchagnu@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "bit-loader-babel": "^2.0.0",
     "log2console": "^1.0.3"
   },
   "devDependencies": {

@@ -62,6 +62,8 @@ Yup, use the bundler plugin [bit-bundler-splitter](https://github.com/MiguelCast
 
 > You can configure multiple bundle splitters with matching rules to generate multiple bundles.
 
+This example generates multiple bundles and you can run them in node with the command below.
+
 ##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/splitter)
 
 #### Run
@@ -69,6 +71,7 @@ Yup, use the bundler plugin [bit-bundler-splitter](https://github.com/MiguelCast
 $ cd splitter
 $ npm install
 $ npm run build
+$ cat dist/vendor.js dist/renderer.js dist/main.js | node
 ```
 
 
