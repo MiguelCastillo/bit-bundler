@@ -8,7 +8,7 @@ Bitbundler affords you with a CLI that uses [subarg](https://github.com/substack
 
 - **`--dest`** { string } - file name to write the bundle to.
 
-- **`--contents`** { string | Buffer } - content to bundle.
+- **`--content`** { string | Buffer } - content to bundle.
 
 - **`--multiprocess`** { boolean | number } - option to enable parallel file processing via worker processes. By default, multiprocess is disabled. But you can enable multiprocess by setting this option to true, which will start two child processes. You can alternatively specify the number of processes to use with the max capped to the number of cpus available.
 

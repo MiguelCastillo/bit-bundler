@@ -61,7 +61,7 @@ Plugins to be registered with the bundler to manipulate bundles. Plugins can be 
 
 Method to bundle a list of files. `bundle` returns a promise that when resolved returns the bundling [context](#context).
 
-#### **`files`** { string[] | { src: string[], dest: string } | { contents: string | Buffer } }
+#### **`files`** { string[] | { src: string[], dest: string } | { content: string | Buffer } }
 
 File definition that contains the files to be bundled, and optionally the destination where the bundle is written to. bit-bundler uses [src-dest](https://github.com/MiguelCastillo/src-dest) to handle file configuration parsing, so check it out if you need more details.
 
@@ -71,7 +71,7 @@ File definition that contains the files to be bundled, and optionally the destin
 
     - **`dest`** - can be a string, which is treated as the file name where the bundle is written to. dest can alternatively be a writable stream, which is the stream the bundle is written to.
 
-  - **`{ contents: string | Buffer, dest: string }`** - An object with a property named `contents` whose value can be either a string or Buffer. It is this contents that gets bundled.
+  - **`{ content: string | Buffer, dest: string }`** - An object with a property named `content` whose value can be either a string or Buffer. It is this content that gets bundled.
 
 
 Basic setup for bundling a file.
@@ -101,13 +101,13 @@ Bitbundler.bundle({
 });
 ```
 
-Bundle contents
+Bundle content
 ``` javascript
 const Bitbundler = require("bit-bundler");
 
 Bitbundler.bundle({
   dest: "dist/out.js",
-  contents: `
+  content: `
     const hello = require("./src/hello");
     const world = require("./src/world");
     console.log(hello() + " + " + world());
