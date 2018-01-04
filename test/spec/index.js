@@ -58,34 +58,34 @@ describe("BitBundler test suite", function() {
     });
   });
 
-  describe("When bundling contents", function() {
+  describe("When bundling content", function() {
     beforeEach(function() {
       createBundler();
     });
 
-    describe("And the bundle contents has no dependencies", function() {
-      const bundleContents = "console.log('hello world');";
+    describe("And the bundle content has no dependencies", function() {
+      const bundleContent = "console.log('hello world');";
       var result;
   
       beforeEach(function() {
-        return bitbundler.bundle({ contents: bundleContents }).then(ctx => result = ctx);
+        return bitbundler.bundle({ content: bundleContent }).then(ctx => result = ctx);
       });
   
-      it("then the bundle contains the expected contents", function() {
+      it("then the bundle contains the expected content", function() {
         expect(result.shards["main"].content.toString()).to.include("console.log('hello world');");
       });
     });
 
-    describe("And the bundle contents has 1 relative dependency", function() {
-      const bundleContents = "require('../sample/z');console.log('hello world');";
-      const bundleContentsPath = path.join(__dirname, "../sample/");
+    describe("And the bundle content has 1 relative dependency", function() {
+      const bundleContent = "require('../sample/z');console.log('hello world');";
+      const bundleContentPath = path.join(__dirname, "../sample/");
       var result;
   
       beforeEach(function() {
-        return bitbundler.bundle({ contents: bundleContents, path: bundleContentsPath }).then(ctx => result = ctx);
+        return bitbundler.bundle({ content: bundleContent, path: bundleContentPath }).then(ctx => result = ctx);
       });
 
-      it("then the bundle contains the expected contents", function() {
+      it("then the bundle contains the expected content", function() {
         expect(result.shards["main"].content.toString()).to.include(`roast: "this",\n  potatoes`);
       });
     });
@@ -115,11 +115,11 @@ describe("BitBundler test suite", function() {
         .on("build-end", buildEnd);
     });
 
-    describe("And creating a bundle from javascript contents", function() {
-      const bundleContents = "console.log('hello world');";
+    describe("And creating a bundle from javascript content", function() {
+      const bundleContent = "console.log('hello world');";
 
       beforeEach(function() {
-        return bitbundler.bundle({ contents: bundleContents });
+        return bitbundler.bundle({ content: bundleContent });
       });
 
       it("then emit is called with `build-init`", function() {
@@ -150,17 +150,17 @@ describe("BitBundler test suite", function() {
         sinon.assert.notCalled(bitbundler.loader.deleteModule);
       });
 
-      it("then buildBundles is called with the corresponding contents", function() {
-        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("contents", bundleContents));
+      it("then buildBundles is called with the corresponding content", function() {
+        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("content", bundleContent));
       });
     });
 
-    describe("And creating a bundle from javascript contents with a dependency", function() {
-      const bundleContents = "require('./sample/z');console.log('hello world');";
-      const bundleContentsPath = path.join(__dirname, "../sample/");
+    describe("And creating a bundle from javascript content with a dependency", function() {
+      const bundleContent = "require('./z');console.log('hello world');";
+      const bundleContentPath = path.join(__dirname, "../sample/");
 
       beforeEach(function() {
-        return bitbundler.bundle({ contents: bundleContents, path: bundleContentsPath });
+        return bitbundler.bundle({ content: bundleContent, path: bundleContentPath });
       });
 
       it("then emit is called with `build-init`", function() {
@@ -191,11 +191,11 @@ describe("BitBundler test suite", function() {
         sinon.assert.notCalled(bitbundler.loader.deleteModule);
       });
 
-      it("then buildBundles is called with the corresponding contents", function() {
-        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("contents", "require('./sample/z');console.log('hello world');"));
+      it("then buildBundles is called with the corresponding content", function() {
+        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("content", "require('./z');console.log('hello world');"));
       });
 
-      it("then buildBundles is called with the corresponding contents path", function() {
+      it("then buildBundles is called with the corresponding content path", function() {
         sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("path", sinon.match((value) => /\/test\/sample\/$/.test(value))));
       });
     });

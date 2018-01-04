@@ -20,7 +20,7 @@ class LoaderPool {
 
   fetch(file, referrer) {
     return (
-      file.contents ? this._fetchContents(file) :
+      file.content ? this._fetchContent(file) :
       file.src.length === 1 ? this._fetchOne(file.src[0], referrer) : this._fetchMany(file.src, referrer)
     )
     .then(result => {
@@ -77,7 +77,7 @@ class LoaderPool {
     });
   }
 
-  _fetchContents(data, referrer) {
+  _fetchContent(data, referrer) {
     return fetch(this, data, referrer).then(mod => {
       this.setModule(mod);
       return this._fetchDependencies(mod);

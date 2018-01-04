@@ -34,7 +34,7 @@ class Bitbundler extends EventEmitter {
     logger.log("build-init");
 
     const file = new File(files);
-    const entries = file.contents ? ["@anonymous-" + id++] : file.src;
+    const entries = file.content ? ["@anonymous-" + id++] : file.src;
     this.context = new Context().setBundle(new Bundle("main", { dest: file.dest, entries: entries }, true));
 
     return this.update(file).then((context) => {

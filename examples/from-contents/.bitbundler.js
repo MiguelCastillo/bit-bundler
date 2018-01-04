@@ -1,6 +1,6 @@
 module.exports = {
   dest: "dist/out.js",
-  contents: `
+  content: `
     const hello = require("./src/hello");
     const world = require("./src/world");
     console.log(hello() + " + " + world());
