@@ -56,6 +56,56 @@ describe("BitBundler test suite", function() {
         expect(result.getBundles("main").dest).to.be.equal(path.join(process.cwd(), "test/dist/dest-test-bundle.js"));
       });
     });
+
+    describe("and bundle a node built module", function() {
+      var result, error;
+
+      beforeEach(function() {
+        return (
+          bitbundler
+            .bundle({ content: "require('fs');" })
+            .then((ctx) => result = ctx)
+            .catch((err) => error = err)
+        );
+      });
+
+      it("then the result is never set", function() {
+        expect(result).to.not.be.ok;
+      });
+
+      it("then the error thrown is of type Error", function() {
+        expect(error).to.be.instanceof(Error);
+      });
+
+      it("then a not found exception is thrown", function() {
+        expect(error.message).to.be.equal("ENOENT: no such file or directory, open 'fs'");
+      });
+    });
+
+    describe("and bundle with a dependency that does not exist", function() {
+      var result, error;
+
+      beforeEach(function() {
+        return (
+          bitbundler
+            .bundle({ content: "require('./does-not-exist');" })
+            .then((ctx) => result = ctx)
+            .catch((err) => error = err)
+        );
+      });
+
+      it("then the result is never set", function() {
+        expect(result).to.not.be.ok;
+      });
+
+      it("then the error thrown is of type Error", function() {
+        expect(error).to.be.instanceof(Error);
+      });
+
+      it("then a not found exception is thrown", function() {
+        expect(error.message).to.be.equal(`Cannot find module './does-not-exist' from '${process.cwd()}'`);
+      });
+    });
   });
 
   describe("When bundling content", function() {
