@@ -11,6 +11,7 @@ var logger = require("../logger").create("bundler/loader");
 var moduleNotFoundError = buildError.bind(null, "Unable to find module");
 var moduleNotLoadedError = buildError.bind(null, "Unable to load module");
 var moduleNotResolvedError = buildError.bind(null, "Unable to resolve module");
+var notResolvedCache = {};
 
 class Loader extends Bitloader {
   constructor(options) {
@@ -35,6 +36,7 @@ function configureResolve(options) {
   return function resolveName(meta) {
     function handleError(err) {
       var message = err && err.message;
+      notResolvedCache[meta.name] = true;
 
       if (message && message.indexOf("Cannot find module") === 0 && options.stubNotFound) {
         logger.warn("Module not found. Skipping it.", moduleNotFoundError(meta));
@@ -59,16 +61,23 @@ function configureFetch(options) {
     function handleError(err) {
       if (err && err.code === "ENOENT" && options.stubNotFound) {
         logger.warn("Module not found. Skipping it.", moduleNotFoundError(meta));
-        return Promise.resolve({ source: "module.exports = require('" + meta.name + "')" });
+        return { source: "" };
       }
 
       logger.error(moduleNotLoadedError(meta), err);
       throw err;
     }
 
-    return meta.id === "@notfound" && options.stubNotFound ?
+    function handleSuccess(mod) {
+      if (notResolvedCache[mod.name]) {
+        delete notResolvedCache[mod.name];
+      }
+      return mod;
+    }
+
+    return notResolvedCache[meta.name] && options.stubNotFound ?
       Promise.resolve({ source: "" }) :
-      readFile(meta).then(utils.identity, handleError);
+      readFile(meta).then(handleSuccess, handleError);
   };
 }
 
