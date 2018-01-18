@@ -1,8 +1,9 @@
 "use strict";
 
-var path = require("path");
-var logger = require("../logger");
-var Workit = require("workit");
+const path = require("path");
+const utils = require("belty");
+const Workit = require("workit");
+const logger = require("../logger");
 
 class WorkerPool extends Workit.Pool {
   log(chunk) {
@@ -20,9 +21,12 @@ class LoaderPool {
 
   fetch(file, referrer) {
     return (
-      file.content ? this._fetchContent(file) :
-      file.src.length === 1 ? this._fetchOne(file.src[0], referrer) : this._fetchMany(file.src, referrer)
-    )
+      file.content ?
+        this._fetchContent(file) :
+      file.src.length === 1 ?
+        this._fetchOne({ name: file.src[0] }, referrer) :
+        this._fetchMany(file.src.map(src => ({ name: src }), referrer)
+    ))
     .then(result => {
       this.pool.workers.map(worker => worker.invoke("clear"));
       return result;
@@ -35,6 +39,7 @@ class LoaderPool {
 
   setModule(mod) {
     this.cache[mod.id] = mod;
+    return mod;
   }
 
   hasModule(id) {
@@ -53,34 +58,48 @@ class LoaderPool {
     return this.cache;
   }
 
-  _fetchMany(names, referrer) {
-    return Promise.all(names.map(name => this._fetchOne(name, referrer)));
+  _fetchMany(modules, referrer) {
+    return Promise.all(modules.map(mod => this._fetchOne(mod, referrer)));
   }
 
-  _fetchOne(name, referrer) {
-    return resolve(this, name, referrer).then((modulePath) => {
-      if (this.cache[modulePath]) {
-        return this.cache[modulePath];
+  _fetchOne(mod, referrer) {
+    const fetchModule = (meta) => {
+      if (this.cache[meta.path]) {
+        return this.cache[meta.path];
       }
-      else if (this.pending[modulePath]) {
-        return this.pending[modulePath];
+      else if (this.pending[meta.path]) {
+        return this.pending[meta.path];
       }
 
-      var pending = fetch(this, name, referrer);
-      this.pending[modulePath] = pending;
+      this.pending[meta.path] = fetch(this, meta, referrer);
 
-      return pending.then(mod => {
-        delete this.pending[mod.path];
-        this.setModule(mod);
-        return this._fetchDependencies(mod);
-      });
-    });
+      return this.pending[meta.path]
+        .then(mod => {
+          return this
+            ._fetchDependencies(this.setModule(mod))
+            .then(mod => this.setModule(mod));
+        })
+        .then(mod => {
+          delete this.pending[meta.path];
+          return mod;
+        })
+        .catch(ex => {
+          delete this.pending[meta.path];
+          throw ex;
+        });
+    };
+
+    return mod.path ?
+      Promise.resolve(fetchModule(mod)) :
+      resolveModuleName(this, mod.name, referrer)
+        .then(modulePath => fetchModule(Object.assign({}, mod, { path: modulePath })));
   }
 
-  _fetchContent(data, referrer) {
-    return fetch(this, data, referrer).then(mod => {
-      this.setModule(mod);
-      return this._fetchDependencies(mod);
+  _fetchContent(file, referrer) {
+    return fetch(this, file, referrer).then(mod => {
+      return this
+        ._fetchDependencies(this.setModule(mod))
+        .then(mod => this.setModule(mod));
     });
   }
 
@@ -88,15 +107,19 @@ class LoaderPool {
     if (!mod.deps.length) {
       return Promise.resolve(mod);
     }
-  
-    return this._fetchMany(mod.deps, mod).then(deps => {
-      mod.deps = deps.map((dep, i) => Object.assign({}, dep, { deps: [], name: mod.deps[i] }));
-      return mod;
+
+    return this._fetchMany(mod.deps, mod).then(dependencies => {
+      const deps = dependencies.map((dep, i) => Object.assign(utils.omit(dep, ["source"]), mod.deps[i], {
+        deps: [],
+        referrer: utils.pick(mod, ["name", "path"])
+      }));
+
+      return Object.assign({}, mod, { deps: deps });
     });
   }
 }
 
-function resolve(loader, name, referrer) {
+function resolveModuleName(loader, name, referrer) {
   return loader.pool.invoke("resolve", {
     name: name,
     referrer: referrer
