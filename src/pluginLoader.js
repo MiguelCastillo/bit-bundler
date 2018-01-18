@@ -7,33 +7,53 @@ function pluginLoader(plugins) {
 
   return []
     .concat(plugins)
-    .filter(Boolean)
-    .map(loadPlugin);
+    .map(createPluginLoader());
 }
 
-function loadPlugin(plugin) {
-  return (
-    typeof plugin === "string" ? pluginModule(plugin) :
-    typeof plugin === "function" ? pluginFunction(plugin) :
-    plugin.constructor === Object ? pluginObject(plugin) :
-    Array.isArray(plugin) ? pluginArray(plugin) : null
-  );
+function createPluginLoader() {
+  var alreadyLoaded = {};
+
+  return function loadPlugin(options) {
+    const plugin = optionsToPlugin(options);
+
+    if (plugin.name) {
+      if (!alreadyLoaded[plugin.name]) {
+        alreadyLoaded[plugin.name] = plugin.load();
+      }
+      return alreadyLoaded[plugin.name];
+    }
+    else {
+      return plugin;
+    }
+  };
 }
 
-function pluginFunction(plugin) {
-  return plugin;
+function optionsToPlugin(options) {
+  var settings, name;
+
+  if (typeof options === "string") {
+    name = options;
+  }
+  else if (options.constructor === Object) {
+    name = options.name;
+    settings = options;
+  }
+  else if (Array.isArray(options)) {
+    name = options[0];
+    settings = options[1];
+  }
+  else if (typeof options === "function") {
+    return options;
+  }
+
+  return {
+    name: name,
+    load: () => pluginModule(name, settings)
+  };
 }
 
-function pluginObject(plugin) {
-  return plugin.name ? pluginModule(plugin.name, plugin) : plugin;
-}
-
-function pluginArray(plugin) {
-  return pluginModule.apply(null, plugin);
-}
-
-function pluginModule(plugin, options) {
-  var result = requireModule(plugin);
+function pluginModule(pluginName, options) {
+  var result = requireModule(pluginName);
   return typeof result === "function" ? result(options) : result;
 }
 
