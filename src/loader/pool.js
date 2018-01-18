@@ -63,40 +63,14 @@ class LoaderPool {
   }
 
   _fetchOne(mod, referrer) {
-    const fetchModule = (meta) => {
-      if (this.cache[meta.path]) {
-        return this.cache[meta.path];
-      }
-      else if (this.pending[meta.path]) {
-        return this.pending[meta.path];
-      }
-
-      this.pending[meta.path] = fetch(this, meta, referrer);
-
-      return this.pending[meta.path]
-        .then(mod => {
-          return this
-            ._fetchDependencies(this.setModule(mod))
-            .then(mod => this.setModule(mod));
-        })
-        .then(mod => {
-          delete this.pending[meta.path];
-          return mod;
-        })
-        .catch(ex => {
-          delete this.pending[meta.path];
-          throw ex;
-        });
-    };
-
     return mod.path ?
-      Promise.resolve(fetchModule(mod)) :
+      Promise.resolve(this._buildTree(mod, referrer)) :
       resolveModuleName(this, mod.name, referrer)
-        .then(modulePath => fetchModule(Object.assign({}, mod, { path: modulePath })));
+        .then(modulePath => this._buildTree(Object.assign({}, mod, { path: modulePath }), referrer));
   }
 
   _fetchContent(file, referrer) {
-    return fetch(this, file, referrer).then(mod => {
+    return fetchModule(this, file, referrer).then(mod => {
       return this
         ._fetchDependencies(this.setModule(mod))
         .then(mod => this.setModule(mod));
@@ -117,6 +91,32 @@ class LoaderPool {
       return Object.assign({}, mod, { deps: deps });
     });
   }
+
+  _buildTree(meta, referrer) {
+    if (this.cache[meta.path]) {
+      return this.cache[meta.path];
+    }
+    else if (this.pending[meta.path]) {
+      return this.pending[meta.path];
+    }
+
+    this.pending[meta.path] = fetchModule(this, meta, referrer);
+
+    return this.pending[meta.path]
+      .then(mod => {
+        return this
+          ._fetchDependencies(this.setModule(mod))
+          .then(mod => this.setModule(mod));
+      })
+      .then(mod => {
+        delete this.pending[meta.path];
+        return mod;
+      })
+      .catch(ex => {
+        delete this.pending[meta.path];
+        throw ex;
+      });
+  };
 }
 
 function resolveModuleName(loader, name, referrer) {
@@ -126,7 +126,7 @@ function resolveModuleName(loader, name, referrer) {
   });
 }
 
-function fetch(loader, file, referrer) {
+function fetchModule(loader, file, referrer) {
   return loader.pool.invoke("fetchShallow", {
     file: file,
     referrer: referrer
