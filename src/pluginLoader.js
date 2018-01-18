@@ -15,7 +15,6 @@ function createPluginLoader() {
 
   return function loadPlugin(options) {
     const plugin = optionsToPlugin(options);
-
     if (plugin.name) {
       if (!alreadyLoaded[plugin.name]) {
         alreadyLoaded[plugin.name] = plugin.load();
@@ -35,8 +34,13 @@ function optionsToPlugin(options) {
     name = options;
   }
   else if (options.constructor === Object) {
-    name = options.name;
-    settings = options;
+    if (options.name) {
+      name = options.name;
+      settings = options;
+    }
+    else {
+      return options;
+    }
   }
   else if (Array.isArray(options)) {
     name = options[0];
