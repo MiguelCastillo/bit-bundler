@@ -101,7 +101,7 @@ class Context {
 
   getModules(ids) {
     return ids ?
-      (Array.isArray(ids) ? ids.map(id => this.cache[id]) : this.cache[id]) :
+      (Array.isArray(ids) ? ids.map(id => this.cache[id]) : this.cache[ids]) :
       (Object.keys(this.cache).map(id => this.cache[id]));
   }
 
