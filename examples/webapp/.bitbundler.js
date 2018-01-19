@@ -3,6 +3,7 @@ module.exports = {
   dest: "dist/index.js",
 
   loader: [
+    envReplace("production"),
     "bit-loader-cache",
     "bit-loader-sourcemaps",
     "bit-loader-babel",
@@ -19,3 +20,11 @@ module.exports = {
     // "bit-bundler-extractsm"
   ]
 };
+
+function envReplace(value) {
+  return {
+    transform: (meta) => ({
+      source: meta.source.replace(/process\.env\.NODE_ENV/g, JSON.stringify(value))
+    })
+  };
+}
