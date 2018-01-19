@@ -1,9 +1,10 @@
 module.exports = {
-  multiprocess: true,
   src: "src/main.jsx",
   dest: "dist/index.js",
 
   loader: [
+    "bit-loader-cache",
+    "bit-loader-sourcemaps",
     "bit-loader-babel",
     "bit-loader-eslint",
     "bit-loader-builtins"
@@ -14,7 +15,7 @@ module.exports = {
       { name: "hello", dest: "dist/hello.js", match: "/hello.jsx$" },
       { name: "world", dest: "dist/world.js", match: "/world.jsx$" },
     ]],
-    "bit-bundler-minifyjs",
-    "bit-bundler-extractsm"
+    // "bit-bundler-minifyjs",
+    // "bit-bundler-extractsm"
   ]
 };
