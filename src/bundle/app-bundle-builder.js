@@ -32,22 +32,22 @@ function buildBundle(modules, options) {
     ids = ids.concat(dependencies.map(dep => dep.id || dep.path));
 
     formattedDependencies = buildDependencies(dependencies);
-    formattedPreBundle = `${buildModuleInfoComment(currentModule, formattedDependencies)}\n${id}:`;
+    formattedPreBundle = `${buildModuleInfoComment(currentModule, id, formattedDependencies)}\n${id}:`;
     lineno += lineCount(formattedPreBundle);
 
     sourceMap.addFile({
       source: currentModule.source,
-      sourceFile: currentModule.path.replace(cwd, "")
+      sourceFile: currentModule.path ? currentModule.path.replace(cwd, "") : "_anonymous.js"
     }, {
       line: lineno
     });
 
-    formattedPostBundle = `[${wrapSource(combineSourceMap.removeComments(currentModule.source))}, ${formattedDependencies}]`;
+    formattedPostBundle = `[${wrapSource(combineSourceMap.removeComments(currentModule.source))},${formattedDependencies}]`;
     lineno += lineCount(formattedPostBundle) - 1;
     result.push(formattedPreBundle + formattedPostBundle);
   }
 
-  const bundleString = `${preamble}({\n${result.join(",\n")}}, ${buildEntries(entries)});`;
+  const bundleString = `${preamble}({\n${result.join(",\n")}\n},${buildEntries(entries)});`;
   return options.umd ? umd(options.umd, `${bundleString}\nreturn ${requireName}(${entries[0]});\n${sourceMap.comment()}`) : `${bundleString}\n${sourceMap.comment()}`;
 }
 
@@ -91,11 +91,11 @@ function addQuotes(item) {
   return `"${item}"`;
 }
 
-function buildModuleInfoComment(mod, deps) {
+function buildModuleInfoComment(mod, id, deps) {
   return (
 `/**
- * id: ${mod.id}
- * path: ${mod.path.replace(cwd, "")}
+ * id: ${id}
+ * path: ${mod.path ? mod.path.replace(cwd, "") : ""}
  * deps: ${deps}
  */`
   );
