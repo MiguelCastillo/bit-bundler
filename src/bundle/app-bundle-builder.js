@@ -1,7 +1,6 @@
 const cwd = process.cwd();
 const acorn = require("acorn");
 const walk = require("acorn/dist/walk");
-// const escodegen = require("escodegen");
 const combineSourceMap = require("combine-source-map");
 const umd = require("umd");
 const prelude = require("./app-bundle-prelude").toString();
@@ -48,8 +47,8 @@ function buildBundle(modules, options) {
     result.push(formattedPreBundle + formattedPostBundle);
   }
 
-  const bundleString = `${preamble}({\n${result.join(",\n")}}, ${buildEntries(entries)});\n${sourceMap.comment()}`;
-  return options.umd ? umd(options.umd, `${bundleString}return ${requireName}(${entries[0]});`) : bundleString;
+  const bundleString = `${preamble}({\n${result.join(",\n")}}, ${buildEntries(entries)});`;
+  return options.umd ? umd(options.umd, `${bundleString}\nreturn ${requireName}(${entries[0]});\n${sourceMap.comment()}`) : `${bundleString}\n${sourceMap.comment()}`;
 }
 
 function wrapSource(source) {
@@ -72,33 +71,6 @@ function renameRequire(source) {
 
   return result.join("");
 }
-
-/*
-function renameRequireES(source) {
-  const comments = [], tokens = [];
-  const ast = acorn.parse(source, {
-    // collect ranges for each node
-    ranges: true,
-    // collect comments in Esprima's format
-    onComment: comments,
-    // collect token ranges
-    onToken: tokens
-  });
-
-  walk.simple(ast, {
-    CallExpression: (node) => {
-      if (node.callee.name === "require") {
-        node.callee.name = requireName;
-      }
-    }
-  });
-
-  escodegen.attachComments(ast, comments, tokens);
-  return escodegen.generate(ast, {
-    comment: true
-  });
-}
-*/
 
 function buildDependencies(dependencies) {
   return "{" + dependencies.map(dependency => (`"${dependency.name}": ${dependency.id ? dependency.id : addQuotes(dependency.path)}`)).join(", ") + "}";
