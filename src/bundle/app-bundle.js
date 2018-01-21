@@ -35,13 +35,16 @@ function buildBundle(bundler, bundle, context, options) {
     return Promise.resolve(bundle);
   }
 
+  // Map entries first to give them lower IDs than the rest to make
+  // bundle ID generation more predictable.
+  const entries = bundle.entries.map(id => bundler.getId(id));
+
   const moduleMap = context.getModules(bundle.modules).reduce((acc, mod) => {
-    var deps = mod.deps.map(dep => Object.assign({}, dep, { id: bundler.getId(dep.path) }));
-    acc[bundler.getId(mod.path)] = Object.assign({}, mod, { id: bundler.getId(mod.path), deps: deps });
+    var modId = bundler.getId(mod.id || mod.path);
+    var deps = mod.deps.map(dep => Object.assign({}, dep, { id: bundler.getId(dep.id || dep.path) }));
+    acc[modId] = Object.assign({}, mod, { id: modId, deps: deps });
     return acc;
   }, {});
-
-  const entries = bundle.entries.map(id => bundler.getId(id));
 
   const settings = bundle.isMain ?
     Object.assign({ entries: entries }, bundler._options, options) :
