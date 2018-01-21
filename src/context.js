@@ -91,7 +91,10 @@ class Context {
 
   setCache(cache) {
     return this.configure({
-      cache: Object.keys(cache).filter(id => this.exclude.indexOf(id) === -1).reduce((accumulator, id) => (accumulator[id] = cache[id], accumulator), {})
+      cache: Object
+        .keys(cache)
+        .filter(id => this.exclude.indexOf(id) === -1)
+        .reduce((accumulator, id) => (accumulator[id] = cache[id], accumulator), {})
     });
   }
 
