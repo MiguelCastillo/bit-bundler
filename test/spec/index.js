@@ -3,7 +3,13 @@
 import { expect } from "chai";
 import sinon from "sinon";
 import path from "path";
+import combineSourceMap from "combine-source-map";
 import BitBundler from "../../src/index";
+import wrapModule from "../helpers/wrapModule";
+import appBundlePrelude from "../../src/bundle/app-bundle-prelude";
+import fs from "fs";
+
+const prelude = appBundlePrelude.toString();
 
 describe("BitBundler test suite", function() {
   var createBundler, bitbundler;
@@ -23,6 +29,9 @@ describe("BitBundler test suite", function() {
 
     describe("and bundling a module with a couple of dependencies and no bundle destination", function() {
       var result;
+      const entry = fs.readFileSync("test/sample/X.js").toString().replace(/require/g, "_bb$req");
+      const dep2 = fs.readFileSync("test/sample/Y.js").toString().replace(/require/g, "_bb$req");
+      const dep3 = fs.readFileSync("test/sample/z.js").toString().replace(/require/g, "_bb$req");
 
       beforeEach(function() {
         return bitbundler.bundle("test/sample/X.js").then(function(ctx) {
@@ -31,7 +40,14 @@ describe("BitBundler test suite", function() {
       });
 
       it("then result in the main bundle contains correct content", function() {
-        expect(trimResult(result.getBundles("main").content)).to.be.equal(`require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){/*eslint no-console: ["off"]*/var Y = require("./Y");function X() {  console.log("Say X");  this._y = new Y();}module.exports = new X();},{"./Y":2}],2:[function(require,module,exports){/*eslint no-console: ["off"]*/var z = require("./z");var X = require("./X");function Y() {  console.log(X, typeof X);  console.log("Say Y");  z.potatoes();}module.exports = Y;},{"./X":1,"./z":3}],3:[function(require,module,exports){/*eslint no-console: ["off"]*/module.exports = {  roast: "this",  potatoes: function() {    console.log("Say potatoes");  }};},{}]},{},[1])`);
+        var expected = (
+`require=_bb$req=(${prelude})({
+${wrapModule(entry, 1, {"./Y": 2}, "/test/sample/X.js")},
+${wrapModule(dep2, 2, {"./z": 3, "./X": 1}, "/test/sample/Y.js")},
+${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
+},[1]);
+`);
+        expect(combineSourceMap.removeComments(result.getBundles("main").content.toString())).to.be.equal(expected);
       });
 
       it("then the main bundle has the dest set to false", function() {
@@ -41,6 +57,9 @@ describe("BitBundler test suite", function() {
 
     describe("and bundling a module with a couple of dependencies with a bundle destination", function() {
       var result;
+      const entry = fs.readFileSync("test/sample/X.js").toString().replace(/require/g, "_bb$req");
+      const dep2 = fs.readFileSync("test/sample/Y.js").toString().replace(/require/g, "_bb$req");
+      const dep3 = fs.readFileSync("test/sample/z.js").toString().replace(/require/g, "_bb$req");
 
       beforeEach(function() {
         return bitbundler.bundle({ src: "test/sample/X.js", dest: "test/dist/dest-test-bundle.js" }).then(function(ctx) {
@@ -49,7 +68,15 @@ describe("BitBundler test suite", function() {
       });
 
       it("then result contains correct bundle content", function() {
-        expect(trimResult(result.getBundles("main").content)).to.be.equal(`require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){/*eslint no-console: ["off"]*/var Y = require("./Y");function X() {  console.log("Say X");  this._y = new Y();}module.exports = new X();},{"./Y":2}],2:[function(require,module,exports){/*eslint no-console: ["off"]*/var z = require("./z");var X = require("./X");function Y() {  console.log(X, typeof X);  console.log("Say Y");  z.potatoes();}module.exports = Y;},{"./X":1,"./z":3}],3:[function(require,module,exports){/*eslint no-console: ["off"]*/module.exports = {  roast: "this",  potatoes: function() {    console.log("Say potatoes");  }};},{}]},{},[1])`);
+        var expected = (
+`require=_bb$req=(${prelude})({
+${wrapModule(entry, 1, {"./Y": 2}, "/test/sample/X.js")},
+${wrapModule(dep2, 2, {"./z": 3, "./X": 1}, "/test/sample/Y.js")},
+${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
+},[1]);
+`);
+
+        expect(combineSourceMap.removeComments(result.getBundles("main").content.toString())).to.be.equal(expected);
       });
 
       it("then the main bundle has the dest set to correct full path", function() {
@@ -464,13 +491,6 @@ function createMockContext() {
   };
 
   return context;
-}
-
-function trimResult(data) {
-  return data
-    .toString()
-    .replace(/\n/g, "")
-    .replace(/\/\/# sourceMappingURL=.*/, "");
 }
 
 function arrayItemContains(value) {
