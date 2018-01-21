@@ -35,19 +35,19 @@ function buildBundle(bundler, bundle, context, options) {
     return Promise.resolve(bundle);
   }
 
-  const entries = bundle.entries.map(id => bundler.getId(id));
-
   const moduleMap = context.getModules(bundle.modules).reduce((acc, mod) => {
     var deps = mod.deps.map(dep => Object.assign({}, dep, { id: bundler.getId(dep.path) }));
     acc[bundler.getId(mod.path)] = Object.assign({}, mod, { id: bundler.getId(mod.path), deps: deps });
     return acc;
   }, {});
 
-  const settings = bundle.isMain ?
-    Object.assign({}, bundler._options, options) :
-    Object.assign({}, utils.omit(bundler._options, ["umd"]), options);
+  const entries = bundle.entries.map(id => bundler.getId(id));
 
-  return bundle.setContent(appBundleBuilder.buildBundle(moduleMap, entries, settings));
+  const settings = bundle.isMain ?
+    Object.assign({ entries: entries }, bundler._options, options) :
+    Object.assign({ entries: entries }, utils.omit(bundler._options, ["umd"]), options);
+
+  return bundle.setContent(appBundleBuilder.buildBundle(moduleMap, settings));
 }
 
 module.exports = AppBundle;
