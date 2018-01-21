@@ -29,7 +29,7 @@ class Builder {
 
   bundle(context, options) {
     var deferred = [];
-  
+
     context.visitBundles((bundle) => deferred.push(buildBundle(this, bundle, context, options)));
 
     return Promise
@@ -41,7 +41,7 @@ class Builder {
     var bpOptions = buildBrowserPackOptions(bpBundle, buildOptions(this));
     console.log(formatBundleInfo(bpBundle, bpOptions));
   }
-  
+
   getId(moduleId) {
     return this._uniqueIdGenerator.getId(moduleId);
   }

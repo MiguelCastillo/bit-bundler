@@ -2,7 +2,8 @@
 
 var utils = require("belty");
 var types = require("dis-isa");
-var BundleBuilder = require("../bundle/builder");
+var AppBundle = require("../bundle/app-bundle");
+// var BrowserpackBuilder = require("../bundle/browserpack-builder");
 var configurator = require("setopt")();
 var pluginLoader = require("../pluginLoader");
 
@@ -12,7 +13,8 @@ class Bundler {
     this._postbundle = [];
 
     if (!options.provider) {
-      options.provider = new BundleBuilder(options);
+      options.provider = new AppBundle(options);
+      // options.provider = new BrowserpackBuilder(options);
     }
 
     configurator.configure(this, options);
