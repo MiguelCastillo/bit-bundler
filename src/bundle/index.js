@@ -18,7 +18,7 @@ class Bundle {
       dest = dest !== false && looksLikeFileName(name) ? name : false;
     }
 
-    Object.assign(this, options, { name: name, dest: dest });
+    Object.assign(this, { entries: [] }, options, { name: name, dest: dest });
   }
 
   configure(options) {
