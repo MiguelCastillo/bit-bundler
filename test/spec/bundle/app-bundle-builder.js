@@ -23,6 +23,7 @@ describe("Bundle builder test suite", function() {
 `require=_bb$req=(${prelude})({
 ${wrapModule(input, 1)}
 },[]);
+
 `);
       expect(combineSourceMap.removeComments(result)).to.equal(expected);
     });
@@ -44,6 +45,7 @@ ${wrapModule(input, 1)}
 `require=_bb$req=(${prelude})({
 ${wrapModule(input, 1)}
 },[1]);
+
 `);
 
       expect(combineSourceMap.removeComments(result)).to.equal(expected);
@@ -73,6 +75,7 @@ ${wrapModule(input, 1, {"path": 2, "process": 3})},
 ${wrapModule(dep1, 2)},
 ${wrapModule(dep2, 3)}
 },[1]);
+
 `);
 
       expect(combineSourceMap.removeComments(result)).to.equal(expected);
