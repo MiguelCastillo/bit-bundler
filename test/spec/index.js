@@ -46,6 +46,7 @@ ${wrapModule(entry, 1, {"./Y": 2}, "/test/sample/X.js")},
 ${wrapModule(dep2, 2, {"./z": 3, "./X": 1}, "/test/sample/Y.js")},
 ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
 },[1]);
+
 `);
         expect(combineSourceMap.removeComments(result.getBundles("main").content.toString())).to.be.equal(expected);
       });
@@ -74,6 +75,7 @@ ${wrapModule(entry, 1, {"./Y": 2}, "/test/sample/X.js")},
 ${wrapModule(dep2, 2, {"./z": 3, "./X": 1}, "/test/sample/Y.js")},
 ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
 },[1]);
+
 `);
 
         expect(combineSourceMap.removeComments(result.getBundles("main").content.toString())).to.be.equal(expected);
