@@ -20,7 +20,7 @@ describe("Bundle builder test suite", function() {
 
     it("then the bundler generates the correct result", function() {
       var expected = (
-`require=_bb$req=(${prelude})({
+`_bb$iter=(${prelude})({
 ${wrapModule(input, 1)}
 },[]);
 
@@ -42,7 +42,7 @@ ${wrapModule(input, 1)}
 
     it("then the bundler generates the correct result", function() {
       var expected = (
-`require=_bb$req=(${prelude})({
+`_bb$iter=(${prelude})({
 ${wrapModule(input, 1)}
 },[1]);
 
@@ -70,7 +70,7 @@ ${wrapModule(input, 1)}
 
     it("then the bundler generates the correct result", function() {
       var expected = (
-`require=_bb$req=(${prelude})({
+`_bb$iter=(${prelude})({
 ${wrapModule(input, 1, {"path": 2, "process": 3})},
 ${wrapModule(dep1, 2)},
 ${wrapModule(dep2, 3)}
