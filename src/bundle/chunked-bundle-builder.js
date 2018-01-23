@@ -3,7 +3,7 @@ const acorn = require("acorn");
 const walk = require("acorn/dist/walk");
 const combineSourceMap = require("combine-source-map");
 const umd = require("umd");
-const prelude = require("./app-bundle-prelude").toString();
+const prelude = require("./chunked-bundle-prelude").toString();
 const requireName = "_bb$req";
 const iteratorName = "_bb$iter";
 const preamble =`require=${iteratorName}=(${prelude})`;

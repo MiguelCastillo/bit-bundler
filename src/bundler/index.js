@@ -2,7 +2,7 @@
 
 var utils = require("belty");
 var types = require("dis-isa");
-var AppBundle = require("../bundle/app-bundle");
+var ChunkedBundle = require("../bundle/chunked-bundle");
 // var BrowserpackBuilder = require("../bundle/browserpack-builder");
 var configurator = require("setopt")();
 var pluginLoader = require("../pluginLoader");
@@ -13,7 +13,7 @@ class Bundler {
     this._postbundle = [];
 
     if (!options.provider) {
-      options.provider = new AppBundle(options);
+      options.provider = new ChunkedBundle(options);
       // options.provider = new BrowserpackBuilder(options);
     }
 
