@@ -3,7 +3,7 @@ const acorn = require("acorn");
 const walk = require("acorn/dist/walk");
 const combineSourceMap = require("combine-source-map");
 const umd = require("umd");
-const prelude = require("./chunked-bundle-prelude").toString();
+const prelude = require("./chunkedBundlePrelude").toString();
 const requireName = "_bb$req";
 const iteratorName = "_bb$iter";
 const preamble =`require=${iteratorName}=(${prelude})`;
@@ -103,7 +103,7 @@ function buildModuleInfoComment(mod, id, deps) {
 }
 
 function lineCount(str) {
-  if (!str || !str.length) {
+  if (!str) {
     return 0;
   }
 

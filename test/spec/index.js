@@ -6,7 +6,7 @@ import path from "path";
 import combineSourceMap from "combine-source-map";
 import BitBundler from "../../src/index";
 import wrapModule from "../helpers/wrapModule";
-import chunkedBundlePrelude from "../../src/bundle/chunked-bundle-prelude";
+import chunkedBundlePrelude from "../../src/bundler/chunkedBundlePrelude";
 import fs from "fs";
 
 const prelude = chunkedBundlePrelude.toString();
