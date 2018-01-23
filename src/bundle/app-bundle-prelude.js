@@ -27,12 +27,23 @@ module.exports = function (moduleMap, entries) {
     return function getDependency(name) {
       const id = depsByName[name];
 
-      var _next = iter;
-      while(_next) {
-        if (_next.hasModule(id)) {
-          return _next.getModule(id, _next);
+      // If it's a local dependency to this bundle, then load it right away.
+      if (hasModule(id)) {
+        return getModule(id);
+      }
+      // Otherwise search in other bundles
+      else {
+        for (var _next = iter.next; _next; _next = _next.next) {
+          if (_next.hasModule(id)) {
+            return _next.getModule(id, _next);
+          }
         }
-        _next = _next.next;
+
+        for (var _prev = iter.prev; _prev; _prev = _prev.prev) {
+          if (_prev.hasModule(id)) {
+            return _prev.getModule(id);
+          }
+        }
       }
 
       throw new Error("Module '" + name + "' with id " + id + " was not found");
