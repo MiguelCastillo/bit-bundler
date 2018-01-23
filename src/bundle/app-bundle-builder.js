@@ -5,7 +5,8 @@ const combineSourceMap = require("combine-source-map");
 const umd = require("umd");
 const prelude = require("./app-bundle-prelude").toString();
 const requireName = "_bb$req";
-const preamble =`require=${requireName}=(${prelude})`;
+const iteratorName = "_bb$iter";
+const preamble =`${iteratorName}=(${prelude})`;
 
 function buildBundle(modules, options) {
   options = options || {};

@@ -1,37 +1,57 @@
-module.exports = function(moduleMap, entries) {
+module.exports = function (moduleMap, entries) {
   const results = {};
-  const externalRequire = typeof require !== "undefined" && require;
+  const bbiter = {
+    getModule: getModule,
+    hasModule: hasModule,
+    next: typeof _bb$iter === "undefined" ? null : _bb$iter
+  };
 
-  function getModule(id) {
-    if (!results[id]) {
-      if (moduleMap[id]) {
-        const meta = {}; meta.exports = {};
-        const load = moduleMap[id][0];
-        const deps = moduleMap[id][1];
-        const getDependency = function(moduleName) { return getModule(deps[moduleName]); };
-
-        // This is to handle circular references gracefully.
-        results[id] = meta.exports;
-
-        // get me the module
-        load(getDependency, meta, meta.exports);
-
-        // Reassign to make sure we handle the case where module.exports
-        // was replaced with something else.
-        results[id] = meta.exports;
-      }
-      else {
-        results[id] = externalRequire && externalRequire(id);
-
-        if (!externalRequire && !results[id]) {
-          throw new Error("Module " + id + " not found");
-        }
-      }
+  function getModule(id, iter) {
+    if (!results.hasOwnProperty(id)) {
+      const meta = { exports: {} };
+      const load = moduleMap[id][0];
+      const deps = moduleMap[id][1];
+      results[id] = meta.exports;
+      load(dependencyGetter(deps, iter), meta, meta.exports);
+      results[id] = meta.exports;
     }
 
     return results[id];
   }
 
-  entries.forEach(getModule);
-  return getModule;
+  function hasModule(id) {
+    return moduleMap.hasOwnProperty(id);
+  }
+
+  function dependencyGetter(depsByName, iter) {
+    return function getDependency(name) {
+      const id = depsByName[name];
+
+      var _next = iter;
+      while(_next) {
+        if (_next.hasModule(id)) {
+          return _next.getModule(id, _next);
+        }
+        _next = _next.next;
+      }
+
+      throw new Error("Module '" + name + "' with id " + id + " was not found");
+    };
+  }
+
+  if (entries.length) {
+    var _prev = bbiter;
+    var _next = bbiter.next;
+    while(_next) {
+      _next.prev = _prev;
+      _prev = _next;
+      _next = _next.next;
+    }
+  }
+
+  entries.forEach(function(id) {
+    getModule(id, bbiter);
+  });
+
+  return bbiter;
 };
