@@ -1,10 +1,5 @@
 module.exports = function (moduleMap, entries) {
   var results = {};
-  var bbiter = {
-    get: get,
-    has: has,
-    next: typeof _bb$iter === "undefined" ? null : _bb$iter
-  };
 
   function get(id, iter) {
     if (!results.hasOwnProperty(id)) {
@@ -48,6 +43,12 @@ module.exports = function (moduleMap, entries) {
       throw new Error("Module '" + name + "' with id " + id + " was not found");
     };
   }
+
+  var bbiter = {
+    get: get,
+    has: has,
+    next: typeof _bb$iter === "undefined" ? null : _bb$iter
+  };
 
   if (entries.length) {
     var _prev = bbiter;

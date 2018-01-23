@@ -49,7 +49,7 @@ function buildBundle(modules, options) {
   }
 
   const bundleString = `${preamble}({\n${result.join(",\n")}\n},${buildEntries(entries)});`;
-  return options.umd ? umd(options.umd, `${bundleString}\nreturn ${requireName}(${entries[0]});\n${sourceMap.comment()}\n`) : `${bundleString}\n${sourceMap.comment()}\n`;
+  return options.umd ? umd(options.umd, `${bundleString}\nreturn ${iteratorName}.get(${entries[0]});\n${sourceMap.comment()}\n`) : `${bundleString}\n${sourceMap.comment()}\n`;
 }
 
 function wrapSource(source) {
