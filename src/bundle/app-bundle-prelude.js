@@ -33,20 +33,16 @@ module.exports = function (moduleMap, entries) {
       }
       // Otherwise search in other bundles
       else {
-        var _next = iter.next;
-        while(_next) {
+        for (var _next = iter.next; _next; _next = _next.next) {
           if (_next.hasModule(id)) {
             return _next.getModule(id, _next);
           }
-          _next = _next.next;
         }
 
-        var _prev = iter.prev;
-        while(_prev) {
+        for (var _prev = iter.prev; _prev; _prev = _prev.prev) {
           if (_prev.hasModule(id)) {
             return _prev.getModule(id);
           }
-          _prev = _prev.prev;
         }
       }
 
