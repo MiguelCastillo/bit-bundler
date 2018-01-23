@@ -1,16 +1,16 @@
 module.exports = function (moduleMap, entries) {
-  const results = {};
-  const bbiter = {
-    getModule: getModule,
-    hasModule: hasModule,
+  var results = {};
+  var bbiter = {
+    get: get,
+    has: has,
     next: typeof _bb$iter === "undefined" ? null : _bb$iter
   };
 
-  function getModule(id, iter) {
+  function get(id, iter) {
     if (!results.hasOwnProperty(id)) {
-      const meta = { exports: {} };
-      const load = moduleMap[id][0];
-      const deps = moduleMap[id][1];
+      var meta = { exports: {} };
+      var load = moduleMap[id][0];
+      var deps = moduleMap[id][1];
       results[id] = meta.exports;
       load(dependencyGetter(deps, iter), meta, meta.exports);
       results[id] = meta.exports;
@@ -19,30 +19,29 @@ module.exports = function (moduleMap, entries) {
     return results[id];
   }
 
-  function hasModule(id) {
+  function has(id) {
     return moduleMap.hasOwnProperty(id);
   }
 
   function dependencyGetter(depsByName, iter) {
     return function getDependency(name) {
-      const id = depsByName[name];
+      var id = depsByName[name];
 
       // If it's a local dependency to this bundle, then load it right away.
-      if (hasModule(id)) {
-        return getModule(id);
+      if (has(id)) {
+        return get(id);
       }
-      // Otherwise search in other bundles
-      else {
-        for (var _next = iter.next; _next; _next = _next.next) {
-          if (_next.hasModule(id)) {
-            return _next.getModule(id, _next);
-          }
-        }
 
-        for (var _prev = iter.prev; _prev; _prev = _prev.prev) {
-          if (_prev.hasModule(id)) {
-            return _prev.getModule(id);
-          }
+      // Otherwise search in other bundles
+      for (var _next = iter.next; _next; _next = _next.next) {
+        if (_next.has(id)) {
+          return _next.get(id, _next);
+        }
+      }
+
+      for (var _prev = iter.prev; _prev; _prev = _prev.prev) {
+        if (_prev.has(id)) {
+          return _prev.get(id);
         }
       }
 
@@ -60,9 +59,6 @@ module.exports = function (moduleMap, entries) {
     }
   }
 
-  entries.forEach(function(id) {
-    getModule(id, bbiter);
-  });
-
+  entries.forEach(function(id) { get(id, bbiter); });
   return bbiter;
 };
