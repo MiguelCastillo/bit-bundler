@@ -1,6 +1,6 @@
 import wrapModule from "../../helpers/wrapModule";
-import chunkedBundleBuilder from "../../../src/bundle/chunked-bundle-builder";
-import chunkedBundlePrelude from "../../../src/bundle/chunked-bundle-prelude";
+import chunkedBundleBuilder from "../../../src/bundler/chunkedBundleBuilder";
+import chunkedBundlePrelude from "../../../src/bundler/chunkedBundlePrelude";
 import combineSourceMap from "combine-source-map";
 import { expect } from "chai";
 

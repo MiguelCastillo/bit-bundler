@@ -2,8 +2,8 @@
 
 var utils = require("belty");
 var types = require("dis-isa");
-var ChunkedBundle = require("../bundle/chunked-bundle");
-// var BrowserpackBuilder = require("../bundle/browserpack-builder");
+var ChunkedBundle = require("./chunkedBundle");
+// var BrowserpackBundle = require("./browserpackBundle");
 var configurator = require("setopt")();
 var pluginLoader = require("../pluginLoader");
 
@@ -14,7 +14,7 @@ class Bundler {
 
     if (!options.provider) {
       options.provider = new ChunkedBundle(options);
-      // options.provider = new BrowserpackBuilder(options);
+      // options.provider = new BrowserpackBundle(options);
     }
 
     configurator.configure(this, options);
