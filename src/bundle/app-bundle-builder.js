@@ -6,7 +6,7 @@ const umd = require("umd");
 const prelude = require("./app-bundle-prelude").toString();
 const requireName = "_bb$req";
 const iteratorName = "_bb$iter";
-const preamble =`${iteratorName}=(${prelude})`;
+const preamble =`require=${iteratorName}=(${prelude})`;
 
 function buildBundle(modules, options) {
   options = options || {};
@@ -49,7 +49,7 @@ function buildBundle(modules, options) {
   }
 
   const bundleString = `${preamble}({\n${result.join(",\n")}\n},${buildEntries(entries)});`;
-  return options.umd ? umd(options.umd, `${bundleString}\nreturn ${iteratorName}.get(${entries[0]});\n${sourceMap.comment()}\n`) : `${bundleString}\n${sourceMap.comment()}\n`;
+  return options.umd ? umd(options.umd, `${bundleString}\nreturn ${iteratorName}(${entries[0]});\n${sourceMap.comment()}\n`) : `${bundleString}\n${sourceMap.comment()}\n`;
 }
 
 function wrapSource(source) {
