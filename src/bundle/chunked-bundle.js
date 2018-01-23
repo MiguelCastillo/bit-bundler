@@ -2,7 +2,7 @@
 
 const utils = require("belty");
 const uniqueId = require("bit-bundler-utils/uniqueId");
-const appBundleBuilder = require("./app-bundle-builder");
+const chunkedBundleBuilder = require("./chunked-bundle-builder");
 
 const defaults = {
   "umd": false
@@ -50,7 +50,7 @@ function buildBundle(bundler, bundle, context, options) {
     Object.assign({ entries: entries }, bundler._options, options) :
     Object.assign({ entries: entries }, utils.omit(bundler._options, ["umd"]), options);
 
-  return bundle.setContent(appBundleBuilder.buildBundle(moduleMap, settings));
+  return bundle.setContent(chunkedBundleBuilder.buildBundle(moduleMap, settings));
 }
 
 module.exports = AppBundle;

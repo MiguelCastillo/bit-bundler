@@ -1,13 +1,13 @@
 module.exports = function (moduleMap, entries) {
   var results = {};
 
-  function get(id, iter) {
+  function get(id) {
     if (!results.hasOwnProperty(id)) {
       var meta = { exports: {} };
       var load = moduleMap[id][0];
       var deps = moduleMap[id][1];
       results[id] = meta.exports;
-      load(dependencyGetter(deps, iter), meta, meta.exports);
+      load(dependencyGetter(deps), meta, meta.exports);
       results[id] = meta.exports;
     }
 
@@ -15,26 +15,24 @@ module.exports = function (moduleMap, entries) {
   }
 
   function has(id) {
-    return moduleMap.hasOwnProperty(id);
+    return moduleMap[id];
   }
 
-  function dependencyGetter(depsByName, iter) {
+  function dependencyGetter(depsByName) {
     return function getDependency(name) {
       var id = depsByName[name];
 
-      // If it's a local dependency to this bundle, then load it right away.
       if (has(id)) {
         return get(id);
       }
 
-      // Otherwise search in other bundles
-      for (var _next = iter.next; _next; _next = _next.next) {
+      for (var _next = get.next; _next; _next = _next.next) {
         if (_next.has(id)) {
-          return _next.get(id, _next);
+          return _next.get(id);
         }
       }
 
-      for (var _prev = iter.prev; _prev; _prev = _prev.prev) {
+      for (var _prev = get.prev; _prev; _prev = _prev.prev) {
         if (_prev.has(id)) {
           return _prev.get(id);
         }
@@ -44,22 +42,18 @@ module.exports = function (moduleMap, entries) {
     };
   }
 
-  var bbiter = {
-    get: get,
-    has: has,
-    next: typeof _bb$iter === "undefined" ? null : _bb$iter
-  };
+  get.get = get;
+  get.has = has;
+  get.next = typeof _bb$iter === "undefined" ? null : _bb$iter;
 
   if (entries.length) {
-    var _prev = bbiter;
-    var _next = bbiter.next;
-    while(_next) {
+    for (var _prev = get, _next = get.next; _next;) {
       _next.prev = _prev;
       _prev = _next;
       _next = _next.next;
     }
   }
 
-  entries.forEach(function(id) { get(id, bbiter); });
-  return bbiter;
+  entries.forEach(get);
+  return get;
 };

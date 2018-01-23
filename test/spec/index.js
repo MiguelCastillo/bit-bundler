@@ -6,10 +6,10 @@ import path from "path";
 import combineSourceMap from "combine-source-map";
 import BitBundler from "../../src/index";
 import wrapModule from "../helpers/wrapModule";
-import appBundlePrelude from "../../src/bundle/app-bundle-prelude";
+import chunkedBundlePrelude from "../../src/bundle/chunked-bundle-prelude";
 import fs from "fs";
 
-const prelude = appBundlePrelude.toString();
+const prelude = chunkedBundlePrelude.toString();
 
 describe("BitBundler test suite", function() {
   var createBundler, bitbundler;
@@ -41,7 +41,7 @@ describe("BitBundler test suite", function() {
 
       it("then result in the main bundle contains correct content", function() {
         var expected = (
-`_bb$iter=(${prelude})({
+`require=_bb$iter=(${prelude})({
 ${wrapModule(entry, 1, {"./Y": 2}, "/test/sample/X.js")},
 ${wrapModule(dep2, 2, {"./z": 3, "./X": 1}, "/test/sample/Y.js")},
 ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
@@ -70,7 +70,7 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
 
       it("then result contains correct bundle content", function() {
         var expected = (
-`_bb$iter=(${prelude})({
+`require=_bb$iter=(${prelude})({
 ${wrapModule(entry, 1, {"./Y": 2}, "/test/sample/X.js")},
 ${wrapModule(dep2, 2, {"./z": 3, "./X": 1}, "/test/sample/Y.js")},
 ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}

@@ -1,2 +1,2 @@
 import "./spec/index";
-import "./spec/bundle/app-bundle-builder";
+import "./spec/bundle/chunked-bundle-builder";

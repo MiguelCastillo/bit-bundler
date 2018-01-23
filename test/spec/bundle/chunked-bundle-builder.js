@@ -1,10 +1,10 @@
-import wrapModule from "../..//helpers/wrapModule";
-import appBundleBuilder from "../../../src/bundle/app-bundle-builder";
-import appBundlePrelude from "../../../src/bundle/app-bundle-prelude";
+import wrapModule from "../../helpers/wrapModule";
+import chunkedBundleBuilder from "../../../src/bundle/chunked-bundle-builder";
+import chunkedBundlePrelude from "../../../src/bundle/chunked-bundle-prelude";
 import combineSourceMap from "combine-source-map";
 import { expect } from "chai";
 
-const prelude = appBundlePrelude.toString();
+const prelude = chunkedBundlePrelude.toString();
 
 describe("Bundle builder test suite", function() {
   describe("When bundling a hello world module with no entry", function() {
@@ -13,14 +13,14 @@ describe("Bundle builder test suite", function() {
     beforeEach(function() {
       input = "module.exports = console.log('hello world');";
 
-      result = appBundleBuilder.buildBundle({
+      result = chunkedBundleBuilder.buildBundle({
         1: { source: input }
       });
     });
 
     it("then the bundler generates the correct result", function() {
       var expected = (
-`_bb$iter=(${prelude})({
+`require=_bb$iter=(${prelude})({
 ${wrapModule(input, 1)}
 },[]);
 
@@ -35,14 +35,14 @@ ${wrapModule(input, 1)}
     beforeEach(function() {
       input = "module.exports = console.log('hello world');";
 
-      result = appBundleBuilder.buildBundle({
+      result = chunkedBundleBuilder.buildBundle({
         1: { source: input, entry: true }
       });
     });
 
     it("then the bundler generates the correct result", function() {
       var expected = (
-`_bb$iter=(${prelude})({
+`require=_bb$iter=(${prelude})({
 ${wrapModule(input, 1)}
 },[1]);
 
@@ -61,7 +61,7 @@ ${wrapModule(input, 1)}
       dep1 = "console.log('the path');";
       dep2 = "console.log('the process');";
 
-      result = appBundleBuilder.buildBundle({
+      result = chunkedBundleBuilder.buildBundle({
         1: { source: input, entry: true, deps: [{ id: 2, name: "path" }, { id: 3, name: "process" }] },
         2: { source: dep1 },
         3: { source: dep2 }
@@ -70,7 +70,7 @@ ${wrapModule(input, 1)}
 
     it("then the bundler generates the correct result", function() {
       var expected = (
-`_bb$iter=(${prelude})({
+`require=_bb$iter=(${prelude})({
 ${wrapModule(input, 1, {"path": 2, "process": 3})},
 ${wrapModule(dep1, 2)},
 ${wrapModule(dep2, 3)}
