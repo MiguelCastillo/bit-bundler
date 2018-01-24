@@ -35,7 +35,8 @@ class Bitbundler extends EventEmitter {
     logger.log("build-init");
 
     const file = configureFiles(files);
-    const entries = file.src.map(src => src.content && !src.id ? ("@anonymous-" + id++) : src);
+    const generateEntryId = (src) => (types.isString(src) ? src : (src.id || src.path || "@anonymous-" + id++));
+    const entries = file.src.map(generateEntryId);
     this.context = new Context().setBundle(new Bundle("main", { dest: file.dest, entries: entries }, true));
 
     return this.update(file).then((context) => {
@@ -59,16 +60,8 @@ class Bitbundler extends EventEmitter {
   update(files) {
     logger.log("build-start");
 
-    const file = configureFiles(files);
-    var loader = this.loader;
-
-    file.src
-      .filter(filePath => types.isString(filePath) && loader.hasModule(filePath))
-      .map(filePath => loader.getModule(filePath))
-      .forEach(mod => loader.deleteModule(mod));
-
     return this
-      .buildBundles(file)
+      .buildBundles(files)
       .then((context) => {
         logger.log("build-writing");
         return bundleWriter()(context);
@@ -105,8 +98,14 @@ class Bitbundler extends EventEmitter {
     const loader = this.loader;
     const bundler = this.bundler;
 
+    // Clear up cached items that need to be reprocessed
+    file.src
+      .filter(filePath => types.isString(filePath) && loader.hasModule(filePath))
+      .map(filePath => loader.getModule(filePath))
+      .forEach(mod => loader.deleteModule(mod));
+
     return loader
-      .fetch(file)
+      .fetch(file.src)
       .then(() => {
         const cache = loader.getCache();
         const mainBundle = context.getBundles("main");
@@ -176,8 +175,10 @@ function configureLogger(bitbundler, options, loggerFactory) {
 }
 
 function configureFiles(files) {
-  if (files.constructor === Object && files.content) {
-    files.src = [].concat(files.src || [], utils.pick(files, ["content", "path"]));
+  if (files.constructor === Object && (files.content || files.path)) {
+    files = Object.assign({}, utils.omit(files, ["content", "path"]), {
+      src: [].concat(files.src || [], utils.pick(files, ["content", "path"]))
+    });
   }
 
   return new File(files);
@@ -189,4 +190,3 @@ Bitbundler.watch = watch;
 Bitbundler.Context = Context;
 Bitbundler.File = File;
 module.exports = Bitbundler;
-
