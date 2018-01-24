@@ -117,7 +117,7 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
       beforeEach(function() {
         return (
           bitbundler
-            .bundle({ content: "require('./does-not-exist');" })
+            .bundle([{ content: "require('./does-not-exist');" }])
             .then((ctx) => result = ctx)
             .catch((err) => error = err)
         );
@@ -147,7 +147,7 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
       var result;
   
       beforeEach(function() {
-        return bitbundler.bundle({ content: bundleContent }).then(ctx => result = ctx);
+        return bitbundler.bundle({ src: { content: bundleContent }}).then(ctx => result = ctx);
       });
   
       it("then the bundle contains the expected content", function() {
@@ -161,7 +161,7 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
       var result;
   
       beforeEach(function() {
-        return bitbundler.bundle({ content: bundleContent, path: bundleContentPath }).then(ctx => result = ctx);
+        return bitbundler.bundle({ src: { content: bundleContent, path: bundleContentPath } }).then(ctx => result = ctx);
       });
 
       it("then the bundle contains the expected content", function() {
@@ -179,10 +179,12 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
       bitbundler.context = context;
       
       sinon.spy(bitbundler, "emit");
-      bitbundler.buildBundles = sinon.stub().resolves(context);
+      sinon.spy(bitbundler, "buildBundles");
       bitbundler.loader.hasModule = sinon.stub();
       bitbundler.loader.getModule = sinon.stub();
       bitbundler.loader.deleteModule = sinon.stub();
+      bitbundler.loader.fetch = sinon.stub().resolves();
+      bitbundler.bundler.bundle = sinon.stub().resolves(context);
       
       buildInit = sinon.stub();
       buildStart = sinon.stub();
@@ -198,7 +200,7 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
       const bundleContent = "console.log('hello world');";
 
       beforeEach(function() {
-        return bitbundler.bundle({ content: bundleContent });
+        return bitbundler.bundle({ src: { content: bundleContent }});
       });
 
       it("then emit is called with `build-init`", function() {
@@ -230,7 +232,15 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
       });
 
       it("then buildBundles is called with the corresponding content", function() {
-        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("content", bundleContent));
+        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("src", sinon.match(items => items[0].content === bundleContent)));
+      });
+
+      it("then loader.fetch is called", function() {
+        sinon.assert.called(bitbundler.loader.fetch);
+      });
+
+      it("then bundler.bundle is called", function() {
+        sinon.assert.called(bitbundler.bundler.bundle);
       });
     });
 
@@ -271,15 +281,23 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
       });
 
       it("then buildBundles is called with the corresponding content", function() {
-        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("content", "require('./z');console.log('hello world');"));
+        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("src", sinon.match(items => items[0].content === "require('./z');console.log('hello world');")));
       });
 
-      it("then buildBundles is called with the corresponding content path", function() {
-        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("path", sinon.match((value) => /\/test\/sample\/$/.test(value))));
+      it("then buildBundles is called with the corresponding path", function() {
+        sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("src", sinon.match(items => /\/test\/sample\/$/.test(items[0].path))));
+      });
+
+      it("then loader.fetch is called", function() {
+        sinon.assert.called(bitbundler.loader.fetch);
+      });
+
+      it("then bundler.bundle is called", function() {
+        sinon.assert.called(bitbundler.bundler.bundle);
       });
     });
 
-    describe("And creating a bundle with one files", function() {
+    describe("And creating a bundle with one file", function() {
       beforeEach(function() {
         return bitbundler.bundle(["test/sample/X.js"]);
       });
@@ -320,18 +338,26 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
         sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("src", sinon.match(arrayItemContains("test/sample/X.js"))));
       });
 
+      it("then loader.fetch is called", function() {
+        sinon.assert.called(bitbundler.loader.fetch);
+      });
+
+      it("then bundler.bundle is called", function() {
+        sinon.assert.called(bitbundler.bundler.bundle);
+      });
+
       it("then visitBundles is called", function() {
         sinon.assert.called(context.visitBundles);
       });
     });
 
-    describe("And updating a bundle with one files", function() {
+    describe("And updating a bundle with one file", function() {
       var file;
 
       beforeEach(function() {
         file = new BitBundler.File("test/sample/X.js");
         file.src.forEach((filePath) => bitbundler.loader.hasModule.withArgs(filePath).returns(true));
-        return bitbundler.update(file.src);
+        return bitbundler.update(file);
       });
 
       it("then emit is called with `build-init`", function() {
@@ -368,6 +394,14 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
 
       it("then buildBundles is called with the corresponding file names", function() {
         sinon.assert.calledWith(bitbundler.buildBundles, sinon.match.has("src", sinon.match(arrayItemContains("test/sample/X.js"))));
+      });
+
+      it("then loader.fetch is called", function() {
+        sinon.assert.called(bitbundler.loader.fetch);
+      });
+
+      it("then bundler.bundle is called", function() {
+        sinon.assert.called(bitbundler.bundler.bundle);
       });
 
       it("then visitBundles is called", function() {
@@ -489,6 +523,9 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
 function createMockContext() {
   var context = {
     cache: {},
+    getBundles: () => ({ setModules: () => ({}) }),
+    setBundle: () => context,
+    setCache: () => context,
     visitBundles: sinon.stub().returns(context)
   };
 
