@@ -1,6 +1,7 @@
 "use strict";
 
 const path = require("path");
+const types = require("dis-isa");
 const utils = require("belty");
 const Workit = require("workit");
 const logger = require("../logger");
@@ -20,16 +21,11 @@ class LoaderPool {
   }
 
   fetch(file, referrer) {
-    return (
-      file.content ?
-        this._fetchContent(file) :
-      file.src.length === 1 ?
-        this._fetchOne({ name: file.src[0] }, referrer) :
-        this._fetchMany(file.src.map(src => ({ name: src }), referrer)
-    ))
+    return this
+    ._fetchMany(file.src.map(src => (types.isString(src) ? { name: src } : src), referrer))
     .then(result => {
       this.pool.workers.map(worker => worker.invoke("clear"));
-      return result;
+      return file.src.length === 1 ? result[0] : result;
     })
     .catch(err => {
       this.pool.workers.map(worker => worker.invoke("clear"));
@@ -63,17 +59,16 @@ class LoaderPool {
   }
 
   _fetchOne(mod, referrer) {
-    return mod.path ?
-      Promise.resolve(this._buildTree(mod, referrer)) :
-      resolveModuleName(this, mod.name, referrer)
-        .then(modulePath => this._buildTree(Object.assign({}, mod, { path: modulePath }), referrer));
+    return (
+      mod.content ? this._fetchContent(mod, referrer) :
+      mod.path ? this._buildTree(mod, referrer) :
+      resolveModuleName(this, mod.name, referrer).then(modulePath => this._buildTree(Object.assign({}, mod, { path: modulePath }), referrer))
+    );
   }
 
   _fetchContent(file, referrer) {
     return fetchModule(this, file, referrer).then(mod => {
-      return this
-        ._fetchDependencies(this.setModule(mod))
-        .then(mod => this.setModule(mod));
+      return this._fetchDependencies(this.setModule(mod)).then(mod => this.setModule(mod));
     });
   }
 
@@ -94,7 +89,7 @@ class LoaderPool {
 
   _buildTree(meta, referrer) {
     if (this.cache[meta.path]) {
-      return this.cache[meta.path];
+      return Promise.resolve(this.cache[meta.path]);
     }
     else if (this.pending[meta.path]) {
       return this.pending[meta.path];
@@ -104,9 +99,7 @@ class LoaderPool {
 
     return this.pending[meta.path]
       .then(mod => {
-        return this
-          ._fetchDependencies(this.setModule(mod))
-          .then(mod => this.setModule(mod));
+        return this._fetchDependencies(this.setModule(mod)).then(mod => this.setModule(mod));
       })
       .then(mod => {
         delete this.pending[meta.path];

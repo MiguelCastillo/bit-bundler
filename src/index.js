@@ -2,6 +2,7 @@
 
 var File = require("src-dest");
 var types = require("dis-isa");
+var utils = require("belty");
 var EventEmitter = require("events");
 var Stream = require("stream");
 var es = require("event-stream");
@@ -33,8 +34,8 @@ class Bitbundler extends EventEmitter {
   bundle(files) {
     logger.log("build-init");
 
-    const file = new File(files);
-    const entries = file.content ? ["@anonymous-" + id++] : file.src;
+    const file = configureFiles(files);
+    const entries = file.src.map(src => src.content && !src.id ? ("@anonymous-" + id++) : src);
     this.context = new Context().setBundle(new Bundle("main", { dest: file.dest, entries: entries }, true));
 
     return this.update(file).then((context) => {
@@ -58,11 +59,11 @@ class Bitbundler extends EventEmitter {
   update(files) {
     logger.log("build-start");
 
-    var file = new File(files);
+    const file = configureFiles(files);
     var loader = this.loader;
 
     file.src
-      .filter(filePath => loader.hasModule(filePath))
+      .filter(filePath => types.isString(filePath) && loader.hasModule(filePath))
       .map(filePath => loader.getModule(filePath))
       .forEach(mod => loader.deleteModule(mod));
 
@@ -99,7 +100,7 @@ class Bitbundler extends EventEmitter {
   }
 
   buildBundles(files) {
-    const file = new File(files);
+    const file = configureFiles(files);
     const context = this.context;
     const loader = this.loader;
     const bundler = this.bundler;
@@ -172,6 +173,14 @@ function configureLogger(bitbundler, options, loggerFactory) {
   if (options !== false) {
     logger.pipe(options && options.stream ? options.stream : buildstats(options));
   }
+}
+
+function configureFiles(files) {
+  if (files.constructor === Object && files.content) {
+    files.src = [].concat(files.src || [], utils.pick(files, ["content", "path"]));
+  }
+
+  return new File(files);
 }
 
 
