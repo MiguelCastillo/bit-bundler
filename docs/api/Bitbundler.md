@@ -28,9 +28,10 @@ Enable to replace modules that are not found in storage with a stub module. This
 
 Toggle source map generation in the final bundle.
 
-#### **`exportNames`** { boolean } (false)
+#### **`exportNames`** { boolean | string[] | object } (false)
 
-Export modules by name when bundling node modules. The use case is for creating bundles that contain your 3rd party dependencies, which you are looking to import by name from your application bundle.
+Export modules by name when bundling node modules. The value can be boolean, in which case modules imported by name rathen than file path are exported by their name. The value can also be an array of names, which allows us to specify a more specific set of module names to export. And lastly, the value can be an object that maps module names to exported name. Meaning that module names that map to the key in the object is exported with the name defined as the value for the corresponding key.
+The use case is for creating bundles that contain your 3rd party dependencies, which you are looking to import by name from your application bundle by calling `require("belty")` for example.
 
 #### **`log`** { stream | { stream: WritableStream, level: string } } (buildstats)
 
