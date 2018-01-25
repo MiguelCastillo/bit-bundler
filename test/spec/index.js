@@ -7,6 +7,7 @@ import combineSourceMap from "combine-source-map";
 import BitBundler from "../../src/index";
 import wrapModule from "../helpers/wrapModule";
 import chunkedBundlePrelude from "../../src/bundler/chunkedBundlePrelude";
+import readModule from "../helpers/readModule";
 import fs from "fs";
 
 const prelude = chunkedBundlePrelude.toString();
@@ -29,9 +30,10 @@ describe("BitBundler test suite", function() {
 
     describe("and bundling a module with a couple of dependencies and no bundle destination", function() {
       var result;
-      const entry = fs.readFileSync("test/sample/X.js").toString().replace(/require/g, "_bb$req");
-      const dep2 = fs.readFileSync("test/sample/Y.js").toString().replace(/require/g, "_bb$req");
-      const dep3 = fs.readFileSync("test/sample/z.js").toString().replace(/require/g, "_bb$req");
+      const entry = readModule.fromFilePath("test/sample/X.js");
+      const dep2 = readModule.fromFilePath("test/sample/Y.js");
+      const dep3 = readModule.fromFilePath("test/sample/z.js");
+      const spromiseContent = trimResult(readModule.fromModuleName("spromise/dist/spromise.min"));
 
       beforeEach(function() {
         return bitbundler.bundle("test/sample/X.js").then(function(ctx) {
@@ -40,14 +42,17 @@ describe("BitBundler test suite", function() {
       });
 
       it("then result in the main bundle contains correct content", function() {
-        var expected = (
-`require=_bb$iter=(${prelude})({
-${wrapModule(entry, 1, {"./Y": 2}, "/test/sample/X.js")},
-${wrapModule(dep2, 2, {"./z": 3, "./X": 1}, "/test/sample/Y.js")},
-${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
-},[1]);
+        var expected = [
+          `require=_bb$iter=(${prelude})({`,
+          `${wrapModule(entry, 1, {"./Y": 2}, "/test/sample/X.js")},`,
+          `${wrapModule(dep2, 2, {"./z": 3, "./X": 1}, "/test/sample/Y.js")},`,
+          `${wrapModule(dep3, 3, {"spromise/dist/spromise.min": 4}, "/test/sample/z.js")},`,
+          `${wrapModule(spromiseContent, 4, {}, "/node_modules/spromise/dist/spromise.min.js")}`,
+          "},[1]);",
+          "",
+          ""
+        ].join("\n");
 
-`);
         expect(combineSourceMap.removeComments(result.getBundles("main").content.toString())).to.be.equal(expected);
       });
 
@@ -58,9 +63,10 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
 
     describe("and bundling a module with a couple of dependencies with a bundle destination", function() {
       var result;
-      const entry = fs.readFileSync("test/sample/X.js").toString().replace(/require/g, "_bb$req");
-      const dep2 = fs.readFileSync("test/sample/Y.js").toString().replace(/require/g, "_bb$req");
-      const dep3 = fs.readFileSync("test/sample/z.js").toString().replace(/require/g, "_bb$req");
+      const entry = readModule.fromFilePath("test/sample/X.js");
+      const dep2 = readModule.fromFilePath("test/sample/Y.js");
+      const dep3 = readModule.fromFilePath("test/sample/z.js");
+      const spromiseContent = trimResult(readModule.fromModuleName("spromise/dist/spromise.min"));
 
       beforeEach(function() {
         return bitbundler.bundle({ src: "test/sample/X.js", dest: "test/dist/dest-test-bundle.js" }).then(function(ctx) {
@@ -69,14 +75,16 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
       });
 
       it("then result contains correct bundle content", function() {
-        var expected = (
-`require=_bb$iter=(${prelude})({
-${wrapModule(entry, 1, {"./Y": 2}, "/test/sample/X.js")},
-${wrapModule(dep2, 2, {"./z": 3, "./X": 1}, "/test/sample/Y.js")},
-${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
-},[1]);
-
-`);
+        var expected = [
+          `require=_bb$iter=(${prelude})({`,
+          `${wrapModule(entry, 1, {"./Y": 2}, "/test/sample/X.js")},`,
+          `${wrapModule(dep2, 2, {"./z": 3, "./X": 1}, "/test/sample/Y.js")},`,
+          `${wrapModule(dep3, 3, {"spromise/dist/spromise.min": 4}, "/test/sample/z.js")},`,
+          `${wrapModule(spromiseContent, 4, {}, "/node_modules/spromise/dist/spromise.min.js")}`,
+          "},[1]);",
+          "",
+          ""
+        ].join("\n");
 
         expect(combineSourceMap.removeComments(result.getBundles("main").content.toString())).to.be.equal(expected);
       });
@@ -166,6 +174,107 @@ ${wrapModule(dep3, 3, {}, "/test/sample/z.js")}
 
       it("then the bundle contains the expected content", function() {
         expect(result.shards["main"].content.toString()).to.include(`roast: "this",\n  potatoes`);
+      });
+    });
+  });
+
+  describe("When bundling with exportNames", function() {
+    var exportNamesConfig, act;
+
+    beforeEach(function() {
+      act = () => createBundler({ exportNames: exportNamesConfig });
+    });
+
+    describe("and exportNames is 'true'", function() {
+      var result;
+      const entry = readModule.fromFilePath("test/sample/X.js");
+      const dep2 = readModule.fromFilePath("test/sample/Y.js");
+      const dep3 = readModule.fromFilePath("test/sample/z.js");
+      const spromiseContent = trimResult(readModule.fromModuleName("spromise/dist/spromise.min"));
+      
+      beforeEach(function() {
+        exportNamesConfig = true;
+        act();
+        return bitbundler.bundle({src: "test/sample/X.js"}).then(function(ctx) {
+          result = ctx;
+        });
+      });
+
+      it("then result in the main bundle contains correct content", function() {
+        var expected = [
+          `require=_bb$iter=(${prelude})({`,
+          `${wrapModule(entry, 1, {"./Y": 2}, "/test/sample/X.js")},`,
+          `${wrapModule(dep2, 2, {"./z": 3, "./X": 1}, "/test/sample/Y.js")},`,
+          `${wrapModule(dep3, 3, {"spromise/dist/spromise.min": "spromise/dist/spromise.min"}, "/test/sample/z.js")},`,
+          `${wrapModule(spromiseContent, '"spromise/dist/spromise.min"', {}, "/node_modules/spromise/dist/spromise.min.js")}`,
+          "},[1]);",
+          "",
+          ""
+        ].join("\n");
+
+        expect(combineSourceMap.removeComments(result.getBundles("main").content.toString())).to.be.equal(expected);
+      });
+    });
+
+    describe("and exportNames is an Array", function() {
+      var result;
+      const entry = readModule.fromFilePath("test/sample/X.js");
+      const dep2 = readModule.fromFilePath("test/sample/Y.js");
+      const dep3 = readModule.fromFilePath("test/sample/z.js");
+      const spromiseContent = trimResult(readModule.fromModuleName("spromise/dist/spromise.min"));
+      
+      beforeEach(function() {
+        exportNamesConfig = ["spromise/dist/spromise.min"];
+        act();
+        return bitbundler.bundle({src: "test/sample/X.js"}).then(function(ctx) {
+          result = ctx;
+        });
+      });
+
+      it("then result in the main bundle contains correct content", function() {
+        var expected = [
+          `require=_bb$iter=(${prelude})({`,
+          `${wrapModule(entry, 1, {"./Y": 2}, "/test/sample/X.js")},`,
+          `${wrapModule(dep2, 2, {"./z": 3, "./X": 1}, "/test/sample/Y.js")},`,
+          `${wrapModule(dep3, 3, {"spromise/dist/spromise.min": "spromise/dist/spromise.min"}, "/test/sample/z.js")},`,
+          `${wrapModule(spromiseContent, '"spromise/dist/spromise.min"', {}, "/node_modules/spromise/dist/spromise.min.js")}`,
+          "},[1]);",
+          "",
+          ""
+        ].join("\n");
+
+        expect(combineSourceMap.removeComments(result.getBundles("main").content.toString())).to.be.equal(expected);
+      });
+    });
+
+    describe("and exportNames is an object that maps to 'Promise'", function() {
+      var result;
+      const entry = readModule.fromFilePath("test/sample/X.js");
+      const dep2 = readModule.fromFilePath("test/sample/Y.js");
+      const dep3 = readModule.fromFilePath("test/sample/z.js");
+      const spromiseContent = trimResult(readModule.fromModuleName("spromise/dist/spromise.min"));
+      
+      beforeEach(function() {
+        exportNamesConfig = { "spromise/dist/spromise.min": "Promise" };
+        act();
+        return bitbundler.bundle({src: "test/sample/X.js"}).then(function(ctx) {
+          result = ctx;
+        });
+      });
+
+      it("then result in the main bundle contains correct content", function() {
+        var expected = [
+          `require=_bb$iter=(${prelude})({`,
+          `${wrapModule(entry, 1, {"./Y": 2}, "/test/sample/X.js")},`,
+          `${wrapModule(dep2, 2, {"./z": 3, "./X": 1}, "/test/sample/Y.js")},`,
+          `${wrapModule(dep3, 3, {"spromise/dist/spromise.min": "Promise"}, "/test/sample/z.js")},`,
+          `${wrapModule(spromiseContent, '"Promise"', {}, "/node_modules/spromise/dist/spromise.min.js")}`,
+          "},[1]);",
+          "",
+          ""
+        ].join("\n");
+
+        expect(combineSourceMap.removeComments(result.getBundles("main").content.toString())).to.be.equal(expected);
       });
     });
   });
@@ -539,3 +648,10 @@ function arrayItemContains(value) {
     });
   };
 }
+
+function trimResult(data) {
+  return data
+    .toString()
+    .replace(/\/\/# sourceMappingURL=.*/, "");
+}
+
