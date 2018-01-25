@@ -28,9 +28,10 @@ Enable to replace modules that are not found in storage with a stub module. This
 
 Toggle source map generation in the final bundle.
 
-#### **`exportNames`** { boolean } (false)
+#### **`exportNames`** { boolean | string[] | object } (false)
 
-Export modules by name when bundling node modules. The use case is for creating bundles that contain your 3rd party dependencies, which you are looking to import by name from your application bundle.
+Export modules by name when bundling node modules. The value can be boolean, in which case modules imported by name rathen than file path are exported by their name. The value can also be an array of names, which allows us to specify a more specific set of module names to export. And lastly, the value can be an object that maps module names to exported name. Meaning that module names that map to the key in the object is exported with the name defined as the value for the corresponding key.
+The use case is for creating bundles that contain your 3rd party dependencies, which you are looking to import by name from your application bundle by calling `require("belty")` for example.
 
 #### **`log`** { stream | { stream: WritableStream, level: string } } (buildstats)
 
@@ -59,19 +60,17 @@ Plugins to be registered with the bundler to manipulate bundles. Plugins can be 
 
 ## bundle(files) : Promise
 
-Method to bundle a list of files. `bundle` returns a promise that when resolved returns the bundling [context](#context).
+Method generating bundles. `bundle` returns a promise that when resolved returns the bundling [context](#context).
 
-#### **`files`** { string[] | { src: string[], dest: string } | { content: string | Buffer } }
+#### **`files`**
 
-File definition that contains the files to be bundled, and optionally the destination where the bundle is written to. bit-bundler uses [src-dest](https://github.com/MiguelCastillo/src-dest) to handle file configuration parsing, so check it out if you need more details.
+File definition that contains what needs to be bundled and optionally the destination where bundles are written to. `files` can be any of the shapes below.
 
-  - **`string[]`** - when files is a string or an array of strings, then those are the files that are bundled.
+  - **`string[]`** - when files is a string or an array of strings, then those are the files that are bundled. These can be globs.
 
-  - **`{ src: string[], dest: string }`** - An object with a property named `src` whose value can be either a string of an array of strings; and these are the files that are bundled. The file object can optionally contain a `dest` property defined in it, which is the where the bundle is written to.
+  - **`{ src: [], dest: string }`** - An object with a property named `src` that is the input to be bundled and an optionally `dest` property, which is the where the bundle is written to. `src` can be a string and array strings. When `src` contains strings, these can be globs that get resolved relative to the current working directory. `src` can also be an array of objects with string `content`, in which case bit-bundler will just bundle that. `src` array can also contain an object with a `path` in it, which will get resolved `bit-bundler` as the path of a module. `src` array can also contain an object with a module `name` in it, which will also get resolved by `bit-bundler`. Please see examples below to get a better understanding of defining `src`.
 
     - **`dest`** - can be a string, which is treated as the file name where the bundle is written to. dest can alternatively be a writable stream, which is the stream the bundle is written to.
-
-  - **`{ content: string | Buffer, dest: string }`** - An object with a property named `content` whose value can be either a string or Buffer. It is this content that gets bundled.
 
 
 Basic setup for bundling a file.
@@ -80,7 +79,7 @@ Basic setup for bundling a file.
 require("bit-bundler").bundle(["path/to/file.js"]);
 ```
 
-You can specify the destination of the bundle.
+Bundle a module and specify the destination for the bundle.
 
 ``` javascript
 const Bitbundler = require("bit-bundler");
@@ -91,7 +90,8 @@ Bitbundler.bundle({
 });
 ```
 
-Destination can be a stream
+The destination can be a stream
+
 ``` javascript
 const Bitbundler = require("bit-bundler");
 
@@ -101,16 +101,59 @@ Bitbundler.bundle({
 });
 ```
 
-Bundle content
+Bundle content. Notice the dependencies `./src/hello` and `./src/world`. These dependencies will get resolved (relative to the current working), processed, and bundled as expected.
+
 ``` javascript
 const Bitbundler = require("bit-bundler");
 
 Bitbundler.bundle({
   dest: "dist/out.js",
-  content: `
-    const hello = require("./src/hello");
-    const world = require("./src/world");
-    console.log(hello() + " + " + world());
-  `
+  src: {
+    content: `
+      const hello = require("./src/hello");
+      const world = require("./src/world");
+      console.log(hello() + " + " + world());
+    `
+  }
+});
+```
+
+Bundle content and some other module name.
+
+``` javascript
+const Bitbundler = require("bit-bundler");
+
+Bitbundler.bundle({
+  dest: "dist/out.js",
+  src: [{
+      name: "belty"
+    }, {
+      content: `
+        const hello = require("./src/hello");
+        const world = require("./src/world");
+        console.log(hello() + " + " + world());
+      `
+    }
+  ]
+});
+```
+
+You can also include globs along with other stuff you want to bundle
+
+``` javascript
+const Bitbundler = require("bit-bundler");
+
+Bitbundler.bundle({
+  dest: "dist/out.js",
+  src: [ "src/*.js", {
+      name: "belty"
+    }, {
+      content: `
+        const hello = require("./src/hello");
+        const world = require("./src/world");
+        console.log(hello() + " + " + world());
+      `
+    }
+  ]
 });
 ```
