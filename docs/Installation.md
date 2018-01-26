@@ -1,27 +1,37 @@
-## Requirements
-
-nodejs version 4.8.0 (or later) as well as npm, yarn, or equivalent to install packages. Throughout the docs, unless otherwise stated, the assumption is that your environment is node.
-
-
 ## Installation
 
 > Generally speaking, we would install bit-bundler via the npm cli, yarn, or whatever other tool of your choice.
 
-There are a several ways in which you can use bit-bundler, and that determines how you install bit-bundler.
+There are a several ways in which you can use bit-bundler, and that determines how you install bit-bundler. But first, let's cover the requirements.
 
-### cli
 
-The first method is bit-bundler's CLI. If you are looking to use bit-bundler's CLI from a shell, you could install bit-bundler globally. So, from the command line execute:
+### Requirements
+
+nodejs version 4.8.0 (or later) as well as npm, yarn, or equivalent to install packages. Throughout the docs, unless otherwise stated, the assumption is that your environment is node.
+
+
+### global cli
+
+The simplest approach for using bit-bundler is via its CLI. If you are looking to use bit-bundler's CLI, the quickest way is a global install. So, from the command line execute:
 
 ```
 $ npm install bit-bundler -g
 ```
 
-This is the quickest setup, and at this point you can start using bit-bundler's CLI.
+And now you can run bit-bundler with a sample command like the one below.
 
-Alternatively, bit-bundler can be installed in your project as a dev dependency. When you do that, you will have access to bit-bundler's CLI from npm scripts defined in your package.json. This integration with npm scripts in your package.json removes the need to install bit-bundler globally, and since its a devDependency you can specify a particular version of bit-bundler for your project.
+```
+$ bitbundler --src src/index.js --dest dist/out.js
+```
 
-> npm scripts integration is the preferred method when using bit-bundler's CLI in your project.
+While global installs are quick and convenient, it has limitations and drawbacks. A better approach is using bit-bundler's CLI through npm scripts.
+
+
+### npm scripts
+
+You can run bit-bundler's CLI through npm scripts. In order to do that, you need to install bit-bundler in your project as a dev dependency and define npm scripts in your package.json. This integration with npm scripts removes the need to install bit-bundler globally with the added benefit of allowing you to define a specific version of bit-bundler for each project.
+
+> npm scripts integration is the preferred method for using bit-bundler's CLI in your project.
 
 From the command line in your project's directory, execute:
 
@@ -29,28 +39,28 @@ From the command line in your project's directory, execute:
 $ npm install bit-bundler --save-dev
 ```
 
-Now in the package.json you can define a sample command as such:
+Now in the package.json for your project you can define an npm script as shown below.
 
 ``` javascript
 {
   "scripts": {
-    "bb-print": "bitbundler --print --src src/index.js --dest dist/out.js"
+    "build": "bitbundler --src src/index.js --dest dist/out.js"
   }
 }
 ```
 
-And in your favorite shell:
+And from your favorite shell:
 
 ```
-$ npm run bb-print
+$ npm run build
 ```
 
-> You can read more about this approach [here](https://docs.npmjs.com/cli/run-script).
+> You can read more about this approach [here](https://docs.npmjs.com/cli/run-script). Also, a very helpful tool called `npx` allows you to interact with bit-bundler's CLI directly if you needed to. More on npx [here](https://www.npmjs.com/package/npx).
 
-The CLI also loads any `.bitbundler.js` or `.bitbundler.json` configuration files automatically that are present in your project. You can alternatively specify the name of the configuration file you want to load by specifying a `--config` argument. Options from configuration files are merged with all CLI arguments with CLI arguments taking precedence over options in configuration files.
+Running bit-bundler via its CLI (global or npm scripts) will automatically load any configuration file (`.bitbundler.js` or `.bitbundler.json`) that is present in your project. You can alternatively specify the name of the configuration file you want to load by specifying a `--config` argument. CLI arguments are merged with options from your configuration files, with CLI arguments taking higher precedence.
 
 
-The equivalent configuration for the above command line looks like the following:
+The equivalent configuration for the above command looks like the following:
 
 ``` javascript
 // file name is .bitbundler.js
@@ -66,11 +76,20 @@ And your command will now look like:
 $ bitbundler
 ```
 
-> Configuration files can be JavaScript, which allows you to scale for more complicated setups. The configuration file can also be JSON, which currently has limitation when defining regular expressions.
+And you npm scripts now becomes
+
+``` javascript
+{
+  "scripts": {
+    "build": "bitbundler"
+  }
+}
+```
+
 
 ### api
 
-The second method is to use bit-bundler's API. From the command line, execute in the directory you intend to use bit-bundler from:
+The last approach is to use bit-bundler's API directly in your code. From the command line:
 
 ```
 $ npm install bit-bundler --save-dev
@@ -81,7 +100,7 @@ Now you are ready to import bit-bundler.
 ES module
 
 ``` javascript
-import Bitbundler from 'bit-bundler';
+import Bitbundler from "bit-bundler";
 
 Bitbundler.bundle({
   src: "src/main.js",
@@ -92,7 +111,7 @@ Bitbundler.bundle({
 CJS module
 
 ``` javascript
-const Bitbundler = require('bit-bundler');
+const Bitbundler = require("bit-bundler");
 
 Bitbundler.bundle({
   src: "src/main.js",

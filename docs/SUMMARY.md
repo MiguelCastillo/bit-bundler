@@ -2,6 +2,10 @@
 
 * [Introduction](README.md)
 * [Installation](Installation.md)
+  * [Requirements](Installation.md#requirements)
+  * [for global cli](Installation.md#global-cli)
+  * [for npm scripts](Installation.md#npm-scripts)
+  * [for api](Installation.md#api)
 * [Hello World](HelloWorld.md)
 * [Loader Plugins](LoaderPlugins.md)
 * [Bundler Plugins](BundlerPlugins.md)
