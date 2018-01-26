@@ -1,6 +1,6 @@
 {
   "name": "bit-bundler",
-  "version": "11.0.1",
+  "version": "11.0.2",
   "dependencies": {
     "acorn": "^5.3.0",
     "acorn-dynamic-import": "^3.0.0",
