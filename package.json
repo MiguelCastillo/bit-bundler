@@ -36,9 +36,11 @@
     "bitbundler": "bin/cli.js"
   },
   "scripts": {
-    "prepublish": "eslint bin/**/*.js src/**/*.js",
-    "test": "eslint bin/**/*.js src/**/*.js && mocha --require babel-register",
-    "linter": "eslint bin/**/*.js src/**/*.js"
+    "prepublish": "npm run linter",
+    "test": "npm run linter && mocha --require babel-register",
+    "linter": "eslint bin/**/*.js src/**/*.js",
+    "docs:build": "gitbook build .",
+    "docs:serve": "gitbook serve ."
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -46,6 +48,8 @@
     "babel-register": "^6.26.0",
     "chai": "~4.1.2",
     "eslint": "^4.16.0",
+    "gitbook": "^3.2.3",
+    "gitbook-cli": "^2.3.2",
     "mocha": "~5.0.0",
     "sinon": "^4.2.1",
     "spromise": "^1.0.0"
