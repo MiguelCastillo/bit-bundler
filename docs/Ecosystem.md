@@ -10,6 +10,7 @@
 - [bit-loader-text](https://github.com/MiguelCastillo/bit-loader-text) for loading and processing text assets such as HTML
 - [bit-loader-builtins](https://github.com/MiguelCastillo/bit-loader-builtins) for handling built in node.js modules (process, path, crypto...)
 - [bit-loader-shimmer](https://github.com/MiguelCastillo/bit-loader-shimmer) for handling module shimming; modules that are not built as modules
+- [bit-loader-sourcemaps](https://github.com/MiguelCastillo/bit-loader-sourcemaps) for initializing source maps for loaded modules
 - [bit-loader-cache](https://github.com/MiguelCastillo/bit-loader-cache) for caching module
 - [bit-loader-extensions](https://github.com/MiguelCastillo/bit-loader-extensions) for supporting loading modules without file extensions
 - [bit-loader-excludes](https://github.com/MiguelCastillo/bit-loader-excludes) for stubbing modules. Useful when we want to include empty modules to maintain a proper dependency tree
