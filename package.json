@@ -1,6 +1,6 @@
 {
   "name": "bit-bundler",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "dependencies": {
     "acorn": "^5.3.0",
     "belty": "^5.2.1",
