@@ -56,13 +56,13 @@ $ npm run build
 ```
 
 
-### How about bundle splitting??
+### Bundle splitting??
 
 Yup, use the bundler plugin [bit-bundler-splitter](https://github.com/MiguelCastillo/bit-bundler-splitter) to help us here.
 
 > You can configure multiple bundle splitters with matching rules to generate multiple bundles.
 
-This example generates multiple bundles and you can run them in node with the command below.
+This example generates multiple bundles which you can run them in node with the command below. If you take a closer look at the modules and the bundles generated you will notice that there is a circular dependencies between the entry point in the main bundle and a module in another bundle. This splitter example illustrates how `bit-bundler` and `bit-bundler-splitter` gracefully handle circular dependencies in modules, even across bundles.
 
 ##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/splitter)
 
@@ -71,7 +71,7 @@ This example generates multiple bundles and you can run them in node with the co
 $ cd splitter
 $ npm install
 $ npm run build
-$ cat dist/vendor.js dist/renderer.js dist/main.js | node
+$ cat dist/vendor.js dist/renderer.js dist/other.js dist/main.js | node
 ```
 
 
