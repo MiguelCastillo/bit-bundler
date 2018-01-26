@@ -62,7 +62,7 @@ Yup, use the bundler plugin [bit-bundler-splitter](https://github.com/MiguelCast
 
 > You can configure multiple bundle splitters with matching rules to generate multiple bundles.
 
-This example generates multiple bundles which you can run them in node with the command below. If you take a closer look at the modules and the bundles generated you will notice that there is a circular dependencies between the entry point in the main bundle and a module in another bundle. This splitter example illustrates how `bit-bundler` and `bit-bundler-splitter` gracefully handle circular dependencies in modules, even across bundles.
+This example generates multiple bundles which you can run in node with the commands below. If you take a closer look at the modules and the bundles generated you will notice that there is a circular dependencies between the entry point in the main bundle and a module in another bundle. This splitter example illustrates how `bit-bundler` and `bit-bundler-splitter` gracefully handle circular dependencies in modules, even across bundles.
 
 ##### [source code](https://github.com/MiguelCastillo/bit-bundler/tree/master/examples/splitter)
 
