@@ -58,7 +58,10 @@ function wrapSource(source) {
 
 function renameRequire(source) {
   const result = source.split("");
-  const ast = acorn.parse(source);
+  const ast = acorn.parse(source, {
+    sourceType: "module"
+  });
+
   var offset = 0;
 
   walk.simple(ast, {
