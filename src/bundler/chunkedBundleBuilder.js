@@ -62,6 +62,10 @@ function wrapSource(source) {
 }
 
 function renameRequire(source) {
+  if (!source.match(/\brequire\b\s*\(/)) {
+    return source;
+  }
+
   const result = source.split("");
   const ast = acorn.parse(source, {
     sourceType: "module",
