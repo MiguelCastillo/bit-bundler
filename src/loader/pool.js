@@ -20,12 +20,12 @@ class LoaderPool {
     this.pool = createPool(this, options.multiprocess);
   }
 
-  fetch(file, referrer) {
+  fetch(files, referrer) {
     return this
-    ._fetchMany(file.src.map(src => (types.isString(src) ? { name: src } : src), referrer))
+    ._fetchMany(files.map(file => (types.isString(file) ? { name: file } : file), referrer))
     .then(result => {
       this.pool.workers.map(worker => worker.invoke("clear"));
-      return file.src.length === 1 ? result[0] : result;
+      return files.length === 1 ? result[0] : result;
     })
     .catch(err => {
       this.pool.workers.map(worker => worker.invoke("clear"));
