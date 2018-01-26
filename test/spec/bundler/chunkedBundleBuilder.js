@@ -81,4 +81,31 @@ ${wrapModule(dep2, 3)}
       expect(combineSourceMap.removeComments(result)).to.equal(expected);
     });
   });
+
+  describe("When bundling a hello world module with an ES6 dependency", function() {
+    var input, dep1, result;
+
+    beforeEach(function() {
+      input = "import './X';\nimport('./X');\nexport default 'hello world';";
+      dep1 = "console.log('from X.js');";
+
+      result = chunkedBundleBuilder.buildBundle({
+        1: { source: input, entry: true, deps: [{ id: 2, name: "./X" }] },
+        2: { source: dep1 }
+      });
+    });
+
+    it("then the bundler generates the correct result", function() {
+      var expected = (
+`require=_bb$iter=(${prelude})({
+${wrapModule(input, 1, {"./X": 2})},
+${wrapModule(dep1, 2)}
+},[1]);
+
+`);
+
+      expect(combineSourceMap.removeComments(result)).to.equal(expected);
+    });
+  });
+  
 });
