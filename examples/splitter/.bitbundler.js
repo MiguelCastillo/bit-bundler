@@ -10,7 +10,8 @@ module.exports = {
   bundler: [
     ["bit-bundler-splitter", [
       { name: "vendor", dest: "dist/vendor.js", match: "/node_modules/" },
-      { name: "renderer", dest: "dist/renderer.js", match: "/src/renderer" }
+      { name: "renderer", dest: "dist/renderer.js", match: "/src/renderer" },
+      { name: "other.js", dest: "dist/other.js", match: { fileName: "other.js" } }
     ]]
   ]
 };
