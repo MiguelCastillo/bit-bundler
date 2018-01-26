@@ -1,5 +1,5 @@
 const cwd = process.cwd();
-const acorn = require("acorn");
+const acorn = require("acorn-dynamic-import/lib/inject").default(require("acorn"));
 const walk = require("acorn/dist/walk");
 const combineSourceMap = require("combine-source-map");
 const umd = require("umd");
@@ -7,6 +7,11 @@ const prelude = require("./chunkedBundlePrelude").toString();
 const requireName = "_bb$req";
 const iteratorName = "_bb$iter";
 const preamble =`require=${iteratorName}=(${prelude})`;
+
+// Fill this in to prevent the walker from throwing when processing the 'Import' node,
+// which is the node generated for dynamic imports.
+walk.base["Import"] = function () { };
+
 
 function buildBundle(modules, options) {
   options = options || {};
@@ -59,7 +64,8 @@ function wrapSource(source) {
 function renameRequire(source) {
   const result = source.split("");
   const ast = acorn.parse(source, {
-    sourceType: "module"
+    sourceType: "module",
+    plugins: { dynamicImport: true }
   });
 
   var offset = 0;
