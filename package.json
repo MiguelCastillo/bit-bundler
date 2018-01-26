@@ -3,6 +3,7 @@
   "version": "11.0.1",
   "dependencies": {
     "acorn": "^5.3.0",
+    "acorn-dynamic-import": "^3.0.0",
     "belty": "^5.2.1",
     "bit-bundler-utils": "^5.1.2",
     "bit-loader": "^9.2.1",
