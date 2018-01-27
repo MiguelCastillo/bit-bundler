@@ -9,6 +9,11 @@ const cammelCaseKeys = require("../cammelCaseKeys");
 module.exports = function parseCliOptions(args) {
   const cliOptions = cammelCaseKeys(subarg(args || []), { ignore: "notifications" });
   const options = Object.assign({}, defaults, cliOptions);
+
+  if (cliOptions._.length) {
+    cliOptions.src = cliOptions.src ? [].concat(cliOptions._, cliOptions.src) : cliOptions._;
+    cliOptions._ = [];
+  }
   
   try {
     var configFilePath = path.join(process.cwd(), options.config);
@@ -27,7 +32,7 @@ module.exports = function parseCliOptions(args) {
 
   return type.coerceValues(processDeprecated(options), {
     "config": type.String,
-    "src": type.Array.withTransform(configureSrc),
+    "src": type.Array.withTransform(toArray),
     "dest": type.String,
     "baseUrl": type.String,
     "stubNotFound": type.Boolean,
@@ -39,10 +44,6 @@ module.exports = function parseCliOptions(args) {
     "multiprocess": type.Any.withTransform(toNumberOrBoolean),
     "log": type.Any.withTransform(maybeBoolean)
   });
-
-  function configureSrc(src) {
-    return options._.length ? options._ : toArray(src);
-  }
   
   function toArray(value) {
     return value && value._ ? value._ : [].concat(value);
