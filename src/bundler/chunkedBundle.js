@@ -17,7 +17,7 @@ class ChunkedBundle {
 
   bundle(context, options) {
     var deferred = [];
-  
+
     context.visitBundles((bundle) => deferred.push(buildBundle(this, bundle, context, options)));
 
     return Promise
@@ -40,28 +40,55 @@ function buildBundle(bundler, bundle, context, options) {
     return Promise.resolve(bundle);
   }
 
-  options = options || {};
-  const getId = (mod) => bundler.getId(mod.id);
+  options = bundle.isMain ?
+    Object.assign({}, bundler._options, options) :
+    Object.assign({}, utils.omit(bundler._options, ["umd"]), options);
+
   const exportName = configureExportName(bundler, bundle.isMain ? bundler._options.exportNames : options.exportNames);
+
+  const getId = (mod) => {
+    return bundler.getId(mod.id);
+  };
+
+  const configureDependency = (dependency) => {
+    const id = getId(dependency);
+    const name = dependency.name || id;
+
+    return {
+      id: id,
+      name: name
+    };
+  };
 
   // Map entries first to give them lower IDs than the rest to make
   // bundle ID generation more predictable.
-  const entries = context.getModules(bundle.entries).map(mod => (exportName(mod), getId(mod)));
+  var entries = context.getModules(bundle.entries);
+  entries.forEach(exportName);
+  entries = entries.reduce((accumulator, entry) => {
+    accumulator[getId(entry)] = true;
+    return accumulator;
+  }, {});
 
-  const moduleMap = context.getModules(bundle.modules).reduce((acc, mod) => {
-    exportName(mod);
-    var modId = getId(mod);
-    var deps = mod.deps.map(dep => Object.assign({}, dep, { id: (exportName(dep), getId(dep)) }));
-    acc[modId] = Object.assign({}, mod, { id: modId, deps: deps });
+  // Configured exported names for the rest of modules.
+  var modules = context.getModules(bundle.modules);
+  modules.forEach(exportName);
+
+  const moduleMap = modules.reduce((acc, mod) => {
+    const moduleId = getId(mod);
+    const deps = mod.deps.map(configureDependency);
+
+    acc[moduleId] = Object.assign({}, {
+      entry: !!entries[moduleId],
+      id: moduleId,
+      deps: deps,
+      path: mod.path,
+      source: mod.source
+    });
+
     return acc;
   }, {});
 
-  const settings = bundle.isMain ?
-    Object.assign({ entries: entries }, bundler._options, options) :
-    Object.assign({ entries: entries }, utils.omit(bundler._options, ["umd"]), options);
-
-  return bundle.setContent(chunkedBundleBuilder.buildBundle(moduleMap, settings));
+  return bundle.setContent(chunkedBundleBuilder.buildBundle(moduleMap, options));
 }
-
 
 module.exports = ChunkedBundle;
