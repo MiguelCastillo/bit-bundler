@@ -6,7 +6,7 @@ const umd = require("umd");
 const prelude = require("./chunkedBundlePrelude").toString();
 const requireName = "_bb$req";
 const iteratorName = "_bb$iter";
-const preamble =`require=${iteratorName}=(${prelude})`;
+const preamble = `require=${iteratorName}=(${prelude})`;
 
 // Fill this in to prevent the walker from throwing when processing the 'Import' node,
 // which is the node generated for dynamic imports.
@@ -17,13 +17,13 @@ function buildBundle(modules, options) {
   options = options || {};
 
   const sourceMap = combineSourceMap.create();
-  const entries = options.entries || getEntries(modules);
+  const entries = getEntries(modules);
 
   var visited = {};
   var result = [];
   var lineno = lineCount(preamble) + (options.umd ? 1 : 0);
   var ids = entries.length ? entries.slice(0) : Object.keys(modules);
-  var id, currentModule, dependencies, formattedDependencies, formattedPreBundle, formattedPostBundle;
+  var filepath, id, currentModule, dependencies, formattedDependencies, formattedPreBundle, formattedPostBundle;
 
   for (var index = 0; index < ids.length; index++) {
     id = ids[index];
@@ -35,18 +35,19 @@ function buildBundle(modules, options) {
     visited[id] = true;
     currentModule = modules[id];
     dependencies = currentModule.deps || [];
-    ids = ids.concat(dependencies.map(dep => dep.id || dep.path));
+    ids = ids.concat(dependencies.map(dep => dep.id));
+    filepath = currentModule.path ? currentModule.path.replace(cwd, "") : "";
 
-    formattedDependencies = buildDependencies(dependencies);
-    formattedPreBundle = `${buildModuleInfoComment(currentModule, id, formattedDependencies)}\n${id}:`;
+    formattedDependencies = buildDependenciesString(dependencies);
+    formattedPreBundle = `${buildModuleInfoCommentString(id, filepath, formattedDependencies)}\n${id}:`;
     lineno += lineCount(formattedPreBundle);
 
     sourceMap.addFile({
       source: currentModule.source,
-      sourceFile: currentModule.path ? currentModule.path.replace(cwd, "") : "_anonymous.js"
+      sourceFile: filepath || "_anonymous.js"
     }, {
-      line: lineno
-    });
+        line: lineno
+      });
 
     formattedPostBundle = `[${wrapSource(combineSourceMap.removeComments(currentModule.source))},${formattedDependencies}]`;
     lineno += lineCount(formattedPostBundle) - 1;
@@ -54,7 +55,10 @@ function buildBundle(modules, options) {
   }
 
   const bundleString = `${preamble}({\n${result.join(",\n")}\n},${buildEntries(entries)});`;
-  return options.umd ? umd(options.umd, `${bundleString}\nreturn ${iteratorName}(${entries[0]});\n${sourceMap.comment()}\n`) : `${bundleString}\n${sourceMap.comment()}\n`;
+
+  return options.umd ?
+    umd(options.umd, `${bundleString}\nreturn ${iteratorName}(${entries[0]});\n${sourceMap.comment()}\n`) :
+    `${bundleString}\n${sourceMap.comment()}\n`;
 }
 
 function wrapSource(source) {
@@ -86,8 +90,8 @@ function renameRequire(source) {
   return result.join("");
 }
 
-function buildDependencies(dependencies) {
-  return "{" + dependencies.map(dependency => (`"${dependency.name}": ${dependency.id ? dependency.id : addQuotes(dependency.path)}`)).join(", ") + "}";
+function buildDependenciesString(dependencies) {
+  return "{" + dependencies.map(dependency => (`"${dependency.name}": ${dependency.id}`)).join(", ") + "}";
 }
 
 function buildEntries(entries) {
@@ -101,15 +105,11 @@ function getEntries(modules) {
     .map(key => key);
 }
 
-function addQuotes(item) {
-  return `"${item}"`;
-}
-
-function buildModuleInfoComment(mod, id, deps) {
+function buildModuleInfoCommentString(id, filepath, deps) {
   return (
-`/**
+    `/**
  * id: ${id}
- * path: ${mod.path ? mod.path.replace(cwd, "") : ""}
+ * path: ${filepath}
  * deps: ${deps}
  */`
   );
@@ -121,7 +121,7 @@ function lineCount(str) {
   }
 
   const result = str.match(/\n/g);
-  return result ? result.length + 1: 1;
+  return result ? result.length + 1 : 1;
 }
 
 module.exports.buildBundle = buildBundle;
