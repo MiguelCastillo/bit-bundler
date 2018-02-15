@@ -75,12 +75,11 @@ function buildBundle(bundler, bundle, context, options) {
 
   const moduleMap = modules.reduce((acc, mod) => {
     const moduleId = getId(mod);
-    const deps = mod.deps.map(configureDependency);
 
     acc[moduleId] = Object.assign({}, {
       entry: !!entries[moduleId],
       id: moduleId,
-      deps: deps,
+      deps: mod.deps.map(configureDependency),
       path: mod.path,
       source: mod.source
     });
