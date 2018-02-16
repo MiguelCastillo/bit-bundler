@@ -17,7 +17,7 @@ function buildBundle(modules, options) {
   options = options || {};
 
   const sourceMap = combineSourceMap.create();
-  const entries = getEntries(modules);
+  const entries = options.entries || getEntries(modules);
 
   var visited = {};
   var result = [];
