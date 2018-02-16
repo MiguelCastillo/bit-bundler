@@ -64,10 +64,7 @@ function buildBundle(bundler, bundle, context, options) {
   // bundle ID generation more predictable.
   var entries = context.getModules(bundle.entries);
   entries.forEach(exportName);
-  entries = entries.reduce((accumulator, entry) => {
-    accumulator[getId(entry)] = true;
-    return accumulator;
-  }, {});
+  entries = entries.map(getId);
 
   // Configured exported names for the rest of modules.
   var modules = context.getModules(bundle.modules);
@@ -77,7 +74,6 @@ function buildBundle(bundler, bundle, context, options) {
     const moduleId = getId(mod);
 
     acc[moduleId] = Object.assign({}, {
-      entry: !!entries[moduleId],
       id: moduleId,
       deps: mod.deps.map(configureDependency),
       path: mod.path,
@@ -87,7 +83,7 @@ function buildBundle(bundler, bundle, context, options) {
     return acc;
   }, {});
 
-  return bundle.setContent(chunkedBundleBuilder.buildBundle(moduleMap, options));
+  return bundle.setContent(chunkedBundleBuilder.buildBundle(moduleMap, Object.assign({ entries: entries }, options)));
 }
 
 module.exports = ChunkedBundle;
