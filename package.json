@@ -51,7 +51,7 @@
     "eslint": "^4.16.0",
     "gitbook": "^3.2.3",
     "gitbook-cli": "^2.3.2",
-    "mocha": "~5.1.1",
+    "mocha": "~5.2.0",
     "sinon": "^5.0.0",
     "spromise": "^1.0.0"
   },
