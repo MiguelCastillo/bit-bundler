@@ -22,7 +22,7 @@
     "p-stream": "^1.0.3",
     "pretty-hrtime": "^1.0.3",
     "pulling-deps": "^2.0.3",
-    "resolve": "^1.5.0",
+    "resolve": "^1.8.1",
     "setopt": "^1.0.1",
     "src-dest": "^3.1.0",
     "subarg": "^1.0.0",
