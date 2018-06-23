@@ -48,7 +48,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-register": "^6.26.0",
     "chai": "~4.1.2",
-    "eslint": "^4.16.0",
+    "eslint": "^5.0.0",
     "gitbook": "^3.2.3",
     "gitbook-cli": "^2.3.2",
     "mocha": "~5.2.0",
