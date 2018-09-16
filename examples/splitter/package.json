@@ -1,7 +1,7 @@
 {
   "name": "examples",
   "version": "1.0.0",
-  "description": "bit-bundler examples",
+  "description": "@bit/bundler examples",
   "main": "basic.js",
   "scripts": {
     "build": "bitbundler",
@@ -11,12 +11,12 @@
   "author": "Miguel Castillo <manchagnu@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "bit-loader-babel": "^2.0.0",
+    "@bit/loader-babel": "^2.0.0",
     "log2console": "^1.0.3"
   },
   "devDependencies": {
     "bit-bundler": "latest",
-    "bit-bundler-splitter": "latest",
+    "@bit/bundler-splitter": "latest",
     "source-map-explorer": "^1.3.3"
   }
 }

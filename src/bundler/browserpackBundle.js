@@ -3,7 +3,7 @@
 /*eslint no-console: ["off"]*/
 
 const browserPack = require("browser-pack");
-const uniqueId = require("bit-bundler-utils/uniqueId");
+const uniqueId = require("@bit/bundler-utils/uniqueId");
 const pstream = require("p-stream");
 const utils = require("belty");
 const path = require("path");

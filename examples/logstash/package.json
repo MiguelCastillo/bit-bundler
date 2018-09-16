@@ -1,7 +1,7 @@
 {
   "name": "examples",
   "version": "1.0.0",
-  "description": "bit-bundler examples",
+  "description": "@bit/bundler examples",
   "main": "basic.js",
   "scripts": {
     "build": "bitbundler",

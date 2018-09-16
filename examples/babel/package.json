@@ -1,7 +1,7 @@
 {
   "name": "examples",
   "version": "1.0.0",
-  "description": "bit-bundler examples",
+  "description": "@bit/bundler examples",
   "main": "index.js",
   "scripts": {
     "build": "bitbundler",
@@ -14,9 +14,8 @@
     "log2console": "^1.0.3"
   },
   "devDependencies": {
+    "@bit/loader-babel": "latest",
     "babel-preset-es2015": "^6.24.1",
-    "bit-bundler": "latest",
-    "bit-loader-babel": "^2.0.0",
     "source-map-explorer": "^1.3.3"
   }
 }

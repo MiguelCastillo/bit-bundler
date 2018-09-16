@@ -1,7 +1,7 @@
 "use strict";
 
 const utils = require("belty");
-const uniqueId = require("bit-bundler-utils/uniqueId");
+const uniqueId = require("@bit/bundler-utils/uniqueId");
 const chunkedBundleBuilder = require("./chunkedBundleBuilder");
 const configureExportName = require("./exportNames");
 

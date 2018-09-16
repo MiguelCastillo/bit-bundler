@@ -4,6 +4,6 @@ module.exports = {
   dest: "dist/out.js",
 
   loader: [
-    "bit-loader-eslint"
+    "@bit/loader-eslint"
   ]
 };
