@@ -15,7 +15,7 @@ nodejs version 4.8.0 (or later) as well as npm, yarn, or equivalent to install p
 The simplest approach for using bit-bundler is via its CLI. If you are looking to use bit-bundler's CLI, the quickest way is a global install. So, from the command line execute:
 
 ```
-$ npm install bit-bundler -g
+$ npm install @bit/bundler -g
 ```
 
 And now you can run bit-bundler with a sample command like the one below.
@@ -36,7 +36,7 @@ You can run bit-bundler's CLI through npm scripts. In order to do that, you need
 From the command line in your project's directory, execute:
 
 ```
-$ npm install bit-bundler --save-dev
+$ npm install @bit/bundler --save-dev
 ```
 
 Now in the package.json for your project you can define an npm script as shown below.
@@ -92,7 +92,7 @@ And you npm scripts now becomes
 The last approach is to use bit-bundler's API directly in your code. From the command line:
 
 ```
-$ npm install bit-bundler --save-dev
+$ npm install @bit/bundler --save-dev
 ```
 
 Now you are ready to import bit-bundler.
@@ -100,7 +100,7 @@ Now you are ready to import bit-bundler.
 ES module
 
 ``` javascript
-import Bitbundler from "bit-bundler";
+import Bitbundler from "@bit/bundler";
 
 Bitbundler.bundle({
   src: "src/main.js",
@@ -111,7 +111,7 @@ Bitbundler.bundle({
 CJS module
 
 ``` javascript
-const Bitbundler = require("bit-bundler");
+const Bitbundler = require("@bit/bundler");
 
 Bitbundler.bundle({
   src: "src/main.js",

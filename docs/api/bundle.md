@@ -6,7 +6,7 @@ Static method to bundle your files with the provided options. This is an alterna
 * The options are the same as the constructor. Please see [Bitbundler's constructor](Bitbundler.md#bitbundleroptions--bitbundler).
 
 ``` javascript
-var Bitbundler = require("bit-bundler");
+var Bitbundler = require("@bit/bundler");
 
 Bitbundler.bundle({
   src: ["path/to/file.js"],

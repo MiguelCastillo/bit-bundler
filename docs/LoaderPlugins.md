@@ -8,18 +8,18 @@ Loader plugins are processors that hook into the module loading pipeline. This a
 #### install bit-bundler and plugins
 
 ```
-$ npm install --save-dev bit-bundler bit-loader-eslint bit-loader-babel
+$ npm install --save-dev @bit/bundler @bit/loader-eslint @bit/loader-babel
 ```
 
 #### setup bitbundler-config.js
 
 ``` javascript
-var Bitbundler = require("bit-bundler");
+var Bitbundler = require("@bit/bundler");
 
 var bitbundler = new Bitbundler({
   loader: [
-    "bit-loader-eslint",
-    "bit-loader-babel"
+    "@bit/loader-eslint",
+    "@bit/loader-babel"
   ]
 });
 
