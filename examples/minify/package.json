@@ -1,7 +1,7 @@
 {
   "name": "examples",
   "version": "1.0.0",
-  "description": "bit-bundler examples",
+  "description": "@bit/bundler examples",
   "main": "basic.js",
   "scripts": {
     "build": "bitbundler",
@@ -15,10 +15,10 @@
   },
   "devDependencies": {
     "bit-bundler": "latest",
-    "bit-bundler-extractsm": "latest",
-    "bit-bundler-minifyjs": "latest",
-    "bit-bundler-splitter": "latest",
-    "bit-loader-babel": "^2.0.0",
+    "@bit/bundler-extractsm": "latest",
+    "@bit/bundler-minifyjs": "latest",
+    "@bit/bundler-splitter": "latest",
+    "@bit/loader-babel": "latest",
     "source-map-explorer": "^1.3.3"
   }
 }

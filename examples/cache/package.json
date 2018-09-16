@@ -1,7 +1,7 @@
 {
   "name": "examples",
   "version": "1.0.0",
-  "description": "bit-bundler examples",
+  "description": "@bit/bundler examples",
   "main": "index.js",
   "scripts": {
     "build": "bitbundler",
@@ -17,8 +17,8 @@
   },
   "devDependencies": {
     "bit-bundler": "latest",
-    "bit-loader-babel": "^2.0.0",
-    "bit-loader-cache": "^1.1.0",
+    "@bit/loader-babel": "latest",
+    "@bit/loader-cache": "latest",
     "elasticsearch": "^13.1.1",
     "redis": "^2.8.0",
     "source-map-explorer": "^1.3.3"

@@ -1,10 +1,10 @@
 "use strict";
 
-var Bitloader = require("bit-loader");
+var Bitloader = require("@bit/loader");
 var utils = require("belty");
 var pullingDeps = require("pulling-deps");
-var resolvePath = require("bit-bundler-utils/resolvePath");
-var readFile = require("bit-bundler-utils/readFile");
+var resolvePath = require("@bit/bundler-utils/resolvePath");
+var readFile = require("@bit/bundler-utils/readFile");
 var pluginLoader = require("../pluginLoader");
 var logger = require("../logger").create("bundler/loader");
 

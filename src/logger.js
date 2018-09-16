@@ -1,2 +1,2 @@
-var Bitloader = require("bit-loader");
+var Bitloader = require("@bit/loader");
 module.exports = Bitloader.logger;
