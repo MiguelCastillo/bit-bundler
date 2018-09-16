@@ -18,7 +18,7 @@
     "log-symbols": "^2.2.0",
     "loggero": "^2.1.0",
     "mkdirp": "^0.5.1",
-    "ora": "^2.0.0",
+    "ora": "^3.0.0",
     "p-stream": "^1.0.3",
     "pretty-hrtime": "^1.0.3",
     "pulling-deps": "^2.0.3",

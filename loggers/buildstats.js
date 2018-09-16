@@ -116,7 +116,7 @@ function logChunk(spinner, chunk) {
 function writeSpinner(spinner, text, htime, level) {
   text = htime ? text + " " + prettyHrtime(process.hrtime(htime)) : text;
 
-  if (!spinner || !spinner.enabled) {
+  if (!spinner || !spinner.isEnabled) {
     writeStream(process.stdout, text, level);
   }
   else {
