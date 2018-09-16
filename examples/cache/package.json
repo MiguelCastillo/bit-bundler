@@ -16,7 +16,7 @@
     "log2console": "^1.0.3"
   },
   "devDependencies": {
-    "bit-bundler": "latest",
+    "@bit/bundler": "latest",
     "@bit/loader-babel": "latest",
     "@bit/loader-cache": "latest",
     "elasticsearch": "^13.1.1",

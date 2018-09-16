@@ -14,7 +14,7 @@
     "log2console": "^1.0.3"
   },
   "devDependencies": {
-    "bit-bundler": "latest",
+    "@bit/bundler": "latest",
     "@bit/bundler-extractsm": "latest",
     "@bit/bundler-minifyjs": "latest",
     "@bit/bundler-splitter": "latest",

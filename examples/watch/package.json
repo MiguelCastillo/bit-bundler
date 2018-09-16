@@ -13,6 +13,6 @@
     "log2console": "^1.0.3"
   },
   "devDependencies": {
-    "bit-bundler": "latest"
+    "@bit/bundler": "latest"
   }
 }
