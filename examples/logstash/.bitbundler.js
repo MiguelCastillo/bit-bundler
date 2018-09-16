@@ -1,5 +1,5 @@
-const loggers = require("bit-bundler/loggers");
-const loaderFilter = require("bit-bundler/loggers/loaderFilter");
+const loggers = require("@bit/bundler/loggers");
+const loaderFilter = require("@bit/bundler/loggers/loaderFilter");
 const JSONStream = require("JSONStream");
 const net = require("net");
 

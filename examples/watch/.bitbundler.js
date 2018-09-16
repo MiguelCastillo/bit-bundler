@@ -1,6 +1,6 @@
-var loggers = require("bit-bundler/loggers");
-var buildstatsLogger = require("bit-bundler/loggers/buildstats");
-var watchLogger = require("bit-bundler/loggers/watch");
+var loggers = require("@bit/bundler/loggers");
+var buildstatsLogger = require("@bit/bundler/loggers/buildstats");
+var watchLogger = require("@bit/bundler/loggers/watch");
 
 module.exports = {
   // Enable watching. You can alternatively pass
