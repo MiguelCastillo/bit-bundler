@@ -76,13 +76,13 @@ File definition that contains what needs to be bundled and optionally the destin
 Basic setup for bundling a file.
 
 ``` javascript
-require("bit-bundler").bundle(["path/to/file.js"]);
+require("@bit/bundler").bundle(["path/to/file.js"]);
 ```
 
 Bundle a module and specify the destination for the bundle.
 
 ``` javascript
-const Bitbundler = require("bit-bundler");
+const Bitbundler = require("@bit/bundler");
 
 Bitbundler.bundle({
   src: ["path/to/file.js"],
@@ -93,7 +93,7 @@ Bitbundler.bundle({
 The destination can be a stream
 
 ``` javascript
-const Bitbundler = require("bit-bundler");
+const Bitbundler = require("@bit/bundler");
 
 Bitbundler.bundle({
   src: ["path/to/file.js"],
@@ -104,7 +104,7 @@ Bitbundler.bundle({
 Bundle content. Notice the dependencies `./src/hello` and `./src/world`. These dependencies will get resolved (relative to the current working), processed, and bundled as expected.
 
 ``` javascript
-const Bitbundler = require("bit-bundler");
+const Bitbundler = require("@bit/bundler");
 
 Bitbundler.bundle({
   dest: "dist/out.js",
@@ -121,7 +121,7 @@ Bitbundler.bundle({
 Bundle content and some other module name.
 
 ``` javascript
-const Bitbundler = require("bit-bundler");
+const Bitbundler = require("@bit/bundler");
 
 Bitbundler.bundle({
   dest: "dist/out.js",
@@ -141,7 +141,7 @@ Bitbundler.bundle({
 You can also include globs along with other stuff you want to bundle
 
 ``` javascript
-const Bitbundler = require("bit-bundler");
+const Bitbundler = require("@bit/bundler");
 
 Bitbundler.bundle({
   dest: "dist/out.js",

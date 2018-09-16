@@ -9,13 +9,13 @@ $ bitbundler --src src/main.js --dest dist/out.js
 #### Include eslint loader plugin to lint only the modules used by your code.
 
 ```
-$ bitbundler --src src/main.js --dest dist/out.js --loader bit-loader-eslint
+$ bitbundler --src src/main.js --dest dist/out.js --loader @bit/loader-eslint
 ```
 
 #### Passing in options to a loader plugin.
 
 ```
-$ bitbundler --src src/main.js --dest dist/out.js --loader [ --name bit-loader-js --options [ --umd ] ] --loader bit-loader-eslint
+$ bitbundler --src src/main.js --dest dist/out.js --loader [ --name @bit/loader-js --options [ --umd ] ] --loader @bit/loader-eslint
 ```
 
 #### Printing the generated CLI settings
@@ -23,7 +23,7 @@ $ bitbundler --src src/main.js --dest dist/out.js --loader [ --name bit-loader-j
 > Handy for debugging
 
 ```
-$ bitbundler --print --src src/main.js --dest dist/out.js --loader [ --name bit-loader-js --options [ --umd ] ] --loader bit-loader-eslint
+$ bitbundler --print --src src/main.js --dest dist/out.js --loader [ --name @bit/loader-js --options [ --umd ] ] --loader @bit/loader-eslint
 ```
 
 #### Loading the default config file

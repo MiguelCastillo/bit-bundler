@@ -9,21 +9,21 @@ In this example, we are going to use [bit-bundler-splitter](https://github.com/M
 #### install bit-bundler and plugins
 
 ```
-$ npm install --save-dev bit-bundler bit-loader-eslint bit-loader-babel bit-bundler-splitter
+$ npm install --save-dev @bit/bundler @bit/loader-eslint @bit/loader-babel @bit/bundler-splitter
 ```
 
 #### setup bitbundler-config.js
 
 ``` javascript
-var Bitbundler = require("bit-bundler");
+var Bitbundler = require("@bit/bundler");
 
 var bitbundler = new Bitbundler({
   loader: [
-    "bit-loader-eslint",
-    "bit-loader-babel"
+    "@bit/loader-eslint",
+    "@bit/loader-babel"
   ],
   bundler: [
-    ["bit-bundler-splitter", [
+    ["@bit/bundler-splitter", [
       { dest: "dist/vendor.js", match: "/node_modules/" },
       { dest: "dist/renderer.js", match: "/src/renderer/" }]
     ]
