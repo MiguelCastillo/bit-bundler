@@ -1,5 +1,6 @@
 module.exports = function(stream, redirect) {
   var _write = null;
+  var _canChange = true;
 
   var _instance = {
     restore: restore,
@@ -9,12 +10,16 @@ module.exports = function(stream, redirect) {
   return _instance;
 
   function handler(data, encoding, cb) {
-    redirect.call(stream, data, encoding);
-
     if (typeof encoding === "function") {
       cb = encoding;
       encoding = null;
     }
+
+    restore();
+    _canChange = false;
+    redirect.call(stream, data, encoding);
+    _canChange = true;
+    override();
 
     if (typeof cb === "function") {
       cb();
@@ -22,14 +27,20 @@ module.exports = function(stream, redirect) {
   };
 
   function restore() {
-    stream.write = _write;
-    _write = null;
+    if (_canChange) {
+      stream.write = _write;
+      _write = null;
+    }
+
     return _instance;
   }
 
   function override() {
-    _write = stream.write;
-    stream.write = handler;
+    if (_canChange) {
+      _write = stream.write;
+      stream.write = handler;
+    }
+
     return _instance;
   }
 };

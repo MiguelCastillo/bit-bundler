@@ -15,8 +15,8 @@ function buildstatsStreamFactory(options) {
   var logEnabled = !(options === false);
   var settings = options || {};
   var level = logger.levels[settings.level || "warn"];
-  var stdoutOverride = overrideStream(process.stdout).override();
-  var stderrOverride = overrideStream(process.stderr).override();
+  var stdoutOverride = createStreamOverride(process.stdout).override();
+  var stderrOverride = createStreamOverride(process.stderr).override();
   var startTime, spinner;
 
   return es.through(function(chunk) {
@@ -59,21 +59,15 @@ function buildstatsStreamFactory(options) {
     this.emit("data", chunk);
   });
 
-  function overrideStream(stream) {
-    var overrideHandle = overrideStreamWrite(stream, function(data, encoding, cb) {
-      overrideHandle.restore();
-
+  function createStreamOverride(stream) {
+    return overrideStreamWrite(stream, function(data, encoding, cb) {
       if (spinner) {
         writeSpinner(spinner, data, null, 4);
       }
       else {
         stream.write(data, encoding, cb);
       }
-
-      overrideHandle.override();
     });
-
-    return overrideHandle;
   }
 }
 
@@ -122,7 +116,6 @@ function writeSpinner(spinner, text, htime, level) {
   else {
     spinner.clear();
     writeStream(spinner.stream, text, level);
-    spinner.render();
   }
 }
 
