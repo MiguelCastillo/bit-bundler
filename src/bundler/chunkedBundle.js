@@ -3,7 +3,7 @@
 const utils = require("belty");
 const uniqueId = require("@bit/bundler-utils/uniqueId");
 const chunkedBundleBuilder = require("./chunkedBundleBuilder");
-const configureExportName = require("./exportNames");
+const configureNamedExports = require("./namedExports");
 
 const defaults = {
   "umd": false
@@ -44,10 +44,18 @@ function buildBundle(bundler, bundle, context, options) {
     Object.assign({}, bundler._options, options) :
     Object.assign({}, utils.omit(bundler._options, ["umd"]), options);
 
-  const exportName = configureExportName(bundler, bundle.isMain ? bundler._options.exportNames : options.exportNames);
+  const getNamedExport = configureNamedExports(bundle.isMain ? bundler._options.exportNames : options.exportNames);
 
   const getId = (mod) => {
     return bundler.getId(mod.id);
+  };
+
+  const setId = (mod) => {
+    const moduleName = getNamedExport(mod);
+
+    if (moduleName) {
+      bundler.setId(mod.id, moduleName);
+    }
   };
 
   const configureDependency = (dependency) => {
@@ -63,12 +71,12 @@ function buildBundle(bundler, bundle, context, options) {
   // Map entries first to give them lower IDs than the rest to make
   // bundle ID generation more predictable.
   var entries = context.getModules(bundle.entries);
-  entries.forEach(exportName);
+  entries.forEach(setId);
   entries = entries.map(getId);
 
   // Configured exported names for the rest of modules.
   var modules = context.getModules(bundle.modules);
-  modules.forEach(exportName);
+  modules.forEach(setId);
 
   const moduleMap = modules.reduce((acc, mod) => {
     const moduleId = getId(mod);
