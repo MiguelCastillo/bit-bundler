@@ -7,7 +7,6 @@
     "acorn": "^6.0.2",
     "acorn-dynamic-import": "^4.0.0",
     "belty": "^5.2.1",
-    "browser-pack": "^6.0.3",
     "chalk": "^2.3.0",
     "chokidar": "^2.0.0",
     "combine-source-map": "^0.8.0",
