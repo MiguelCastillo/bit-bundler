@@ -1,4 +1,9 @@
-module.exports = function (moduleMap, entries) {
+/**
+ * This exports the string that is used for managing module loading in a bundle.
+ * It also handles loading bundles that need to be loaded dynamically
+ */
+
+module.exports.BUNDLE_MODULE_LOADER = function (moduleMap, entries) {
   var results = {};
 
   function get(id) {
@@ -56,4 +61,8 @@ module.exports = function (moduleMap, entries) {
 
   entries.forEach(get);
   return get;
-};
+}.toString();
+
+
+module.exports.REQUIRE_NAME = "_bb$req";
+module.exports.BUNDLE_ITERATOR_NAME = "_bb$iter";

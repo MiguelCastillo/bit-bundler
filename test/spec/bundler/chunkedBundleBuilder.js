@@ -1,10 +1,9 @@
 import wrapModule from "../../helpers/wrapModule";
 import chunkedBundleBuilder from "../../../src/bundler/chunkedBundleBuilder";
-import chunkedBundlePrelude from "../../../src/bundler/chunkedBundlePrelude";
 import combineSourceMap from "combine-source-map";
 import { expect } from "chai";
 
-const prelude = chunkedBundlePrelude.toString();
+import {BUNDLE_MODULE_LOADER} from "../../../src/bundler/bundleConstants";
 
 describe("Bundle builder test suite", function() {
   describe("When bundling a hello world module with no entry", function() {
@@ -20,7 +19,7 @@ describe("Bundle builder test suite", function() {
 
     it("then the bundler generates the correct result", function() {
       var expected = (
-`require=_bb$iter=(${prelude})({
+`require=_bb$iter=(${BUNDLE_MODULE_LOADER})({
 ${wrapModule(input, 1)}
 },[]);
 
@@ -42,7 +41,7 @@ ${wrapModule(input, 1)}
 
     it("then the bundler generates the correct result", function() {
       var expected = (
-`require=_bb$iter=(${prelude})({
+`require=_bb$iter=(${BUNDLE_MODULE_LOADER})({
 ${wrapModule(input, 1)}
 },[1]);
 
@@ -70,7 +69,7 @@ ${wrapModule(input, 1)}
 
     it("then the bundler generates the correct result", function() {
       var expected = (
-`require=_bb$iter=(${prelude})({
+`require=_bb$iter=(${BUNDLE_MODULE_LOADER})({
 ${wrapModule(input, 1, {"path": 2, "process": 3})},
 ${wrapModule(dep1, 2)},
 ${wrapModule(dep2, 3)}
@@ -97,7 +96,7 @@ ${wrapModule(dep2, 3)}
 
     it("then the bundler generates the correct result", function() {
       var expected = (
-`require=_bb$iter=(${prelude})({
+`require=_bb$iter=(${BUNDLE_MODULE_LOADER})({
 ${wrapModule(input, 1, {"./X": 2})},
 ${wrapModule(dep1, 2)}
 },[1]);

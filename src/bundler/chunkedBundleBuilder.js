@@ -1,16 +1,14 @@
-const cwd = process.cwd();
 const acorn = require("acorn-dynamic-import/lib/inject").default(require("acorn"));
-const walk = require("acorn/dist/walk");
+const acornWalk = require("acorn/dist/walk");
 const combineSourceMap = require("combine-source-map");
 const umd = require("umd");
-const prelude = require("./chunkedBundlePrelude").toString();
-const requireName = "_bb$req";
-const iteratorName = "_bb$iter";
-const preamble = `require=${iteratorName}=(${prelude})`;
+const bundleConstants = require("./bundleConstants");
 
-// Fill this in to prevent the walker from throwing when processing the 'Import' node,
-// which is the node generated for dynamic imports.
-walk.base["Import"] = function () { };
+const CWD = process.cwd();
+const BUNDLE_MODULE_LOADER = bundleConstants.BUNDLE_MODULE_LOADER;
+const REQUIRE_NAME = bundleConstants.REQUIRE_NAME;
+const BUNDLE_ITERATOR_NAME = bundleConstants.BUNDLE_ITERATOR_NAME;
+const PREAMBLE = `require=${BUNDLE_ITERATOR_NAME}=(${BUNDLE_MODULE_LOADER})`;
 
 
 function buildBundle(modules, options) {
@@ -21,7 +19,7 @@ function buildBundle(modules, options) {
 
   var visited = {};
   var result = [];
-  var lineno = lineCount(preamble) + (options.umd ? 1 : 0);
+  var lineno = lineCount(PREAMBLE) + (options.umd ? 1 : 0);
   var ids = entries.length ? entries.slice(0) : Object.keys(modules);
   var filepath, id, currentModule, dependencies, formattedDependencies, formattedPreBundle, formattedPostBundle;
 
@@ -36,7 +34,7 @@ function buildBundle(modules, options) {
     currentModule = modules[id];
     dependencies = currentModule.deps || [];
     ids = ids.concat(dependencies.map(dep => dep.id));
-    filepath = currentModule.path ? currentModule.path.replace(cwd, "") : "";
+    filepath = currentModule.path ? currentModule.path.replace(CWD, "") : "";
 
     formattedDependencies = buildDependenciesString(dependencies);
     formattedPreBundle = `${buildModuleInfoCommentString(id, filepath, formattedDependencies)}\n${id}:`;
@@ -54,15 +52,15 @@ function buildBundle(modules, options) {
     result.push(formattedPreBundle + formattedPostBundle);
   }
 
-  const bundleString = `${preamble}({\n${result.join(",\n")}\n},${buildEntries(entries)});`;
+  const bundleString = `${PREAMBLE}({\n${result.join(",\n")}\n},[${entries.join(", ")}]);`;
 
   return options.umd ?
-    umd(options.umd, `${bundleString}\nreturn ${iteratorName}(${entries[0]});\n${sourceMap.comment()}\n`) :
+    umd(options.umd, `${bundleString}\nreturn ${BUNDLE_ITERATOR_NAME}(${entries[0]});\n${sourceMap.comment()}\n`) :
     `${bundleString}\n${sourceMap.comment()}\n`;
 }
 
 function wrapSource(source) {
-  return `function(${requireName}, module, exports) {\n${renameRequire(source)}\n}`;
+  return `function(${REQUIRE_NAME}, module, exports) {\n${renameRequire(source)}\n}`;
 }
 
 function renameRequire(source) {
@@ -78,10 +76,10 @@ function renameRequire(source) {
 
   var offset = 0;
 
-  walk.simple(ast, {
+  acornWalk.simple(ast, {
     CallExpression: (node) => {
       if (node.callee.name === "require") {
-        result.splice(node.callee.start - offset, node.callee.end - node.callee.start, requireName);
+        result.splice(node.callee.start - offset, node.callee.end - node.callee.start, REQUIRE_NAME);
         offset += 6;
       }
     }
@@ -92,10 +90,6 @@ function renameRequire(source) {
 
 function buildDependenciesString(dependencies) {
   return "{" + dependencies.map(dependency => (`"${dependency.name}": ${dependency.id}`)).join(", ") + "}";
-}
-
-function buildEntries(entries) {
-  return `[${entries.join(", ")}]`;
 }
 
 function getEntries(modules) {
