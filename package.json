@@ -13,7 +13,7 @@
     "dis-isa": "^1.3.2",
     "escodegen": "^1.9.0",
     "event-stream": "^4.0.0",
-    "filesize": "^3.5.11",
+    "filesize": "^4.0.0",
     "log-symbols": "^2.2.0",
     "loggero": "^2.1.0",
     "mkdirp": "^0.5.1",
