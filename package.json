@@ -4,7 +4,7 @@
   "dependencies": {
     "@bit/bundler-utils": "^5.1.2",
     "@bit/loader": "^10.0.1",
-    "acorn": "^6.0.2",
+    "acorn": "^7.0.0",
     "acorn-dynamic-import": "^4.0.0",
     "belty": "^5.2.1",
     "chalk": "^2.3.0",
