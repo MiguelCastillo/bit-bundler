@@ -12,18 +12,29 @@ var defaults = {
 };
 
 class Context {
-  constructor(options) {
-    utils.merge(this, defaults, options);
+  constructor() {
+    utils.merge(this, defaults);
   }
 
   configure(options) {
-    return !options || this === options ? this : new Context(Object.assign({}, this, options));
+    if (!options || this === options) {
+      return this;
+    }
+
+    // Shallow copy so that we dont override what the methods
+    // calling configure did.
+    const newValues = Object.assign({}, this, options);
+    return Object.assign(new Context(), newValues);
   }
 
   updateBundles(visitor) {
     return Object
       .keys(this.shards)
-      .reduce((context, name) => context.setBundle(context.shards[name].configure(visitor(context.shards[name]))), this);
+      .reduce((context, name) => {
+        const result = visitor(context.shards[name]);
+        const updatedBundle = context.shards[name].configure(result);
+        return context.setBundle(updatedBundle);
+      }, this);
   }
 
   visitBundles(visitor) {
@@ -37,23 +48,29 @@ class Context {
   getBundles(names) {
     return names ?
       (Array.isArray(names) ? names.map(name => this.shards[name]) : this.shards[names]) :
-      (Object.keys(this.shards).map(shardName => this.shard[shardName]));
+      (Object.keys(this.shards).map(shardName => this.shards[shardName]));
   }
 
   setBundle(bundle) {
-    if (!bundle) {
-      throw new Error("bundle cannot be null");
-    }
+    let shard = null;
 
-    if (!bundle.name) {
-      throw new Error("Must provide bundle.name");
+    if (bundle instanceof Bundle) {
+      shard = bundle;
     }
+    else {
+      if (!bundle) {
+        throw new Error("bundle cannot be null");
+      }
 
-    const shard = (
-      bundle instanceof Bundle ? bundle :
-      this.shards[bundle.name] ? this.shards[bundle.name].configure(bundle) :
-      new Bundle(bundle.name, Object.assign({}, bundle))
-    );
+      if (!bundle.name) {
+        throw new Error("Must provide bundle.name");
+      }
+
+      shard = (this.shards[bundle.name] ?
+        this.shards[bundle.name].configure(bundle) :
+        new Bundle(bundle.name, bundle)
+      );
+    }
 
     return this.configure({
       shards: Object.assign({}, this.shards, {
@@ -63,7 +80,7 @@ class Context {
   }
 
   deleteBundle(name) {
-    var shards = utils.assign({}, this.shards);
+    var shards = Object.assign({}, this.shards);
     delete shards[name];
 
     return this.configure({
