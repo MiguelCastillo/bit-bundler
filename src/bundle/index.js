@@ -22,36 +22,43 @@ class Bundle {
   }
 
   configure(options) {
-    return !options || options === this ? this : new Bundle(this.name, Object.assign({}, this, options), this.isMain);
+    if (!options || options === this) {
+      return this;
+    }
+
+    return new Bundle(this.name || options.name, Object.assign({}, this, options), this.isMain);
   }
 
   clear() {
-    return this.configure({ content: null });
+    return this.configure({content: null});
   }
 
   setDest(dest) {
-    this.dest = dest;
-    return this;
+    return this.configure({dest});
   }
 
   setName(name) {
-    this.name = name;
-    return this;
+    return this.configure({name});
   }
 
   setContent(content) {
-    this.content = content;
-    return this;
+    return this.configure({content});
   }
 
-  setEntries(entires) {
-    this.entries = entires;
-    return this;
+  setEntries(entries) {
+    const updatedEntries = this.entries
+      .concat(entries)
+      .filter(Boolean)
+      .reduce((container, item) => {
+        container[item] = true;
+        return container;
+      }, {});
+
+    return this.configure({entries: Object.keys(updatedEntries)});
   }
 
   setModules(modules) {
-    this.modules = modules;
-    return this;
+    return this.configure({modules});
   }
 }
 
