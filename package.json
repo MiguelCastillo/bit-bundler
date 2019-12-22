@@ -51,7 +51,7 @@
     "gitbook": "^3.2.3",
     "gitbook-cli": "^2.3.2",
     "mocha": "~6.2.2",
-    "sinon": "^7.0.0",
+    "sinon": "^8.0.0",
     "spromise": "^1.0.0"
   },
   "browser": {},
