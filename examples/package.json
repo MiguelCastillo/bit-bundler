@@ -1,0 +1,10 @@
+{
+    "name": "@bit/bit-bundler-examples",
+    "description": "Bit bundler examples. Exmaples include setup with no plugins, babel, and complex webapp type of configurations.",
+    "scripts": {
+        "postinstall": "npm-subdir install"
+    },
+    "devDependencies": {
+        "npm-extras": "latest"
+    }
+}
