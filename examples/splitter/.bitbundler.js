@@ -1,7 +1,6 @@
 module.exports = {
   src: "src/main.js",
   dest: "dist/main.js",
-  multiprocess: 2,
 
   loader: [
     "@bit/loader-babel"
