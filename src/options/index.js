@@ -38,13 +38,13 @@ module.exports = function parseCliOptions(args) {
     "stubNotFound": type.Boolean,
     "sourceMap": type.Boolean,
     "exportNames": type.Boolean,
-    "watch": type.Boolean,
+    "watch": type.Boolean.withTransform(maybeBoolean),
     "loader": type.Array.withTransform(toArray),
     "bundler": type.Array.withTransform(toArray),
     "multiprocess": type.Any.withTransform(toNumberOrBoolean),
     "log": type.Any.withTransform(maybeBoolean)
   });
-  
+
   function toArray(value) {
     return value && value._ ? value._ : [].concat(value);
   }
