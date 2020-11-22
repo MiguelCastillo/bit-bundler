@@ -3,6 +3,9 @@ _book
 /examples/**/.bundler-cache.json
 /test/dist
 
+package-lock.json
+/**/package-lock.json
+
 .DS_Store
 /dist
 
