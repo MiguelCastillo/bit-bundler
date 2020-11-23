@@ -1,3 +1,15 @@
 language: node_js
 node_js:
-  - "8"
+- '10'
+deploy:
+  provider: npm
+  email: manchagnu@gmail.com
+  api_key:
+    secure: KN8tj+QbQJX+ltKNxHdvirRzveAo9hUzP5Z6wuZr33WX8gf/UEfjO3m4hbJXmXmc7XPblnsFw9JzfCDt1MgBseQwyVFLVNDxVM2vSGkTAOBZSa5SfYR3bF7IbYEmX2JjcRnmsGuitJEtvwFknSX5pVFLQhTa3H5TReNqEx9A9Mcdyhiqg/N6W1XMGPhJsb0CbWVWENYE6CNdxyF4h+F/h470hbQ+p+qhyuMVHmnCvZIkB/27OD7Jc+k7VdBBxeRN6mwI7syu1qTZHTzWPKiyhcXlZz5d0bGzeucta9zYqT0kyfcxwymsP0DQ5JypMePKgKSIlBcnInNJw7Kf3XwwQLxZKA+ZZCz3MH8YyP95I7phESGO1H4us43cqyY47Qjht02XKvDou1dkQ1ClzydaimxOkYLf4F5g6aTgpyxHU9XTxFi4msDbyUfq0w/Zw3sSxTcrS0ESjGBrSjEsiN+2Ga46txhkw+1VFLA0Nk4q401WIlFjoonQ+7JpyCowEnZTH4xdbjT/BTgIwKQxDkV9AW8d9xbNP301u7rGSv0eHdkZg47T/2ZhIzvYin73kq9OmTa2RX6/p3ceRfgsbuocL1yNYWWF/1f/+44hvd+n9huFumWxdekFrqRLBswfOs+W12Ga5uvzK0cD8J3HJdCRLgVEniUiolQlS4sVcIbcXHI=
+  on:
+    tags: true
+    repo: MiguelCastillo/bit-bundler
+  skip_cleanup: 'true'
+script:
+  - npm run linter
+  - npm test
