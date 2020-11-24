@@ -12,10 +12,10 @@ var Bundle = require("./bundle");
 var Context = require("./context");
 var bundleWriter = require("./bundle/writer");
 var watch = require("./watch");
-var loggerFactory = require("./logger");
+var logging = require("./logging");
 var buildstats = require("../loggers/buildstats");
 
-var logger = loggerFactory.create("bundler/build");
+var logger = logging.create("bundler/build");
 var id = 0;
 
 class Bitbundler extends EventEmitter {
@@ -24,7 +24,7 @@ class Bitbundler extends EventEmitter {
 
     this.options = Object.assign({}, options);
     configureNotifications(this, this.options.notifications);
-    configureLogger(this, this.options.log, loggerFactory);
+    configureLogger(this, this.options.log, logging);
 
     this.context = null;
     this.loader = loaderFactory(this.options);
@@ -89,7 +89,7 @@ class Bitbundler extends EventEmitter {
   }
 
   getLogger(name) {
-    return loggerFactory.create(name);
+    return logging.create(name);
   }
 
   buildBundles(files) {
@@ -142,7 +142,7 @@ function configureNotifications(bitbundler, notifications) {
   });
 }
 
-function configureLogger(bitbundler, options, loggerFactory) {
+function configureLogger(bitbundler, options, logging) {
   if (options === true) {
     options = {
       level: "info"
@@ -159,18 +159,16 @@ function configureLogger(bitbundler, options, loggerFactory) {
     };
   }
 
-  const logger = loggerFactory
-    .enableAll()
-    .pipe(es.through(function(chunk) {
-      chunk.name === "bundler/build" ?
-        bitbundler.emit.apply(bitbundler, chunk.data) :
-        bitbundler.emit(chunk.name, chunk);
+  const loggerStream = logging.pipe(es.through(function(chunk) {
+    chunk.name === "bundler/build" ?
+      bitbundler.emit.apply(bitbundler, chunk.data) :
+      bitbundler.emit(chunk.name, chunk);
 
-      this.emit("data", chunk);
-    }));
+    this.emit("data", chunk);
+  }));
 
   if (options !== false) {
-    logger.pipe(options && options.stream ? options.stream : buildstats(options));
+    loggerStream.pipe(options && options.stream ? options.stream : buildstats(options));
   }
 }
 

@@ -1,7 +1,7 @@
 var chalk = require("chalk");
 var es = require("event-stream");
 var messageBuilder = require("./messageBuilder");
-var logger = require("../src/logger");
+var logger = require("../src/logging");
 
 function verboseStreamFactory() {
   return es.through(function(chunk) {

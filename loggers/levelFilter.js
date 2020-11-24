@@ -1,5 +1,5 @@
 var es = require("event-stream");
-var logger = require("../src/logger");
+var logger = require("../src/logging");
 
 function levelFilter(level) {
   level = logger.levels[level];

@@ -5,7 +5,7 @@ var ora = require("ora");
 var chalk = require("chalk");
 var logSymbols = require("./logSymbols");
 var messageBuilder = require("./messageBuilder");
-var logger = require("../src/logger");
+var logger = require("../src/logging");
 var overrideStreamWrite = require("./overrideStreamWrite");
 
 var FAILED = 0;

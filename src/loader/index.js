@@ -6,7 +6,7 @@ var pullingDeps = require("pulling-deps");
 var resolvePath = require("@bit/bundler-utils/resolvePath");
 var readFile = require("@bit/bundler-utils/readFile");
 var pluginLoader = require("../pluginLoader");
-var logger = require("../logger").create("bundler/loader");
+var logger = require("../logging").create("bundler/loader");
 
 var moduleNotFoundError = buildError.bind(null, "Unable to find module");
 var moduleNotLoadedError = buildError.bind(null, "Unable to load module");

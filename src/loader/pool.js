@@ -4,7 +4,7 @@ const path = require("path");
 const types = require("dis-isa");
 const utils = require("belty");
 const Workit = require("workit");
-const logger = require("../logger");
+const logger = require("../logging");
 
 class WorkerPool extends Workit.Pool {
   log(chunk) {

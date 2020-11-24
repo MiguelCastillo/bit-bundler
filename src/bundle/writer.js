@@ -4,8 +4,8 @@ var fs = require("fs");
 var path = require("path");
 var mkdirp = require("mkdirp");
 var types = require("dis-isa");
-var loggerFactory = require("../logger");
-var logger = loggerFactory.create("bundler/build");
+var logging = require("../logging");
+var logger = logging.create("bundler/build");
 
 function writer() {
   return function writerDelegate(context) {

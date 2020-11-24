@@ -2,7 +2,7 @@
 
 var utils = require("belty");
 var Bundle = require("./bundle");
-var loggerFactory = require("./logger");
+var logging = require("./logging");
 var flattenModules = require("./flattenModules");
 
 var defaults = {
@@ -126,7 +126,7 @@ class Context {
   }
 
   getLogger(name) {
-    return loggerFactory.create(name);
+    return logging.create(name);
   }
 }
 
