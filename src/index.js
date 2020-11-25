@@ -24,22 +24,20 @@ class Bitbundler extends EventEmitter {
 
     this.options = Object.assign({}, options);
     configureNotifications(this, this.options.notifications);
-    configureLogger(this, this.options.log, logging);
+    configureLogger(this, this.options.log);
 
     this.context = null;
     this.loader = loaderFactory(this.options);
     this.bundler = bundlerFactory(this.options);
   }
 
-  bundle(files) {
+  bundle(inputFiles) {
     logger.log("build-init");
 
-    const file = configureFiles(files);
-    const generateEntryId = (src) => (types.isString(src) ? src : (src.id || src.path || "@anonymous-" + id++));
-    const entries = file.src.map(generateEntryId);
-    this.context = new Context().setBundle(new Bundle("main", { dest: file.dest, entries: entries }, true));
+    const {files, bundle} = createMainBundle(inputFiles);
+    this.context = new Context().setBundle(bundle);
 
-    return this.update(file).then((context) => {
+    return this.update(files).then((context) => {
       if (this.options.watch) {
         watch(this, this.options.watch);
       }
@@ -142,7 +140,7 @@ function configureNotifications(bitbundler, notifications) {
   });
 }
 
-function configureLogger(bitbundler, options, logging) {
+function configureLogger(bitbundler, options) {
   if (options === true) {
     options = {
       level: "info"
@@ -172,16 +170,63 @@ function configureLogger(bitbundler, options, logging) {
   }
 }
 
+// Creates the root bundle where all things start from. If there are multiple
+// bundles that need to be generated, then bundle splitting is the tool for
+// the job.
+function createMainBundle(files) {
+  files = configureFiles(files);
+  const entries = files.src.map(src => {
+    return types.isString(src) ? src : (src.id || src.path || "@anonymous-" + id++);
+  });
+
+  return {
+    files: files,
+    bundle: new Bundle("main", { dest: files.dest, entries: entries }, true),
+  };
+}
+
 function configureFiles(files) {
-  if (files.constructor === Object && (files.content || files.path)) {
-    files = Object.assign({}, utils.omit(files, ["content", "path"]), {
-      src: [].concat(files.src || [], utils.pick(files, ["content", "path"]))
+  if (files instanceof File) {
+    return files;
+  }
+
+  // A file configuration object can be of the shape:
+  // { "content" } || { "content", "path" }
+  // { "src" }
+  //
+  // We want to convert it to:
+  // { "src": [{ "content" }] } || { "src": [{ "content", "path" }] }
+  // { "src": "src" }
+  //
+  if (types.isPlainObject(files)) {
+    let src;
+
+    if (files.content || files.path) {
+      src = utils.pick(files, ["content", "path"]);
+    }
+    else if (files.src) {
+      src = files.src;
+    }
+    else {
+      throw new Error("Invalid format for input file to bundle.");
+    }
+
+    return new File(Object.assign({
+        src: [].concat(src),
+      }, utils.pick(files, ["cwd", "dest"])
+    ));
+  }
+
+  // Otherwise, we should have a single string path or an array of input files
+  // of string paths and or content/path pairs.
+  if (types.isString(files) || types.isArray(files)) {
+    return new File({
+      src: [].concat(files),
     });
   }
 
-  return new File(files);
+  throw new Error("Invalid format for input file to bundle.");
 }
-
 
 Bitbundler.dest = bundleWriter;
 Bitbundler.watch = watch;
