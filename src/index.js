@@ -34,10 +34,10 @@ class Bitbundler extends EventEmitter {
   bundle(inputFiles) {
     logger.log("build-init");
 
-    const {files, bundle} = createMainBundle(inputFiles);
+    const {entrypoint, bundle} = createMainBundle(inputFiles);
     this.context = new Context().setBundle(bundle);
 
-    return this.update(files).then((context) => {
+    return this.update(entrypoint).then((context) => {
       if (this.options.watch) {
         watch(this, this.options.watch);
       }
@@ -55,11 +55,11 @@ class Bitbundler extends EventEmitter {
     });
   }
 
-  update(files) {
+  update(inputFile) {
     logger.log("build-start");
 
     return this
-      .buildBundles(files)
+      .buildBundles(inputFile)
       .then((context) => {
         logger.log("build-writing");
         return bundleWriter()(context);
@@ -90,20 +90,20 @@ class Bitbundler extends EventEmitter {
     return logging.create(name);
   }
 
-  buildBundles(files) {
-    const file = configureFiles(files);
+  buildBundles(inputFile) {
+    const entrypoint = createEntrypoint(inputFile);
     const context = this.context;
     const loader = this.loader;
     const bundler = this.bundler;
 
     // Clear up cached items that need to be reprocessed
-    file.src
+    entrypoint.src
       .filter(filePath => types.isString(filePath) && loader.hasModule(filePath))
       .map(filePath => loader.getModule(filePath))
       .forEach(mod => loader.deleteModule(mod));
 
     return loader
-      .fetch(file.src)
+      .fetch(entrypoint.src)
       .then(() => {
         const cache = loader.getCache();
         const mainBundle = context.getBundles("main");
@@ -118,8 +118,8 @@ class Bitbundler extends EventEmitter {
   }
 }
 
-Bitbundler.bundle = function(files, settings) {
-  return new Bitbundler(settings).bundle(files);
+Bitbundler.bundle = function(inputFiles, settings) {
+  return new Bitbundler(settings).bundle(inputFiles);
 };
 
 function configureNotifications(bitbundler, notifications) {
@@ -173,59 +173,106 @@ function configureLogger(bitbundler, options) {
 // Creates the root bundle where all things start from. If there are multiple
 // bundles that need to be generated, then bundle splitting is the tool for
 // the job.
-function createMainBundle(files) {
-  files = configureFiles(files);
-  const entries = files.src.map(src => {
+function createMainBundle(inputFiles) {
+  const entrypoint = createEntrypoint(inputFiles);
+  const entries = entrypoint.src.map(src => {
     return types.isString(src) ? src : (src.id || src.path || "@anonymous-" + id++);
   });
 
   return {
-    files: files,
-    bundle: new Bundle("main", { dest: files.dest, entries: entries }, true),
+    entrypoint: entrypoint,
+    bundle: new Bundle("main", { dest: entrypoint.dest, entries: entries }, true),
   };
 }
 
-function configureFiles(files) {
-  if (files instanceof File) {
-    return files;
+// createEntrypoint converts the input files that need to be bundled to an entry
+// point file with validated paths.
+//
+// Files can have a few different shapes to make the API simpler to use. But it
+// certainly makes the logic here much more complex so that we can handle
+// all the different cases correctly.
+//
+// - A file can be a string, which case it is just a path to a single file to
+//   bundle.
+//
+// - An object, which has three main bits of information: 1. src files for
+//   bundling, dest where the bundle is to be written, and cwd that is the
+//   current working directory for the input files.
+//   The src can look like:
+//   - A a string or an array of string file paths.
+//     {"src": string | [string]}
+//   - An object with a content property. Content is string of javascript code.
+//     Often, content comes with a "path" property as well to specify a fake
+//     path that is for resolving dependencies relative to in the javascript
+//     content string.
+//     {"content": string | Buffer, "path": string}
+//
+// - An array that can be a combination of string paths and/or content objects
+//   as described above.
+//
+// TODO: add tests for createEntrypoint.
+//
+function createEntrypoint(inputFile) {
+  if (inputFile instanceof File) {
+    return inputFile;
   }
 
-  // A file configuration object can be of the shape:
-  // { "content" } || { "content", "path" }
-  // { "src" }
-  //
-  // We want to convert it to:
-  // { "src": [{ "content" }] } || { "src": [{ "content", "path" }] }
-  // { "src": "src" }
-  //
-  if (types.isPlainObject(files)) {
-    let src;
-
-    if (files.content || files.path) {
-      src = utils.pick(files, ["content", "path"]);
-    }
-    else if (files.src) {
-      src = files.src;
-    }
-    else {
-      throw new Error("Invalid format for input file to bundle.");
-    }
-
-    return new File(Object.assign({
-        src: [].concat(src),
-      }, utils.pick(files, ["cwd", "dest"])
-    ));
-  }
-
-  // Otherwise, we should have a single string path or an array of input files
-  // of string paths and or content/path pairs.
-  if (types.isString(files) || types.isArray(files)) {
+  // Check if input is a single path.
+  if (types.isString(inputFile)) {
     return new File({
-      src: [].concat(files),
+      src: [inputFile],
     });
   }
 
-  throw new Error("Invalid format for input file to bundle.");
+  // If we have an array, if could either an array of strings and/or
+  // content objects.
+  else if (types.isArray(inputFile)) {
+    return new File({
+      src: inputFile.map(mapSource),
+    });
+  }
+
+  // Check if we have an object, which contains a src property
+  else if (types.isPlainObject(inputFile)) {
+    let src;
+
+    if (inputFile.content || inputFile.path) {
+      src = [utils.pick(inputFile, ["content", "path"])];
+    }
+    else if (inputFile.src) {
+      src = [].concat(inputFile.src).map(mapSource);
+    }
+    else {
+      invalidFormatError();
+    }
+
+    return new File(Object.assign({
+        src: src,
+      }, utils.pick(inputFile, ["cwd", "dest"])
+    ));
+  }
+
+  // Ok, we do not have a valid input format. Let's just throw an error.
+  else {
+    invalidFormatError();
+  }
+
+  // Maps and validates src data.
+  function mapSource(src) {
+    if (types.isPlainObject(src)) {
+      return utils.pick(src, ["content", "path"]);
+    }
+
+    if (types.isString(src)) {
+      return src;
+    }
+
+    throw new Error("Invalid format for input file to bundle.");
+  }
+
+  function invalidFormatError() {
+    throw new Error("Invalid format for input file to bundle.");
+  }
 }
 
 Bitbundler.dest = bundleWriter;
