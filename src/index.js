@@ -86,24 +86,26 @@ class Bitbundler extends EventEmitter {
       });
   }
 
-  getLogger(name) {
-    return logging.create(name);
-  }
-
   buildBundles(inputFile) {
-    const entrypoint = createEntrypoint(inputFile);
+    // There are two way in which buildBundles runs.
+    // 1. When we first kick off the bundling process. In this case, inputFile
+    //    will be an entrypoint.
+    // 2. When there is an update from file watching. In this case, inputFile
+    //    will be a file path string.
+    // getTargetsToBundle helps us get the right thing to bundle.
+    const targets = getTargetsToBundle(inputFile);
     const context = this.context;
     const loader = this.loader;
     const bundler = this.bundler;
 
     // Clear up cached items that need to be reprocessed
-    entrypoint.src
-      .filter(filePath => types.isString(filePath) && loader.hasModule(filePath))
-      .map(filePath => loader.getModule(filePath))
+    targets
+      .filter(target => types.isString(target) && loader.hasModule(target))
+      .map(target => loader.getModule(target))
       .forEach(mod => loader.deleteModule(mod));
 
     return loader
-      .fetch(entrypoint.src)
+      .fetch(targets)
       .then(() => {
         const cache = loader.getCache();
         const mainBundle = context.getBundles("main");
@@ -115,6 +117,10 @@ class Bitbundler extends EventEmitter {
 
         return bundler.bundle(updatedContext);
       });
+  }
+
+  getLogger(name) {
+    return logging.create(name);
   }
 }
 
@@ -185,8 +191,16 @@ function createMainBundle(inputFiles) {
   };
 }
 
-// createEntrypoint converts the input files that need to be bundled to an entry
-// point file with validated paths.
+// createEntrypoint converts input files that need to be bundled to an
+// entrypoint object with file paths to be bundled. An entrypoint is an object
+// that contains three main bits of information.
+// 1. src - all the file paths and module names to be loaded. file paths can
+//    be globs, which are automatically expanded.
+// 2. dest - where the generated bundle is going to be written to.
+// 3. cwd - current working directory file paths are relative to.
+//
+// The goal of this function is to generate an entrypoint from all the
+// different ways in which users can define files to be bundled.
 //
 // Files can have a few different shapes to make the API simpler to use. But it
 // certainly makes the logic here much more complex so that we can handle
@@ -213,10 +227,6 @@ function createMainBundle(inputFiles) {
 // TODO: add tests for createEntrypoint.
 //
 function createEntrypoint(inputFile) {
-  if (inputFile instanceof File) {
-    return inputFile;
-  }
-
   // Check if input is a single path.
   if (types.isString(inputFile)) {
     return new File({
@@ -273,6 +283,19 @@ function createEntrypoint(inputFile) {
   function invalidFormatError() {
     throw new Error("Invalid format for input file to bundle.");
   }
+}
+
+// getTargetsToBundle returns an array of file paths and module names to bundle.
+function getTargetsToBundle(inputFile) {
+  if (inputFile instanceof File) {
+    return inputFile.src;
+  }
+
+  if (types.isString(inputFile)) {
+    return [inputFile];
+  }
+
+  throw new Error("Invalid file to bundle. It must be either a file path (string) or an entrypoint.");
 }
 
 Bitbundler.dest = bundleWriter;
