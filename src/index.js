@@ -295,6 +295,10 @@ function getTargetsToBundle(inputFile) {
     return [inputFile];
   }
 
+  if (types.isArray(inputFile)) {
+    return inputFile;
+  }
+
   throw new Error("Invalid file to bundle. It must be either a file path (string) or an entrypoint.");
 }
 
