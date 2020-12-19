@@ -30,7 +30,7 @@ function watch(bitbundler, options) {
 
   const watcher = chokidar.watch(filesToWatch, settings);
   const watching = utils.arrayToObject(filesToWatch);
-  let nextPaths = {}, inProgress;
+  let nextPaths = {}, inProgress = false;
 
   logger.log("started");
 
@@ -44,9 +44,14 @@ function watch(bitbundler, options) {
   }
 
   function onChange(filepath) {
-    const absolutePath = makeAbsolutePath(filepath);
+    // NOTE: chokidar will only trigger change events for one file at a time.
+    // However, when bundling is in progress we queue up all files that change
+    // so that when bundling finishes, we can kick off another build with all
+    // the files that have changed. To consolidate the behavior for those two
+    // different use cases, we normalize all file changes to be an array.
     const filepaths = utils
-      .toArray(absolutePath)
+      .toArray(filepath)
+      .map(makeAbsolutePath)
       .filter(fp => bitbundler.loader.hasModule(fp));
 
     if (inProgress) {
