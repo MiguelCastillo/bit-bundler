@@ -1,24 +1,36 @@
-var utils = require("belty");
-var chokidar = require("chokidar");
-var File = require("src-dest");
-var logger = require("./logging").create("bundler/watch");
+const utils = require("belty");
+const chokidar = require("chokidar");
+const systemPath = require("path");
+const File = require("src-dest");
+const logger = require("./logging").create("bundler/watch");
 
 function watch(bitbundler, options) {
   if (options === true || !options) {
     options = {};
   }
 
-  var include = new File(options.include);
-  var settings = utils.merge({ followSymlinks: false }, utils.omit(options, ["include"]));
+  const baseUrl = bitbundler.baseUrl();
+  
+  const settings = utils.merge({
+    followSymlinks: false,
+    cwd: baseUrl,
+    // We ignore `include` because we process it separately below, and `cwd`
+    // because we want to use whatever bit bundler is configured with to make
+    // sure everything has the same `cwd`.
+  }, utils.omit(options, ["include", "cwd"]));
 
   if (!settings.hasOwnProperty("ignored")) {
     settings.ignored = [/[\/\\]\./, /node_modules\//];
   }
 
-  var nextPaths = {}, inProgress;
-  var filesToWatch = Object.keys(bitbundler.loader.getCache()).concat(include.src);
-  var watcher = chokidar.watch(filesToWatch, settings);
-  var watching = utils.arrayToObject(filesToWatch);
+  const include = new File(options.include);
+  const filesToWatch = Object
+    .keys(bitbundler.loader.getCache())
+    .concat(include.src);
+
+  const watcher = chokidar.watch(filesToWatch, settings);
+  const watching = utils.arrayToObject(filesToWatch);
+  let nextPaths = {}, inProgress;
 
   logger.log("started");
 
@@ -27,62 +39,69 @@ function watch(bitbundler, options) {
     .on("change", onChange)
     .on("unlink", onDelete);
 
-  function onChange(path) {
-    var paths = utils
-      .toArray(path)
-      .filter(function(path) {
-        return bitbundler.loader.hasModule(path);
-      });
+  function makeAbsolutePath(filepath) {
+    return systemPath.resolve(baseUrl, filepath);
+  }
+
+  function onChange(filepath) {
+    const absolutePath = makeAbsolutePath(filepath);
+    const filepaths = utils
+      .toArray(absolutePath)
+      .filter(fp => bitbundler.loader.hasModule(fp));
 
     if (inProgress) {
-      paths.forEach(function(path) {
-        nextPaths[path] = path;
+      filepaths.forEach(fp => {
+        nextPaths[fp] = fp;
       });
     }
-    else if (paths.length) {
+    else if (filepaths.length) {
       inProgress = true;
 
-      bitbundler.update(paths).then(function(result) {
-        paths.forEach(function(path) {
-          logger.log("updated", path);
-        });
-
-        var newFiles = Object
-          .keys(result.getCache())
-          .filter(function(moduleId) {
-            return !watching[moduleId];
+      bitbundler.update(filepaths)
+        .then(result => {
+          filepaths.forEach(fp => {
+            logger.log("updated", fp);
           });
 
-        if (newFiles.length) {
-          watcher.add(newFiles);
-        }
+          const newFiles = Object
+            .keys(result.getCache())
+            .filter(moduleId => !watching[moduleId]);
 
-        executePending();
-      }, function() {
-        executePending();
-      });
+          if (newFiles.length) {
+            watcher.add(newFiles);
+          }
+        })
+        .finally(executePending);
     }
     else {
-      logger.log("changed", path);
+      logger.log("changed", filepath);
     }
   }
 
-  function onAdd(path) {
-    if (bitbundler.loader.hasModule(path) || include.src.indexOf(path) !== -1) {
-      logger.log("watching", path);
+  function onAdd(filepath) {
+    const absolutePath = makeAbsolutePath(filepath);
+    if (isPathRelevant(absolutePath)) {
+      logger.log("watching", filepath);
     }
   }
 
-  function onDelete(path) {
-    if (bitbundler.loader.hasModule(path) || include.src.indexOf(path) !== -1) {
-      logger.log("removed", path);
+  function onDelete(filepath) {
+    const absolutePath = makeAbsolutePath(filepath);
+    if (isPathRelevant(absolutePath)) {
+      logger.log("removed", filepath);
     }
+  }
+
+  // Checks if a filepath is used in a bundle and therefore is a valid
+  // canditate for file watching.
+  function isPathRelevant(filepath) {
+    return bitbundler.loader.hasModule(filepath) || include.src.indexOf(filepath) !== -1;
   }
 
   function executePending() {
     inProgress = false;
 
-    var pendingPaths = Object.keys(nextPaths);
+    const pendingPaths = Object.keys(nextPaths);
 
     if (pendingPaths.length) {
       nextPaths = {};
