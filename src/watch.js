@@ -10,9 +10,8 @@ function watch(bitbundler, options) {
   }
 
   const baseUrl = bitbundler.baseUrl();
-  
+
   const settings = utils.merge({
-    followSymlinks: false,
     cwd: baseUrl,
     // We ignore `include` because we process it separately below, and `cwd`
     // because we want to use whatever bit bundler is configured with to make
