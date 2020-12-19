@@ -22,13 +22,20 @@ class Bitbundler extends EventEmitter {
   constructor(options) {
     super();
 
-    this.options = Object.assign({}, options);
+    this.options = Object.assign({
+      baseUrl: process.cwd(),
+    }, options);
+
     configureNotifications(this, this.options.notifications);
     configureLogger(this, this.options.log);
 
     this.context = null;
     this.loader = loaderFactory(this.options);
     this.bundler = bundlerFactory(this.options);
+  }
+
+  baseUrl() {
+    return this.options.baseUrl;
   }
 
   bundle(inputFiles) {
