@@ -34,12 +34,43 @@ function watch(bitbundler, options) {
   logger.log("started");
 
   watcher
-    .on("add", onAdd)
-    .on("change", onChange)
-    .on("unlink", onDelete);
+    .on("add", throttleFileEvents(onAdd))
+    .on("change", throttleFileEvents(onChange))
+    .on("unlink", throttleFileEvents(onDelete));
 
-  function makeAbsolutePath(filepath) {
-    return systemPath.resolve(baseUrl, filepath);
+  // Helper function to throttle chokidar events.
+  // We have the ability to queue up file changes that occur while bundling
+  // is already in progress. This throttling is for ensureing we don't kick
+  // off builds when we are still getting file events.
+  function throttleFileEvents(fn, timeoutMs = 500) {
+    let timeoutID = null;
+    let filenameQueue = {};
+
+    return (filepath) => {
+      filenameQueue[filepath] = true;
+
+      if (timeoutID) {
+        clearTimeout(timeoutID);
+      }
+
+      timeoutID = setTimeout(() => {
+        fn(Object.keys(filenameQueue));
+        timeoutID = null;
+        filenameQueue = {};
+      }, timeoutMs);
+    };
+  }
+
+  function getFilepaths(filepaths) {
+    return utils
+      .toArray(filepaths)
+      .map(filepath => systemPath.resolve(baseUrl, filepath))
+      .filter(filepath => {
+        return (
+          bitbundler.loader.hasModule(filepath) ||
+          include.src.indexOf(filepath) !== -1
+        );
+      });
   }
 
   function onChange(filepath) {
@@ -48,17 +79,19 @@ function watch(bitbundler, options) {
     // so that when bundling finishes, we can kick off another build with all
     // the files that have changed. To consolidate the behavior for those two
     // different use cases, we normalize all file changes to be an array.
-    const filepaths = utils
-      .toArray(filepath)
-      .map(makeAbsolutePath)
-      .filter(fp => bitbundler.loader.hasModule(fp));
+    const filepaths = getFilepaths(filepath);
+
+    // If there are no file changes that we care about, we just exist early.
+    if (!filepaths.length) {
+      return;
+    }
 
     if (inProgress) {
       filepaths.forEach(fp => {
         nextPaths[fp] = fp;
       });
     }
-    else if (filepaths.length) {
+    else {
       inProgress = true;
 
       bitbundler.update(filepaths)
@@ -77,29 +110,18 @@ function watch(bitbundler, options) {
         })
         .finally(executePending);
     }
-    else {
-      logger.log("changed", filepath);
-    }
   }
 
   function onAdd(filepath) {
-    const absolutePath = makeAbsolutePath(filepath);
-    if (isPathRelevant(absolutePath)) {
-      logger.log("watching", filepath);
-    }
+    getFilepaths(filepath).forEach(fp => {
+      logger.log("watching", fp);
+    });
   }
 
   function onDelete(filepath) {
-    const absolutePath = makeAbsolutePath(filepath);
-    if (isPathRelevant(absolutePath)) {
-      logger.log("removed", filepath);
-    }
-  }
-
-  // Checks if a filepath is used in a bundle and therefore is a valid
-  // canditate for file watching.
-  function isPathRelevant(filepath) {
-    return bitbundler.loader.hasModule(filepath) || include.src.indexOf(filepath) !== -1;
+    getFilepaths(filepath).forEach(fp => {
+      logger.log("removed", fp);
+    });
   }
 
   function executePending() {
