@@ -96,9 +96,7 @@ function watch(bitbundler, options) {
 
       bitbundler.update(filepaths)
         .then(result => {
-          filepaths.forEach(fp => {
-            logger.log("updated", fp);
-          });
+          logFileEvents(filepaths, "updated");
 
           const newFiles = Object
             .keys(result.getCache())
@@ -113,15 +111,19 @@ function watch(bitbundler, options) {
   }
 
   function onAdd(filepath) {
-    getFilepaths(filepath).forEach(fp => {
-      logger.log("watching", fp);
-    });
+    logFileEvents(getFilepaths(filepath), "watching");
   }
 
   function onDelete(filepath) {
-    getFilepaths(filepath).forEach(fp => {
-      logger.log("removed", fp);
-    });
+    logFileEvents(getFilepaths(filepath), "removed");
+  }
+
+  function logFileEvents(filepaths, eventName) {
+    filepaths
+      .map(fp => fp.replace(baseUrl + "/", ""))
+      .forEach(fp => {
+        logger.log(eventName, fp);
+      });
   }
 
   function executePending() {
