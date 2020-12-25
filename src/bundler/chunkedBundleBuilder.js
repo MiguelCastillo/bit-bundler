@@ -35,7 +35,7 @@ function buildBundle(modules, options) {
     currentModule = modules[id];
     dependencies = currentModule.deps || [];
     ids = ids.concat(dependencies.map(dep => dep.id));
-    filepath = currentModule.path ? currentModule.path.replace(options.baseUrl, "") : "";
+    filepath = currentModule.path ? currentModule.path.replace(options.baseUrl + "/", "") : "";
 
     formattedDependencies = buildDependenciesString(dependencies);
     formattedPreBundle = `${buildModuleInfoCommentString(id, filepath, formattedDependencies)}\n${id}:`;

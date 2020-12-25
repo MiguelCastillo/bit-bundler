@@ -42,10 +42,10 @@ describe("BitBundler test suite", function () {
       it("then result in the main bundle contains correct content", function () {
         var expected = [
           `require=_bb$iter=(${BUNDLE_MODULE_LOADER})({`,
-          `${wrapModule(entry, 1, { "./Y": 2 }, "/test/sample/X.js")},`,
-          `${wrapModule(dep2, 2, { "./z": 3, "./X": 1 }, "/test/sample/Y.js")},`,
-          `${wrapModule(dep3, 3, { "spromise/dist/spromise.min": 4 }, "/test/sample/z.js")},`,
-          `${wrapModule(spromiseContent, 4, {}, "/node_modules/spromise/dist/spromise.min.js")}`,
+          `${wrapModule(entry, 1, { "./Y": 2 }, "test/sample/X.js")},`,
+          `${wrapModule(dep2, 2, { "./z": 3, "./X": 1 }, "test/sample/Y.js")},`,
+          `${wrapModule(dep3, 3, { "spromise/dist/spromise.min": 4 }, "test/sample/z.js")},`,
+          `${wrapModule(spromiseContent, 4, {}, "node_modules/spromise/dist/spromise.min.js")}`,
           "},[1]);",
           "",
           ""
@@ -75,10 +75,10 @@ describe("BitBundler test suite", function () {
       it("then result contains correct bundle content", function () {
         var expected = [
           `require=_bb$iter=(${BUNDLE_MODULE_LOADER})({`,
-          `${wrapModule(entry, 1, { "./Y": 2 }, "/test/sample/X.js")},`,
-          `${wrapModule(dep2, 2, { "./z": 3, "./X": 1 }, "/test/sample/Y.js")},`,
-          `${wrapModule(dep3, 3, { "spromise/dist/spromise.min": 4 }, "/test/sample/z.js")},`,
-          `${wrapModule(spromiseContent, 4, {}, "/node_modules/spromise/dist/spromise.min.js")}`,
+          `${wrapModule(entry, 1, { "./Y": 2 }, "test/sample/X.js")},`,
+          `${wrapModule(dep2, 2, { "./z": 3, "./X": 1 }, "test/sample/Y.js")},`,
+          `${wrapModule(dep3, 3, { "spromise/dist/spromise.min": 4 }, "test/sample/z.js")},`,
+          `${wrapModule(spromiseContent, 4, {}, "node_modules/spromise/dist/spromise.min.js")}`,
           "},[1]);",
           "",
           ""
@@ -201,10 +201,10 @@ describe("BitBundler test suite", function () {
       it("then result in the main bundle contains correct content", function () {
         var expected = [
           `require=_bb$iter=(${BUNDLE_MODULE_LOADER})({`,
-          `${wrapModule(entry, 1, { "./Y": 2 }, "/test/sample/X.js")},`,
-          `${wrapModule(dep2, 2, { "./z": 3, "./X": 1 }, "/test/sample/Y.js")},`,
-          `${wrapModule(dep3, 3, { "spromise/dist/spromise.min": "spromise/dist/spromise.min" }, "/test/sample/z.js")},`,
-          `${wrapModule(spromiseContent, '"spromise/dist/spromise.min"', {}, "/node_modules/spromise/dist/spromise.min.js")}`,
+          `${wrapModule(entry, 1, { "./Y": 2 }, "test/sample/X.js")},`,
+          `${wrapModule(dep2, 2, { "./z": 3, "./X": 1 }, "test/sample/Y.js")},`,
+          `${wrapModule(dep3, 3, { "spromise/dist/spromise.min": "spromise/dist/spromise.min" }, "test/sample/z.js")},`,
+          `${wrapModule(spromiseContent, '"spromise/dist/spromise.min"', {}, "node_modules/spromise/dist/spromise.min.js")}`,
           "},[1]);",
           "",
           ""
@@ -232,10 +232,10 @@ describe("BitBundler test suite", function () {
       it("then result in the main bundle contains correct content", function () {
         var expected = [
           `require=_bb$iter=(${BUNDLE_MODULE_LOADER})({`,
-          `${wrapModule(entry, 1, { "./Y": 2 }, "/test/sample/X.js")},`,
-          `${wrapModule(dep2, 2, { "./z": 3, "./X": 1 }, "/test/sample/Y.js")},`,
-          `${wrapModule(dep3, 3, { "spromise/dist/spromise.min": "spromise/dist/spromise.min" }, "/test/sample/z.js")},`,
-          `${wrapModule(spromiseContent, '"spromise/dist/spromise.min"', {}, "/node_modules/spromise/dist/spromise.min.js")}`,
+          `${wrapModule(entry, 1, { "./Y": 2 }, "test/sample/X.js")},`,
+          `${wrapModule(dep2, 2, { "./z": 3, "./X": 1 }, "test/sample/Y.js")},`,
+          `${wrapModule(dep3, 3, { "spromise/dist/spromise.min": "spromise/dist/spromise.min" }, "test/sample/z.js")},`,
+          `${wrapModule(spromiseContent, '"spromise/dist/spromise.min"', {}, "node_modules/spromise/dist/spromise.min.js")}`,
           "},[1]);",
           "",
           ""
@@ -263,10 +263,10 @@ describe("BitBundler test suite", function () {
       it("then result in the main bundle contains correct content", function () {
         var expected = [
           `require=_bb$iter=(${BUNDLE_MODULE_LOADER})({`,
-          `${wrapModule(entry, 1, { "./Y": 2 }, "/test/sample/X.js")},`,
-          `${wrapModule(dep2, 2, { "./z": 3, "./X": 1 }, "/test/sample/Y.js")},`,
-          `${wrapModule(dep3, 3, { "spromise/dist/spromise.min": "Promise" }, "/test/sample/z.js")},`,
-          `${wrapModule(spromiseContent, '"Promise"', {}, "/node_modules/spromise/dist/spromise.min.js")}`,
+          `${wrapModule(entry, 1, { "./Y": 2 }, "test/sample/X.js")},`,
+          `${wrapModule(dep2, 2, { "./z": 3, "./X": 1 }, "test/sample/Y.js")},`,
+          `${wrapModule(dep3, 3, { "spromise/dist/spromise.min": "Promise" }, "test/sample/z.js")},`,
+          `${wrapModule(spromiseContent, '"Promise"', {}, "node_modules/spromise/dist/spromise.min.js")}`,
           "},[1]);",
           "",
           ""
