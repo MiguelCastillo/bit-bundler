@@ -52,7 +52,7 @@ function configureResolve(options) {
       };
     }
 
-    return resolver(meta).then(utils.identity, handleError);
+    return resolver(meta).catch(handleError);
   };
 }
 
