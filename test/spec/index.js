@@ -18,10 +18,6 @@ describe("BitBundler test suite", function () {
   });
 
   describe("bundle output tests", () => {
-    beforeEach(function () {
-      createBundler();
-    });
-  
     describe("bundling a module with a couple of dependencies and no bundle destination", function () {
       var result;
       const entry = readModule.fromFilePath("test/sample/X.js");
@@ -30,6 +26,8 @@ describe("BitBundler test suite", function () {
       const spromiseContent = trimResult(readModule.fromModuleName("spromise/dist/spromise.min"));
 
       beforeEach(function () {
+        createBundler();
+
         return bitbundler.bundle("test/sample/X.js").then(function (ctx) {
           result = ctx;
         });
@@ -63,6 +61,8 @@ describe("BitBundler test suite", function () {
       const spromiseContent = trimResult(readModule.fromModuleName("spromise/dist/spromise.min"));
 
       beforeEach(function () {
+        createBundler();
+
         return bitbundler.bundle({ src: "test/sample/X.js", dest: "test/dist/dest-test-bundle.js" }).then(function (ctx) {
           result = ctx;
         });
@@ -75,6 +75,44 @@ describe("BitBundler test suite", function () {
           `${wrapModule(dep2, 2, { "./z": 3, "./X": 1 }, "test/sample/Y.js")},`,
           `${wrapModule(dep3, 3, { "spromise/dist/spromise.min": 4 }, "test/sample/z.js")},`,
           `${wrapModule(spromiseContent, 4, {}, "node_modules/spromise/dist/spromise.min.js")}`,
+          "},[1]);",
+          "",
+          ""
+        ].join("\n");
+
+        expect(combineSourceMap.removeComments(result.getBundles("main").content.toString())).to.be.equal(expected);
+      });
+
+      it("then the main bundle has the dest set to correct full path", function () {
+        expect(result.getBundles("main").dest).to.be.equal(path.join(process.cwd(), "test/dist/dest-test-bundle.js"));
+      });
+    });
+
+    describe("with baseUrl different than process.cwd()", function () {
+      var result;
+      const entry = readModule.fromFilePath("test/sample/X.js");
+      const dep2 = readModule.fromFilePath("test/sample/Y.js");
+      const dep3 = readModule.fromFilePath("test/sample/z.js");
+      const spromiseContent = trimResult(readModule.fromModuleName("spromise/dist/spromise.min"));
+
+      beforeEach(function () {
+        const baseUrl = path.resolve(__dirname, "../");
+        createBundler({baseUrl: baseUrl});
+
+        return bitbundler.bundle({ src: "sample/X.js", dest: "dist/dest-test-bundle.js" }).then(function (ctx) {
+          result = ctx;
+        });
+      });
+
+      it("then result contains correct bundle content", function () {
+        const spromiseFullpath = path.resolve(__dirname, "../../", "node_modules/spromise/dist/spromise.min.js");
+
+        var expected = [
+          `require=_bb$iter=(${BUNDLE_MODULE_LOADER})({`,
+          `${wrapModule(entry, 1, { "./Y": 2 }, "sample/X.js")},`,
+          `${wrapModule(dep2, 2, { "./z": 3, "./X": 1 }, "sample/Y.js")},`,
+          `${wrapModule(dep3, 3, { "spromise/dist/spromise.min": 4 }, "sample/z.js")},`,
+          `${wrapModule(spromiseContent, 4, {}, spromiseFullpath)}`,
           "},[1]);",
           "",
           ""

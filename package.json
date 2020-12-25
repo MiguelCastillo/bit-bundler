@@ -23,7 +23,7 @@
     "pulling-deps": "^5.0.1",
     "resolve": "^1.19.0",
     "setopt": "^1.0.1",
-    "src-dest": "^3.1.0",
+    "src-dest": "^3.2.0",
     "subarg": "^1.0.0",
     "umd": "^3.0.3",
     "workit": "^2.1.0"

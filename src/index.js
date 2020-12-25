@@ -41,7 +41,7 @@ class Bitbundler extends EventEmitter {
   bundle(inputFiles) {
     logger.log("build-init");
 
-    const {entrypoint, bundle} = createMainBundle(inputFiles);
+    const {entrypoint, bundle} = createMainBundle(inputFiles, this.baseUrl());
     this.context = new Context().setBundle(bundle);
 
     return this
@@ -191,8 +191,8 @@ function configureLogger(bitbundler, options) {
 // Creates the root bundle where all things start from. If there are multiple
 // bundles that need to be generated, then bundle splitting is the tool for
 // the job.
-function createMainBundle(inputFiles) {
-  const entrypoint = createEntrypoint(inputFiles);
+function createMainBundle(inputFiles, baseUrl) {
+  const entrypoint = createEntrypoint(inputFiles, baseUrl);
   const entries = entrypoint.src.map(src => {
     return types.isString(src) ? src : (src.id || src.path || "@anonymous-" + id++);
   });
@@ -238,12 +238,12 @@ function createMainBundle(inputFiles) {
 //
 // TODO: add tests for createEntrypoint.
 //
-function createEntrypoint(inputFile) {
+function createEntrypoint(inputFile, baseUrl) {
   // Check if input is a single path.
   if (types.isString(inputFile)) {
     return new File({
       src: [inputFile],
-    });
+    }, baseUrl);
   }
 
   // If we have an array, if could either an array of strings and/or
@@ -251,7 +251,7 @@ function createEntrypoint(inputFile) {
   else if (types.isArray(inputFile)) {
     return new File({
       src: inputFile.map(mapSource),
-    });
+    }, baseUrl);
   }
 
   // Check if we have an object, which contains a src property
@@ -271,7 +271,7 @@ function createEntrypoint(inputFile) {
     return new File(Object.assign({
         src: src,
       }, utils.pick(inputFile, ["cwd", "dest"])
-    ));
+    ), baseUrl);
   }
 
   // Ok, we do not have a valid input format. Let's just throw an error.
