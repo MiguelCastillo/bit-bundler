@@ -44,22 +44,31 @@ class Bitbundler extends EventEmitter {
     const {entrypoint, bundle} = createMainBundle(inputFiles);
     this.context = new Context().setBundle(bundle);
 
-    return this.update(entrypoint).then((context) => {
-      if (this.options.watch) {
-        watch(this, this.options.watch);
-      }
-
-      if (this.options.multiprocess) {
+    return this
+      .update(entrypoint)
+      .then((context) => {
         if (this.options.watch) {
-          this.loader.pool.size(1);          
+          watch(this, this.options.watch);
         }
-        else {
-          this.loader.pool.stop();          
-        }
-      }
 
-      return context;
-    });
+        if (this.options.multiprocess) {
+          if (this.options.watch) {
+            this.loader.pool.size(1);          
+          }
+          else {
+            this.loader.pool.stop();          
+          }
+        }
+
+        return context;
+      })
+      .catch(ex => {
+        if (this.options.multiprocess) {
+          this.loader.pool.stop();
+        }
+
+        throw ex;
+      });
   }
 
   update(inputFile) {
@@ -78,18 +87,14 @@ class Bitbundler extends EventEmitter {
         this.context = context;
         return context;
       })
-      .catch((err) => {
-        if (err) {
-          process.stderr.write((err && err.stack ? err.stack : err) + "\n");
+      .catch((ex) => {
+        if (ex) {
+          process.stderr.write((ex && ex.stack ? ex.stack : ex) + "\n");
         }
 
-        if (this.options.multiprocess) {
-          this.loader.pool.stop();
-        }
-
-        logger.error("build-failure", err);
+        logger.error("build-failure", ex);
         logger.log("build-end");
-        throw err;
+        throw ex;
       });
   }
 
