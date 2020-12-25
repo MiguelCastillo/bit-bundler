@@ -17,16 +17,12 @@ describe("BitBundler test suite", function () {
     createBundler = (config) => bitbundler = new BitBundler(Object.assign({ log: false }, config || {}));
   });
 
-  describe("When creating a bundler with no configuration", function () {
+  describe("bundle output tests", () => {
     beforeEach(function () {
       createBundler();
     });
-
-    it("then the bundler is an instance of Bundler", function () {
-      expect(bitbundler).to.be.an.instanceof(BitBundler);
-    });
-
-    describe("and bundling a module with a couple of dependencies and no bundle destination", function () {
+  
+    describe("bundling a module with a couple of dependencies and no bundle destination", function () {
       var result;
       const entry = readModule.fromFilePath("test/sample/X.js");
       const dep2 = readModule.fromFilePath("test/sample/Y.js");
@@ -59,7 +55,7 @@ describe("BitBundler test suite", function () {
       });
     });
 
-    describe("and bundling a module with a couple of dependencies with a bundle destination", function () {
+    describe("bundling a module with a couple of dependencies with a bundle destination", function () {
       var result;
       const entry = readModule.fromFilePath("test/sample/X.js");
       const dep2 = readModule.fromFilePath("test/sample/Y.js");
@@ -91,11 +87,15 @@ describe("BitBundler test suite", function () {
         expect(result.getBundles("main").dest).to.be.equal(path.join(process.cwd(), "test/dist/dest-test-bundle.js"));
       });
     });
+  });
 
-    describe("and bundle a node built module", function () {
+  describe("content bundling tests", () => {
+    describe("a node built in module", function () {
       var result, error;
 
       beforeEach(function () {
+        createBundler();
+
         return (
           bitbundler
             .bundle({ content: "require('fs');" })
@@ -117,10 +117,12 @@ describe("BitBundler test suite", function () {
       });
     });
 
-    describe("and bundle with a dependency that does not exist", function () {
+    describe("dependency that does not exist", function () {
       var result, error;
 
       beforeEach(function () {
+        createBundler();
+        
         return (
           bitbundler
             .bundle([{ content: "require('./does-not-exist');" }])
@@ -141,18 +143,13 @@ describe("BitBundler test suite", function () {
         expect(error.message).to.be.equal(`Cannot find module './does-not-exist' from '${process.cwd()}'`);
       });
     });
-  });
 
-  describe("When bundling content", function () {
-    beforeEach(function () {
-      createBundler();
-    });
-
-    describe("And the bundle content has no dependencies", function () {
+    describe("no dependencies", function () {
       const bundleContent = "console.log('hello world');";
       var result;
 
       beforeEach(function () {
+        createBundler();
         return bitbundler.bundle({ src: { content: bundleContent } }).then(ctx => result = ctx);
       });
 
@@ -161,12 +158,13 @@ describe("BitBundler test suite", function () {
       });
     });
 
-    describe("And the bundle content has 1 relative dependency", function () {
+    describe("with 1 relative dependency", function () {
       const bundleContent = "require('../sample/z');console.log('hello world');";
       const bundleContentPath = path.join(__dirname, "../sample/");
       var result;
 
       beforeEach(function () {
+        createBundler();
         return bitbundler.bundle({ src: { content: bundleContent, path: bundleContentPath } }).then(ctx => result = ctx);
       });
 
@@ -176,14 +174,8 @@ describe("BitBundler test suite", function () {
     });
   });
 
-  describe("When bundling with exportNames", function () {
-    var exportNamesConfig, act;
-
-    beforeEach(function () {
-      act = () => createBundler({ exportNames: exportNamesConfig });
-    });
-
-    describe("and exportNames is 'true'", function () {
+  describe("exportNames tests", () => {
+    describe("bundling with exportNames 'true'", function () {
       var result;
       const entry = readModule.fromFilePath("test/sample/X.js");
       const dep2 = readModule.fromFilePath("test/sample/Y.js");
@@ -191,8 +183,7 @@ describe("BitBundler test suite", function () {
       const spromiseContent = trimResult(readModule.fromModuleName("spromise/dist/spromise.min"));
 
       beforeEach(function () {
-        exportNamesConfig = true;
-        act();
+        createBundler({ exportNames: true });
         return bitbundler.bundle({ src: "test/sample/X.js" }).then(function (ctx) {
           result = ctx;
         });
@@ -214,7 +205,7 @@ describe("BitBundler test suite", function () {
       });
     });
 
-    describe("and exportNames is an Array", function () {
+    describe("bundling with exportNames array of module names", function () {
       var result;
       const entry = readModule.fromFilePath("test/sample/X.js");
       const dep2 = readModule.fromFilePath("test/sample/Y.js");
@@ -222,8 +213,8 @@ describe("BitBundler test suite", function () {
       const spromiseContent = trimResult(readModule.fromModuleName("spromise/dist/spromise.min"));
 
       beforeEach(function () {
-        exportNamesConfig = ["spromise/dist/spromise.min"];
-        act();
+        createBundler({ exportNames: ["spromise/dist/spromise.min"] });
+
         return bitbundler.bundle({ src: "test/sample/X.js" }).then(function (ctx) {
           result = ctx;
         });
@@ -245,7 +236,7 @@ describe("BitBundler test suite", function () {
       });
     });
 
-    describe("and exportNames is an object that maps to 'Promise'", function () {
+    describe("bundling with exportNames object that maps to 'Promise'", function () {
       var result;
       const entry = readModule.fromFilePath("test/sample/X.js");
       const dep2 = readModule.fromFilePath("test/sample/Y.js");
@@ -253,8 +244,8 @@ describe("BitBundler test suite", function () {
       const spromiseContent = trimResult(readModule.fromModuleName("spromise/dist/spromise.min"));
 
       beforeEach(function () {
-        exportNamesConfig = { "spromise/dist/spromise.min": "Promise" };
-        act();
+        createBundler({ exportNames: { "spromise/dist/spromise.min": "Promise" } });
+
         return bitbundler.bundle({ src: "test/sample/X.js" }).then(function (ctx) {
           result = ctx;
         });
@@ -277,7 +268,7 @@ describe("BitBundler test suite", function () {
     });
   });
 
-  describe("Given a bundler", function () {
+  describe("bundling pipeline and event emitting tests", function () {
     var context, buildInit, buildStart, buildEnd;
 
     beforeEach(function () {
@@ -303,7 +294,7 @@ describe("BitBundler test suite", function () {
         .on("build-end", buildEnd);
     });
 
-    describe("And creating a bundle from javascript content", function () {
+    describe("bundle javascript content", function () {
       const bundleContent = "console.log('hello world');";
 
       beforeEach(function () {
@@ -351,7 +342,7 @@ describe("BitBundler test suite", function () {
       });
     });
 
-    describe("And creating a bundle from javascript content with a dependency", function () {
+    describe("bundle javascript content with a dependency", function () {
       const bundleContent = "require('./z');console.log('hello world');";
       const bundleContentPath = path.join(__dirname, "../sample/");
 
@@ -404,7 +395,7 @@ describe("BitBundler test suite", function () {
       });
     });
 
-    describe("And creating a bundle with one file", function () {
+    describe("bundle with one file", function () {
       beforeEach(function () {
         return bitbundler.bundle(["test/sample/X.js"]);
       });
@@ -458,7 +449,7 @@ describe("BitBundler test suite", function () {
       });
     });
 
-    describe("And updating a bundle with one file", function () {
+    describe("bundle update with one file", function () {
       var file;
 
       beforeEach(function () {
@@ -516,7 +507,7 @@ describe("BitBundler test suite", function () {
       });
     });
 
-    describe("And bundling fails", function () {
+    describe("bundle failures", function () {
       beforeEach(function () {
         bitbundler.buildBundles = sinon.stub().rejects("bad");
         return bitbundler.bundle(["test/sample/X.js"]).catch(function () { });
@@ -544,85 +535,63 @@ describe("BitBundler test suite", function () {
     });
   });
 
-  describe("Given a bundler with a single function notifications configured", function () {
-    var notificationStub, initBuildStub, context;
+  describe("bundling notification tests", () => {
+    describe("single notification function", function () {
+      var notificationStub, initBuildStub, context;
 
-    beforeEach(function () {
-      initBuildStub = sinon.stub();
-      notificationStub = sinon.stub().returns({ "build-init": initBuildStub });
-      createBundler({ notifications: notificationStub });
+      beforeEach(function () {
+        initBuildStub = sinon.stub();
+        notificationStub = sinon.stub().returns({ "build-init": initBuildStub });
+        createBundler({ notifications: notificationStub });
 
-      sinon.spy(bitbundler, "emit");
-      context = createMockContext();
-      bitbundler.buildBundles = sinon.stub().resolves(context);
+        sinon.spy(bitbundler, "emit");
+        context = createMockContext();
+        bitbundler.buildBundles = sinon.stub().resolves(context);
 
-      return bitbundler.bundle(["test/sample/X.js"]);
-    });
-
-    it("then the notification function is called", function () {
-      sinon.assert.called(notificationStub);
-    });
-
-    it("then the registered build-init callback is called", function () {
-      sinon.assert.called(initBuildStub);
-    });
-  });
-
-  describe("Given a bundler with multiple function notifications configured", function () {
-    var notificationStub1, notificationStub2, buildInitStub1, buildInitStub2, context;
-
-    beforeEach(function () {
-      buildInitStub1 = sinon.stub();
-      buildInitStub2 = sinon.stub();
-      notificationStub1 = sinon.stub().returns({ "build-init": buildInitStub1 });
-      notificationStub2 = sinon.stub().returns({ "build-init": buildInitStub2 });
-      createBundler({ notifications: [notificationStub1, notificationStub2] });
-
-      sinon.spy(bitbundler, "emit");
-      context = createMockContext();
-      bitbundler.buildBundles = sinon.stub().resolves(context);
-
-      return bitbundler.bundle(["test/sample/X.js"]);
-    });
-
-    it("then the first notification function is called", function () {
-      sinon.assert.called(notificationStub1);
-    });
-
-    it("then the second notification function is called", function () {
-      sinon.assert.called(notificationStub2);
-    });
-
-    it("then the first registered build-init callback is called", function () {
-      sinon.assert.called(buildInitStub1);
-    });
-
-    it("then the second registered build-init callback is called", function () {
-      sinon.assert.called(buildInitStub2);
-    });
-  });
-
-  describe("Given a bundler with a single notification configured", function () {
-    var context, initBuildStub;
-
-    beforeEach(function () {
-      initBuildStub = sinon.stub();
-
-      createBundler({
-        notifications: {
-          "build-init": initBuildStub
-        }
+        return bitbundler.bundle(["test/sample/X.js"]);
       });
 
-      sinon.spy(bitbundler, "emit");
-      context = createMockContext();
-      bitbundler.buildBundles = sinon.stub().resolves(context);
+      it("then the notification function is called", function () {
+        sinon.assert.called(notificationStub);
+      });
 
-      return bitbundler.bundle(["test/sample/X.js"]);
+      it("then the registered build-init callback is called", function () {
+        sinon.assert.called(initBuildStub);
+      });
     });
 
-    it("then build-init callback is called", function () {
-      sinon.assert.called(initBuildStub);
+    describe("multiple notification functions", function () {
+      var notificationStub1, notificationStub2, buildInitStub1, buildInitStub2, context;
+
+      beforeEach(function () {
+        buildInitStub1 = sinon.stub();
+        buildInitStub2 = sinon.stub();
+        notificationStub1 = sinon.stub().returns({ "build-init": buildInitStub1 });
+        notificationStub2 = sinon.stub().returns({ "build-init": buildInitStub2 });
+        createBundler({ notifications: [notificationStub1, notificationStub2] });
+
+        sinon.spy(bitbundler, "emit");
+        context = createMockContext();
+        bitbundler.buildBundles = sinon.stub().resolves(context);
+
+        return bitbundler.bundle(["test/sample/X.js"]);
+      });
+
+      it("then the first notification function is called", function () {
+        sinon.assert.called(notificationStub1);
+      });
+
+      it("then the second notification function is called", function () {
+        sinon.assert.called(notificationStub2);
+      });
+
+      it("then the first registered build-init callback is called", function () {
+        sinon.assert.called(buildInitStub1);
+      });
+
+      it("then the second registered build-init callback is called", function () {
+        sinon.assert.called(buildInitStub2);
+      });
     });
   });
 });
@@ -652,4 +621,3 @@ function trimResult(data) {
     .toString()
     .replace(/\/\/# sourceMappingURL=.*/, "");
 }
-
