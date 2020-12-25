@@ -7,5 +7,5 @@ module.exports = function(options) {
     };
   }
 
-  return Object.assign(utils.pick(options, ["umd", "sourceMap", "exportNames"]), options.bundler);
+  return Object.assign(utils.pick(options, ["umd", "sourceMap", "exportNames", "baseUrl"]), options.bundler);
 };

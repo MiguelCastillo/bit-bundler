@@ -6,7 +6,6 @@ const combineSourceMap = require("combine-source-map");
 const umd = require("umd");
 const bundleConstants = require("./bundleConstants");
 
-const CWD = process.cwd();
 const BUNDLE_MODULE_LOADER = bundleConstants.BUNDLE_MODULE_LOADER;
 const REQUIRE_NAME = bundleConstants.REQUIRE_NAME;
 const BUNDLE_ITERATOR_NAME = bundleConstants.BUNDLE_ITERATOR_NAME;
@@ -36,7 +35,7 @@ function buildBundle(modules, options) {
     currentModule = modules[id];
     dependencies = currentModule.deps || [];
     ids = ids.concat(dependencies.map(dep => dep.id));
-    filepath = currentModule.path ? currentModule.path.replace(CWD, "") : "";
+    filepath = currentModule.path ? currentModule.path.replace(options.baseUrl, "") : "";
 
     formattedDependencies = buildDependenciesString(dependencies);
     formattedPreBundle = `${buildModuleInfoCommentString(id, filepath, formattedDependencies)}\n${id}:`;
