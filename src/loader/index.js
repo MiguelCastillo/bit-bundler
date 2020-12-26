@@ -11,7 +11,7 @@ var logger = require("../logging").create("bundler/loader");
 var moduleNotFoundError = buildError.bind(null, "Unable to find module");
 var moduleNotLoadedError = buildError.bind(null, "Unable to load module");
 var moduleNotResolvedError = buildError.bind(null, "Unable to resolve module");
-var notResolvedCache = {};
+const notResolvedCache = {};
 
 class Loader extends Bitloader {
   constructor(options) {
@@ -68,16 +68,21 @@ function configureFetch(options) {
       throw err;
     }
 
-    function handleSuccess(mod) {
-      if (notResolvedCache[mod.name]) {
-        delete notResolvedCache[mod.name];
+    function handleSuccess({source}) {
+      if (notResolvedCache[meta.name]) {
+        delete notResolvedCache[meta.name];
       }
-      return mod;
+
+      return {
+        source
+      };
     }
 
-    return notResolvedCache[meta.name] && options.stubNotFound ?
-      Promise.resolve({ source: "" }) :
-      readFile(meta).then(handleSuccess, handleError);
+    if (notResolvedCache[meta.name] && options.stubNotFound) {
+      return Promise.resolve({ source: "" });
+    }
+
+    return readFile(meta).then(handleSuccess).catch(handleError);
   };
 }
 
