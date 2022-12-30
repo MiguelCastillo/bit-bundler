@@ -37,7 +37,7 @@
   },
   "scripts": {
     "prepublish": "npm run linter",
-    "test": "npm run linter && mocha --require babel-register",
+    "test": "mocha --require babel-register",
     "linter": "eslint src bin test/spec",
     "docs:build": "gitbook build .",
     "docs:serve": "gitbook serve ."
