@@ -53,10 +53,10 @@ class Bitbundler extends EventEmitter {
 
         if (this.options.multiprocess) {
           if (this.options.watch) {
-            this.loader.pool.size(1);          
+            this.loader.pool.size(1);
           }
           else {
-            this.loader.pool.stop();          
+            this.loader.pool.stop();
           }
         }
 
@@ -176,6 +176,16 @@ function configureLogger(bitbundler, options) {
   }
 
   const loggerStream = logging.pipe(es.through(function(chunk) {
+    // We treat bundler/build message as special case to provide better
+    // ergonomics for listenning to important build events like
+    //
+    // bitbundler
+    //   .on("build-init", buildInit)
+    //   .on("build-start", buildStart)
+    //   .on("build-end", buildEnd);
+    //
+    // Where the callbacks have their context bound to the instance of
+    // the bundler itself for convenience to access the bundler itself.
     chunk.name === "bundler/build" ?
       bitbundler.emit.apply(bitbundler, chunk.data) :
       bitbundler.emit(chunk.name, chunk);

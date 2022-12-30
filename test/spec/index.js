@@ -160,7 +160,7 @@ describe("BitBundler test suite", function () {
 
       beforeEach(function () {
         createBundler();
-        
+
         return (
           bitbundler
             .bundle([{ content: "require('./does-not-exist');" }])
@@ -307,44 +307,48 @@ describe("BitBundler test suite", function () {
   });
 
   describe("bundling pipeline and event emitting tests", function () {
-    var context, buildInit, buildStart, buildEnd;
+    let buildInit, buildStart, buildEnd, writeSuccess, writeFailure;
 
     beforeEach(function () {
       createBundler();
-      context = createMockContext();
-      bitbundler.context = context;
-
-      sinon.spy(bitbundler, "emit");
       sinon.spy(bitbundler, "buildBundles");
-      bitbundler.loader.hasModule = sinon.stub();
-      bitbundler.loader.getModule = sinon.stub();
-      bitbundler.loader.deleteModule = sinon.stub();
-      bitbundler.loader.fetch = sinon.stub().resolves();
-      bitbundler.bundler.bundle = sinon.stub().resolves(context);
+      sinon.spy(bitbundler.loader, "hasModule");
+      sinon.spy(bitbundler.loader, "getModule");
+      sinon.spy(bitbundler.loader, "deleteModule");
+      sinon.spy(bitbundler.loader, "fetch");
+      sinon.spy(bitbundler.bundler, "bundle");
 
       buildInit = sinon.stub();
       buildStart = sinon.stub();
       buildEnd = sinon.stub();
+      writeSuccess = sinon.stub();
+      writeFailure = sinon.stub();
 
       bitbundler
         .on("build-init", buildInit)
         .on("build-start", buildStart)
-        .on("build-end", buildEnd);
+        .on("build-end", buildEnd)
+        .on("write-success", writeSuccess)
+        .on("write-failure", writeFailure);
     });
 
-    describe("bundle javascript content", function () {
+    describe("bundle javascript content that does not produce a bundle", function () {
+      let destStub;
       const bundleContent = "console.log('hello world');";
 
       beforeEach(function () {
-        return bitbundler.bundle({ src: { content: bundleContent } });
-      });
+        // dest is a stream and streams have a write function with arguments:
+        // 1. the content to write
+        // 2. callback that is called when the stream is done writing.
+        //
+        // The stub setup below will cause the callback to be called by sinon
+        // so that we can tell the bundler that we are done writing the bundle.
+        destStub = {
+          write: sinon.stub().callsArg(1),
+        };
 
-      it("then emit is called with `build-init`", function () {
-        sinon.assert.calledWith(bitbundler.emit, "build-init");
-      });
-
-      it("then emit is called with `build-start`", function () {
-        sinon.assert.calledWith(bitbundler.emit, "build-start");
+        bitbundler.bundler.bundle = sinon.stub().resolves(createMockEmptyContext());
+        return bitbundler.bundle({ src: { content: bundleContent }, dest: destStub });
       });
 
       it("then initBuild event handler is called", function () {
@@ -357,6 +361,61 @@ describe("BitBundler test suite", function () {
 
       it("then postBuild event handler is called", function () {
         sinon.assert.called(buildEnd);
+      });
+
+      it("then writeSucess event handler is not called", function () {
+        // write success is only called when there is content to be
+        // written. But since this test mockes out the bundle context
+        // so that there is no bundle content, then write success is
+        // never triggered.
+        sinon.assert.notCalled(writeSuccess);
+      });
+
+      it("then dest.write function is NOT called", function () {
+        sinon.assert.notCalled(destStub.write);
+      });
+    });
+
+    describe("bundle javascript content and success write", function () {
+      let destStub;
+      const bundleContent = "console.log('hello world');";
+
+      beforeEach(function () {
+        // dest is a stream and streams have a write function with arguments:
+        // 1. the content to write
+        // 2. callback that is called when the stream is done writing.
+        //
+        // The stub setup below will cause the callback to be called by sinon
+        // so that we can tell the bundler that we are done writing the bundle.
+        destStub = {
+          write: sinon.stub().callsArg(1),
+        };
+
+        return bitbundler.bundle({ src: { content: bundleContent }, dest: destStub });
+      });
+
+      it("then initBuild event handler is called", function () {
+        sinon.assert.called(buildInit);
+      });
+
+      it("then preBuild event handler is called", function () {
+        sinon.assert.called(buildStart);
+      });
+
+      it("then postBuild event handler is called", function () {
+        sinon.assert.called(buildEnd);
+      });
+
+      it("then writeSucess event handler is called", function () {
+        sinon.assert.called(writeSuccess);
+      });
+
+      it("then writeFailure event handler is never called", function () {
+        sinon.assert.notCalled(writeFailure);
+      });
+
+      it("then dest.write function is called", function () {
+        sinon.assert.called(destStub.write);
       });
 
       it("then loader.hasModule is not called", function () {
@@ -380,20 +439,72 @@ describe("BitBundler test suite", function () {
       });
     });
 
+    describe("bundle javascript content and failed write", function () {
+      let destStub, stubWriteError, errorFromWrite, stderrStub;
+      const bundleContent = "console.log('hello world');";
+
+      beforeEach(function () {
+        stubWriteError = new Error("test error when writing bundle");
+
+        // dest is a stream and streams have a write function with arguments:
+        // 1. the content to write
+        // 2. callback that is called when the stream is done writing.
+        //
+        // The stub setup below will cause the callback to be called by sinon
+        // so that we can tell the bundler that we are done writing the bundle.
+        destStub = {
+          write: sinon.stub().callsArgWith(1, stubWriteError),
+        };
+
+        // We stub out stderr.write so that tests dont get noisy output from
+        // logging the promise rejection from failing the bundle writing.
+        stderrStub = sinon.stub();
+        process.stderr.write = stderrStub;
+
+        return bitbundler
+          .bundle({ src: { content: bundleContent }, dest: destStub })
+          .catch((e) => {
+            // the writer will reject the promise... So we catch it here
+            // to let the test continue to run.
+            errorFromWrite = e;
+          });
+      });
+
+      it("then we get an error from the bundle write", function () {
+        expect(errorFromWrite).to.be.equal(stubWriteError);
+      });
+
+      it("then initBuild event handler is called", function () {
+        sinon.assert.called(buildInit);
+      });
+
+      it("then preBuild event handler is called", function () {
+        sinon.assert.called(buildStart);
+      });
+
+      it("then postBuild event handler is called", function () {
+        sinon.assert.called(buildEnd);
+      });
+
+      it("then writeSucess event handler is called", function () {
+        sinon.assert.notCalled(writeSuccess);
+      });
+
+      it("then writeFailure event handler is never called", function () {
+        sinon.assert.called(writeFailure);
+      });
+
+      it("then dest.write function is called", function () {
+        sinon.assert.called(destStub.write);
+      });
+    });
+
     describe("bundle javascript content with a dependency", function () {
       const bundleContent = "require('./z');console.log('hello world');";
       const bundleContentPath = path.join(__dirname, "../sample/");
 
       beforeEach(function () {
         return bitbundler.bundle({ content: bundleContent, path: bundleContentPath });
-      });
-
-      it("then emit is called with `build-init`", function () {
-        sinon.assert.calledWith(bitbundler.emit, "build-init");
-      });
-
-      it("then emit is called with `build-start`", function () {
-        sinon.assert.calledWith(bitbundler.emit, "build-start");
       });
 
       it("then initBuild event handler is called", function () {
@@ -434,16 +545,11 @@ describe("BitBundler test suite", function () {
     });
 
     describe("bundle with one file", function () {
+      let context;
       beforeEach(function () {
+        context = createMockEmptyContext();
+        bitbundler.bundler.bundle = sinon.stub().resolves(context);
         return bitbundler.bundle(["test/sample/X.js"]);
-      });
-
-      it("then emit is called with `build-init`", function () {
-        sinon.assert.calledWith(bitbundler.emit, "build-init");
-      });
-
-      it("then emit is called with `build-start`", function () {
-        sinon.assert.calledWith(bitbundler.emit, "build-start");
       });
 
       it("then initBuild event handler is called", function () {
@@ -488,20 +594,21 @@ describe("BitBundler test suite", function () {
     });
 
     describe("bundle update with one file", function () {
-      var file;
+      var file, context;
 
       beforeEach(function () {
         file = new BitBundler.File("test/sample/X.js");
+        bitbundler.loader.hasModule.restore();
+        bitbundler.loader.getModule.restore();
+        bitbundler.loader.deleteModule.restore();
+        bitbundler.loader.hasModule = sinon.stub();
+        bitbundler.loader.getModule = sinon.stub();
+        bitbundler.loader.deleteModule = sinon.stub();
+
+        context = createMockEmptyContext();
+        bitbundler.context = context;
         file.src.forEach((filePath) => bitbundler.loader.hasModule.withArgs(filePath).returns(true));
         return bitbundler.update(file);
-      });
-
-      it("then emit is called with `build-init`", function () {
-        sinon.assert.neverCalledWith(bitbundler.emit, "build-init");
-      });
-
-      it("then emit is called with `build-start`", function () {
-        sinon.assert.calledWith(bitbundler.emit, "build-start");
       });
 
       it("then initBuild event handler is NOT called", function () {
@@ -551,14 +658,6 @@ describe("BitBundler test suite", function () {
         return bitbundler.bundle(["test/sample/X.js"]).catch(function () { });
       });
 
-      it("then emit is called with `build-init`", function () {
-        sinon.assert.calledWith(bitbundler.emit, "build-init");
-      });
-
-      it("then emit is called with `build-start`", function () {
-        sinon.assert.calledWith(bitbundler.emit, "build-start");
-      });
-
       it("then initBuild event handler is called", function () {
         sinon.assert.called(buildInit);
       });
@@ -582,8 +681,7 @@ describe("BitBundler test suite", function () {
         notificationStub = sinon.stub().returns({ "build-init": initBuildStub });
         createBundler({ notifications: notificationStub });
 
-        sinon.spy(bitbundler, "emit");
-        context = createMockContext();
+        context = createMockEmptyContext();
         bitbundler.buildBundles = sinon.stub().resolves(context);
 
         return bitbundler.bundle(["test/sample/X.js"]);
@@ -608,8 +706,7 @@ describe("BitBundler test suite", function () {
         notificationStub2 = sinon.stub().returns({ "build-init": buildInitStub2 });
         createBundler({ notifications: [notificationStub1, notificationStub2] });
 
-        sinon.spy(bitbundler, "emit");
-        context = createMockContext();
+        context = createMockEmptyContext();
         bitbundler.buildBundles = sinon.stub().resolves(context);
 
         return bitbundler.bundle(["test/sample/X.js"]);
@@ -634,7 +731,7 @@ describe("BitBundler test suite", function () {
   });
 });
 
-function createMockContext() {
+function createMockEmptyContext() {
   var context = {
     cache: {},
     getBundles: () => ({ setModules: () => ({}) }),
